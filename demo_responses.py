@@ -38,16 +38,16 @@ DEMO_RESPONSES = {
                 "week-on-week to 156 hours — still within SLA but the fastest single-week escalation "
                 "this quarter. The first SLA breach of the quarter has occurred, with one invoice "
                 "missing the contractual 7-day payment window. First-pass resolution has dipped below "
-                "the 95% SLA to 94.8%, attributable to junior staff handling work that ordinarily "
-                "requires senior processor judgment."
+                "the 95% SLA to 94.8%, attributable to reduced senior processing coverage "
+                "during a period of concurrent planned leave."
             ),
             "interventions": [
                 {
                     "title": "Restrict concurrent leave during active client onboarding periods",
                     "rationale": (
                         "The co-occurrence of two senior processors on leave during a new client "
-                        "go-live created a capacity gap that junior cover could not fully absorb. "
-                        "This is a governance oversight in leave planning."
+                        "go-live created a capacity gap that reduced senior coverage could not "
+                        "fully absorb. This is a governance oversight in leave planning."
                     ),
                     "action": (
                         "Director of Operations to mandate a minimum coverage rule: no more than one "
@@ -63,8 +63,8 @@ DEMO_RESPONSES = {
                     "title": "Resolve the new client invoice template mismatch this week",
                     "rationale": (
                         "The new logistics client's invoice format is generating exceptions that "
-                        "junior processors are not yet equipped to resolve without escalation, "
-                        "increasing cycle time and manual processing effort."
+                        "the format mismatch is generating exceptions that require escalation to "
+                        "resolve, increasing cycle time and manual processing effort."
                     ),
                     "action": (
                         "Operations Lead to review the new client's invoice template against the "
@@ -106,26 +106,26 @@ DEMO_RESPONSES = {
             "week_label": "2025-W07",
             "severity": "WARNING",
             "executive_summary": (
-                "The week's deterioration has two identifiable process causes: junior staff cover "
-                "absorbing work that requires senior processor judgment, and a new logistics client "
+                "The week's deterioration has two identifiable process causes: reduced senior "
+                "processing coverage due to concurrent planned leave, and a new logistics client "
                 "introducing invoice formats that are generating higher exception flags than standard "
                 "templates. Neither cause is structural, but both will worsen if not addressed before "
-                "senior processors return. Manual processing hours reached 156 hours — 24 hours higher "
-                "than the prior week — driven by the additional time junior staff require per invoice "
-                "and the exception-heavy new client volume."
+                "full team capacity is restored. Manual processing hours reached 156 hours — 24 hours "
+                "higher than the prior week — driven by the exception-heavy new client volume and "
+                "the additional handling steps required for non-standard invoice formats."
             ),
             "interventions": [
                 {
                     "title": "Document new client exception patterns before senior processors return",
                     "rationale": (
-                        "Without a documented exception log, the senior processors returning from "
-                        "leave will face the same learning curve the junior staff just went through. "
-                        "Capturing specific exception types now creates a reusable playbook."
+                        "Without a documented exception log, the team returning from leave will "
+                        "need to re-triage the same issues from scratch. Capturing exception types "
+                        "now creates a reusable playbook that reduces handling time going forward."
                     ),
                     "action": (
-                        "Junior team lead to maintain a running exception log for the new client "
+                        "Operations team lead to maintain a running exception log for the new client "
                         "this week: exception type, cause, and resolution step for each flagged "
-                        "invoice. Share with returning senior processors on Monday."
+                        "invoice. Share with the full team at Monday's handover."
                     ),
                     "expected_impact": (
                         "Reduces time-per-invoice for the new client by eliminating repeated "
@@ -993,8 +993,8 @@ DEMO_RESPONSES = {
                     "rationale": (
                         "The team is operating below full capacity with agency cover. Agency staff "
                         "are productive but cost more per hour and cannot be relied upon indefinitely. "
-                        "The permanent replacement remains at interview stage — the timeline must "
-                        "be compressed."
+                        "The permanent replacement remains at interview stage — it is recommended "
+                        "the timeline be compressed to avoid prolonged reliance on agency cover."
                     ),
                     "action": (
                         "HR and Director of Operations to target a hire decision by end of this week "
