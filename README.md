@@ -1,5 +1,6 @@
 # Prescriptive KPI & Performance Dashboard
 ### Autonomous Operational Governance Agent
+**[→ Live demo](https://project-aegis-kpi.streamlit.app)** · Demo mode · No API key required
 
 ---
 
@@ -10,7 +11,12 @@ Not a dashboard. An **AI-native PMO Governance Agent** that:
 - Automatically detects SLA breaches and week-over-week deterioration
 - Uses Claude AI to explain *why* metrics dropped (cross-referencing data with operational logs)
 - Prescribes 3 specific, VP-ready interventions — ready for a steering committee
-![Dashboard screenshot](docs/screenshot.png)
+
+### Dashboard in action — W08 Critical Incident (ERP Failure)
+
+![KPI monitoring view](docs/screenshot_kpis.png)
+
+![AI prescriptive analysis](docs/screenshot_ai.png)
 
 ---
 
