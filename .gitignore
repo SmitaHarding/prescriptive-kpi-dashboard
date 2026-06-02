@@ -1,0 +1,6 @@
+venv/
+__pycache__/
+*.pyc
+.env
+kpi_dashboard.db
+.DS_Store
