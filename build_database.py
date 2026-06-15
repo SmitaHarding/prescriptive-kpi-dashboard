@@ -13,7 +13,7 @@ v2.0 changes:
 import sqlite3
 import os
 
-DB_PATH = "kpi_dashboard.db"   # saves in the same folder as this script
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "kpi_dashboard.db")
 
 # ── Workforce capacity formula coefficients ──────────────────────────────────
 # Y = β₀ + (μ₁ × stuck_invoice_count) + (μ₂ × invoice_exception_count) + (μ₃ × dispute_count)
@@ -236,7 +236,7 @@ def _derive_row(raw_row):
     )
 
 
-def build():
+def build(db_path=None):
     """
     Creates the SQLite database, defines the schema, and seeds it with
     16 weeks of operational KPI data.
@@ -246,11 +246,16 @@ def build():
     so the database always reflects the canonical workforce capacity model.
 
     Safe to re-run — drops and recreates the database each time.
-    """
-    if os.path.exists(DB_PATH):
-        os.remove(DB_PATH)
 
-    conn = sqlite3.connect(DB_PATH)
+    Args:
+        db_path: Optional explicit path for the database file.
+                 Defaults to DB_PATH (same directory as this script).
+    """
+    target = db_path or DB_PATH
+    if os.path.exists(target):
+        os.remove(target)
+
+    conn = sqlite3.connect(target)
     cur = conn.cursor()
 
     cur.execute("""
@@ -294,7 +299,7 @@ def build():
     conn.commit()
     conn.close()
 
-    print(f"✅ Database created: {DB_PATH}")
+    print(f"✅ Database created: {target}")
     print(f"   {len(weeks_data)} weeks of KPI data seeded (10 metrics, 2 derived counts).")
     print()
     print("   Formula-derived manual_processing_hours:")

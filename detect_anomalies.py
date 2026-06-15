@@ -15,8 +15,9 @@ v2.0 changes:
 """
 
 import sqlite3
+import os
 
-DB_PATH = "kpi_dashboard.db"   # relative to script location
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "kpi_dashboard.db")
 
 # ── SLA Thresholds ──────────────────────────────────────────────────────────
 SLA = {

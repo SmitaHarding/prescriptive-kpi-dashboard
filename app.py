@@ -40,11 +40,11 @@ DEMO_MODE = os.getenv("DEMO_MODE", "false").lower() in ("true", "1", "yes")
 if DEMO_MODE:
     from demo_responses import DEMO_RESPONSES
 
-DB_PATH = "kpi_dashboard.db"
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "kpi_dashboard.db")
 
 # ── DB auto-init guard (Streamlit Cloud deployment) ───────────────────────────
 if not os.path.exists(DB_PATH):
-    build_database.build()
+    build_database.build(DB_PATH)
 
 # ── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -149,16 +149,23 @@ def load_data():
     Loads all KPI weeks from the database, joined with operational notes.
     Cached by Streamlit so repeated renders don't re-query SQLite.
     Returns a pandas DataFrame ordered by week_number.
+
+    Uses sqlite3 cursor directly (not pd.read_sql_query) to avoid
+    pandas.errors.DatabaseError in pandas 2.2+ which deprecated raw
+    DBAPI2 connections passed to read_sql_query.
     """
     conn = sqlite3.connect(DB_PATH)
-    df = pd.read_sql_query("""
+    cur = conn.cursor()
+    cur.execute("""
         SELECT k.*, COALESCE(n.notes, '') AS notes
         FROM kpi_weekly k
         LEFT JOIN operational_notes n USING (week_number)
         ORDER BY week_number
-    """, conn)
+    """)
+    cols = [d[0] for d in cur.description]
+    rows = cur.fetchall()
     conn.close()
-    return df
+    return pd.DataFrame(rows, columns=cols)
 
 
 @st.cache_data
