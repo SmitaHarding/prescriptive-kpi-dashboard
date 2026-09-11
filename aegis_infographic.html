@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Project Aegis — Infographic</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --brand: #185FA5; --brand-light: #E6F1FB; --brand-mid: #B5D4F4; --text: #1a2035; --text-sec: #4a5568; --text-ter: #8a95a3; --border: #e4edf7; }
+body { background: #eef3f9; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; display: flex; justify-content: center; align-items: flex-start; padding: 40px 30px; min-height: 100vh; }
+
+.card { width: 1100px; border-radius: 16px; overflow: hidden; box-shadow: 0 6px 32px rgba(24,95,165,0.12); background: #fff; }
+
+/* ── HEADER ── */
+.header { background: var(--brand); padding: 22px 32px; display: flex; justify-content: space-between; align-items: flex-end; }
+.header-left .eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.55); margin-bottom: 5px; }
+.header-left .title { font-size: 20px; font-weight: 600; color: #fff; line-height: 1.25; }
+.header-right { text-align: right; }
+.header-right .sub { font-size: 11.5px; color: rgba(255,255,255,0.65); margin-bottom: 4px; }
+.header-right .links { display: flex; gap: 14px; justify-content: flex-end; }
+.header-right .lk { font-size: 11px; color: rgba(255,255,255,0.85); text-decoration: none; border: 0.5px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 3px 10px; }
+
+/* ── BODY ── */
+.body { padding: 24px 32px 28px; display: flex; flex-direction: column; gap: 24px; }
+
+/* Section label */
+.sec-head { display: flex; align-items: center; gap: 9px; margin-bottom: 14px; }
+.sec-num { width: 22px; height: 22px; border-radius: 50%; background: var(--brand); font-size: 10px; font-weight: 700; color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.sec-lbl { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--brand); }
+.sec-line { flex: 1; height: 0.5px; background: var(--brand-mid); }
+
+/* ── 01 PROBLEM — 3 columns ── */
+.prob-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.prob-card { border: 0.5px solid var(--border); border-radius: 10px; overflow: hidden; }
+.prob-card-top { background: var(--brand-light); padding: 12px 14px; border-bottom: 0.5px solid var(--brand-mid); }
+.prob-card-top .fail { font-size: 12.5px; font-weight: 700; color: var(--brand); margin-bottom: 3px; }
+.prob-card-top .metric { font-size: 10.5px; color: var(--text-sec); line-height: 1.45; }
+.prob-card-bot { padding: 12px 14px; background: #fff; }
+.prob-card-bot p { font-size: 11.5px; color: var(--text-sec); line-height: 1.6; }
+
+/* ── 02 WHAT I BUILT — intro left + table right ── */
+.built-layout { display: grid; grid-template-columns: 280px 1fr; gap: 20px; align-items: start; }
+.built-intro { font-size: 12px; line-height: 1.75; color: var(--text-sec); border-left: 2.5px solid var(--brand-mid); padding-left: 14px; }
+.cap-table { width: 100%; border-collapse: collapse; }
+.cap-table th { font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--brand); padding: 0 10px 8px; text-align: left; border-bottom: 1px solid var(--brand-mid); }
+.cap-table th:first-child { width: 26%; }
+.cap-table td { font-size: 11.5px; line-height: 1.5; color: var(--text); padding: 8px 10px; vertical-align: top; border-bottom: 0.5px solid var(--border); }
+.cap-table tr:last-child td { border-bottom: none; }
+.cap-table .asis { color: var(--text-ter); }
+.cap-table .aegis { color: var(--brand); font-weight: 600; }
+.cap-table tr:nth-child(even) td { background: #f8fbfe; }
+.cap-table .col-label { font-weight: 600; }
+
+/* divider */
+.divider { height: 0.5px; background: var(--border); }
+
+/* ── 03 HOW IT WORKS — horizontal workflow ── */
+.wf-horizontal { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr; align-items: start; gap: 0; }
+.wf-node { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.wf-circle { width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid var(--brand); font-size: 13px; font-weight: 700; color: var(--brand); display: flex; align-items: center; justify-content: center; background: #fff; flex-shrink: 0; margin-bottom: 10px; }
+.wf-circle.f { background: var(--brand); color: #fff; }
+.wf-node .node-box { width: 100%; border-radius: 9px; padding: 12px 14px; border: 0.5px solid var(--border); background: #fff; }
+.wf-node.ai .node-box { background: var(--brand-light); border-color: var(--brand-mid); }
+.node-box .wt { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 5px; }
+.wf-node.ai .node-box .wt { color: var(--brand); }
+.node-box .wd { font-size: 11px; color: var(--text-sec); line-height: 1.55; }
+.ai-tags { display: flex; flex-direction: column; gap: 4px; margin-top: 7px; }
+.ai-tag { font-size: 10px; background: #fff; color: var(--brand); border: 0.5px solid var(--brand-mid); border-radius: 4px; padding: 3px 7px; text-align: center; font-weight: 500; }
+.wf-arrow { display: flex; align-items: flex-start; padding-top: 18px; color: var(--brand-mid); font-size: 22px; padding-left: 4px; padding-right: 4px; line-height: 1; }
+
+/* ── FOOTER ── */
+.footer { background: var(--brand-light); border-top: 0.5px solid var(--brand-mid); padding: 13px 32px; display: flex; justify-content: space-between; align-items: center; }
+.footer .built { font-size: 11.5px; color: var(--brand); font-weight: 500; }
+.footer .flinks { display: flex; gap: 16px; }
+.footer .fl { font-size: 11.5px; color: var(--brand); text-decoration: none; font-weight: 500; }
+</style>
+</head>
+<body>
+<div class="card">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div class="eyebrow">Project Aegis</div>
+      <div class="title">Prescriptive KPI &amp; Performance Dashboard</div>
+    </div>
+    <div class="header-right">
+      <div class="sub">Autonomous AI Governance Agent · B2B Payment Operations</div>
+      <div class="links">
+        <a class="lk" href="https://project-aegis-kpi.streamlit.app/">▶ Live demo</a>
+        <a class="lk" href="https://github.com/SmitaHarding/prescriptive-kpi-dashboard">⌥ GitHub</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="body">
+
+    <!-- 01 THE PROBLEM -->
+    <div>
+      <div class="sec-head">
+        <div class="sec-num">01</div>
+        <div class="sec-lbl">The problem</div>
+        <div class="sec-line"></div>
+      </div>
+      <div class="prob-grid">
+        <div class="prob-card">
+          <div class="prob-card-top">
+            <div class="fail">Reporting lag</div>
+            <div class="metric">3–7 days from KPI breach to leadership visibility</div>
+          </div>
+          <div class="prob-card-bot"><p>Correction windows close before intervention is possible. Downstream financial and compliance exposure accumulates unchecked.</p></div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-card-top">
+            <div class="fail">Analytical bottleneck</div>
+            <div class="metric">Up to 30% of senior PM capacity lost weekly</div>
+          </div>
+          <div class="prob-card-bot"><p>Analyst capacity consumed by data gathering across time zones rather than solution design. Briefing quality inconsistent and time-dependent.</p></div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-card-top">
+            <div class="fail">Governance risk</div>
+            <div class="metric">Structured KPI data and incident logs never cross-referenced</div>
+          </div>
+          <div class="prob-card-bot"><p>Corrective action plans rely on memory and institutional knowledge. Root cause analysis is anecdotal, incomplete, and variable in quality.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 02 WHAT I BUILT -->
+    <div>
+      <div class="sec-head">
+        <div class="sec-num">02</div>
+        <div class="sec-lbl">What I built</div>
+        <div class="sec-line"></div>
+      </div>
+      <div class="built-layout">
+        <div class="built-intro">Project Aegis replaces manual reporting with an autonomous AI governance agent. The moment a KPI breaches its SLA threshold, the system detects it, cross-references the corresponding operational logs, and generates tailored prescriptive briefings for leadership and operations teams — without human intervention.</div>
+        <table class="cap-table">
+          <thead>
+            <tr>
+              <th>Capability</th>
+              <th>As-is</th>
+              <th>With Project Aegis</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="col-label">Time to insight</td>
+              <td class="asis">1–7 days</td>
+              <td class="aegis">Minutes</td>
+            </tr>
+            <tr>
+              <td class="col-label">Briefing preparation</td>
+              <td class="asis">Manual — senior PM drafts from ad hoc data pulls</td>
+              <td class="aegis">Autonomous — AI-generated from operational data</td>
+            </tr>
+            <tr>
+              <td class="col-label">Root cause analysis</td>
+              <td class="asis">Retrospective; structured and unstructured data reviewed separately</td>
+              <td class="aegis">KPI data and incident logs cross-referenced simultaneously at point of breach</td>
+            </tr>
+            <tr>
+              <td class="col-label">Governance scope</td>
+              <td class="asis">One market at a time</td>
+              <td class="aegis">Pan-European — all markets monitored simultaneously</td>
+            </tr>
+            <tr>
+              <td class="col-label">PM capacity freed</td>
+              <td class="asis">Up to 30% weekly capacity on variance reports</td>
+              <td class="aegis">Reporting automated — PM redirected to corrective action</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 03 HOW IT WORKS -->
+    <div>
+      <div class="sec-head">
+        <div class="sec-num">03</div>
+        <div class="sec-lbl">How it works</div>
+        <div class="sec-line"></div>
+      </div>
+      <div class="wf-horizontal">
+
+        <div class="wf-node">
+          <div class="wf-circle">1</div>
+          <div class="node-box">
+            <div class="wt">Data layer</div>
+            <div class="wd">SQLite database · 10 KPIs across 16 weeks · formula-derived workforce capacity model</div>
+          </div>
+        </div>
+
+        <div class="wf-arrow">›</div>
+
+        <div class="wf-node">
+          <div class="wf-circle">2</div>
+          <div class="node-box">
+            <div class="wt">Anomaly detection</div>
+            <div class="wd">Rule-based engine flags SLA breaches and week-over-week deterioration instantly across all KPIs</div>
+          </div>
+        </div>
+
+        <div class="wf-arrow">›</div>
+
+        <div class="wf-node ai">
+          <div class="wf-circle f">3</div>
+          <div class="node-box">
+            <div class="wt">AI governance agent</div>
+            <div class="wd">KPI variance data and operational incident logs ingested simultaneously at point of breach</div>
+            <div class="ai-tags">
+              <span class="ai-tag">Executive Copilot — strategic risk &amp; governance</span>
+              <span class="ai-tag">Operations Copilot — root cause &amp; process excellence</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="wf-arrow">›</div>
+
+        <div class="wf-node">
+          <div class="wf-circle">4</div>
+          <div class="node-box">
+            <div class="wt">Prescriptive output</div>
+            <div class="wd">3 ranked interventions · rationale · expected impact · path back to green</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="built">Built with Claude AI · Intent-driven from the start</div>
+    <div class="flinks">
+      <a class="fl" href="https://project-aegis-kpi.streamlit.app/">▶ Live demo</a>
+      <a class="fl" href="https://github.com/SmitaHarding/prescriptive-kpi-dashboard">⌥ GitHub</a>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
