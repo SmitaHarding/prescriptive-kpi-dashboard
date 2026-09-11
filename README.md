@@ -1,78 +1,49 @@
-# Prescriptive KPI & Performance Dashboard
-### Autonomous Operational Governance Agent
-**[→ Live demo](https://project-aegis-kpi.streamlit.app)** · Demo mode · No API key required
+# Project Aegis
+
+An AI-native operational governance agent for a large-scale B2B payments operation.
+It detects SLA breaches and week-over-week deterioration, attributes them to
+documented operational causes, and prescribes interventions ahead of the weekly
+operating review.
+
+**v1 shipped in June 2026 and was retired in September**, after an adversarial review
+found twenty-one defects — chief among them a severity model with no concept of
+trajectory, and a reasoning layer that prescribed interventions nobody had the capacity
+to execute. **v2 is being rebuilt from the frame up** against a documented operating
+model: the decision the system exists to improve, requirements written as executable
+evaluations, and a harness the build must pass before it ships.
+
+[**→ Live**](https://project-aegis-kpi.streamlit.app) · v1 preserved on the
+[`archive/v1`](../../tree/archive/v1) branch
 
 ---
 
-## What this is
+## Why the process is the point
 
-Not a dashboard. An **AI-native PMO Governance Agent** that:
-- Stores 16 weeks of operational KPI data in a local database
-- Automatically detects SLA breaches and week-over-week deterioration
-- Uses Claude AI to explain *why* metrics dropped (cross-referencing data with operational logs)
-- Prescribes 3 specific, VP-ready interventions — ready for a steering committee
+In deterministic software you specify, build, then verify. That does not work where a
+reasoning layer is involved: *"the interventions must be practical"* is not something
+you can inspect in code review. So the evaluation case **is** the requirement — it is
+also the acceptance test and the regression suite.
 
-### Dashboard in action — W08 Critical Incident (ERP Failure)
+v1 demonstrates the cost of skipping that. Its PRD required a prompt prohibiting
+speculative extrapolation. The prompt was never written, and nothing ever failed as a
+result.
 
-![KPI monitoring view](docs/screenshot_kpis.png)
+## Repository
 
-![AI prescriptive analysis](docs/screenshot_ai.png)
+| Path | Contents |
+|------|----------|
+| [`method/`](method/) | The operating model — one section per stage, written as the work proceeds |
+| [`spec/`](spec/) | Requirements as failable statements: deterministic, red-line, judgement |
+| [`data/`](data/) | The world — seed generator and operational notes, carrying no answers |
+| [`evals/`](evals/) | The harness — golden set, constraint gates, runner, scorecard |
+| [`prototype/`](prototype/) | v2 application code |
 
----
+## Status
 
-## Setup (one time)
-
-### 1. Install Python dependencies
-```bash
-pip install -r requirements.txt
-```
-
-### 2. Build the database
-```bash
-python build_database.py
-```
-
-### 3. Set your Claude API key
-```bash
-# Mac / Linux
-export ANTHROPIC_API_KEY="sk-ant-your-key-here"
-
-# Windows
-set ANTHROPIC_API_KEY=sk-ant-your-key-here
-```
-Get your key at: https://console.anthropic.com
-
-### 4. Launch the dashboard
-```bash
-streamlit run app.py
-```
+**Planning.** Six sessions — frame, value, requirements, dataset, golden set, harness —
+precede any code. Each closes by committing a section of the operating model, so this
+repository is the running record of decisions rather than a write-up produced at the end.
 
 ---
 
-## File structure
-
-| File | Purpose |
-|------|---------|
-| `build_database.py` | Creates and seeds the SQLite KPI database |
-| `detect_anomalies.py` | Queries data, flags breaches & deterioration |
-| `ai_agent.py` | Claude AI agent — root cause + prescriptive interventions |
-| `app.py` | Streamlit visual dashboard |
-| `kpi_dashboard.db` | SQLite database (created by build_database.py) |
-
----
-
-## KPI definitions & SLA targets
-
-| KPI | SLA Target |
-|-----|-----------|
-| Payment Accuracy Rate | ≥ 97% |
-| Manual Processing Hours | < 200 hrs/week |
-| SLA Breach Count | 0 |
-| First-Pass Resolution Rate | ≥ 95% |
-| Processing Cycle Time | < 3 days |
-
----
-
-## Quick overview
-
-> *"I built an Autonomous Operational Governance Agent that connects directly to process data models. The moment an SLA breach is detected, the system cross-references quantitative KPI data with qualitative operational logs, then uses a Claude AI agent — acting as a Transformation Lead — to autonomously synthesise the root cause and draft three prescriptive mitigation strategies. This eliminates manual reporting lag and scales steering committee readiness."*
+*Built with assistance from Claude.*

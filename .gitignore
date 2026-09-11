@@ -1,15 +1,15 @@
+# Local working material — never published
+_working/
+_v1-local/
+
+# Python
 venv/
+.venv/
 __pycache__/
 *.pyc
-.env
-kpi_dashboard.db
+
+# Generated data artefacts (rebuild from data/)
+*.db
+
+# macOS
 .DS_Store
-BackendSchema_ProjectAegis_v1.0.docx
-ImplPlan_ProjectAegis_v1.0.docx
-PageFlow_ProjectAegis_v1.0.docx
-Prescriptive KPI & Performance Dashboard Agent Brief.docx
-SESSION_HANDOFF.md
-UXUIBrief_ProjectAegis_v1.0.docx
-archive/
-kpi_dashboard.db
-__pycache__/
