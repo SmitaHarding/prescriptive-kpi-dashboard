@@ -1,9 +1,10 @@
 # Project Aegis
 
-An AI-native operational governance agent for a large-scale B2B payments operation.
-It detects SLA breaches and week-over-week deterioration, attributes them to
-documented operational causes, and prescribes interventions ahead of the weekly
-operating review.
+An AI-assisted operational governance tool for a large-scale B2B payments operation.
+Each Monday it shows which metrics are off target, groups new partner disputes into
+possible issues, and drafts containment actions from a playbook — within the team's
+real capacity, and only after the PMO lead has reviewed them. The AI spots patterns;
+people confirm causes.
 
 **v1 shipped in June 2026 and was retired in September**, after an adversarial review
 found twenty-one defects — chief among them a severity model with no concept of
@@ -32,17 +33,25 @@ result.
 
 | Path | Contents |
 |------|----------|
-| [`method/`](method/) | The operating model — one section per stage, written as the work proceeds |
-| [`spec/`](spec/) | Requirements as failable statements: deterministic, red-line, judgement |
-| [`data/`](data/) | The world — seed generator and operational notes, carrying no answers |
-| [`evals/`](evals/) | The harness — golden set, constraint gates, runner, scorecard |
-| [`prototype/`](prototype/) | v2 application code |
+| [`method/`](method/) | The operating model — [decisions](method/decisions.md) and the [frame](method/01-frame.md) so far, one section per session |
+| [`spec/`](spec/) | Requirements as failable statements, and the registers the checks read |
+| [`data/`](data/) | The simulated world — weeks, dispute tickets and issues, carrying no answers |
+| [`evals/`](evals/) | The harness — test cases, red-line gates, runner, scorecard; `check.py` runs today |
+| [`prototype/`](prototype/) | v2 application code — empty until the harness exists |
+| [`CLAUDE.md`](CLAUDE.md) | Standing rules for the AI build loop |
 
 ## Status
 
-**Planning.** Six sessions — frame, value, requirements, dataset, golden set, harness —
-precede any code. Each closes by committing a section of the operating model, so this
-repository is the running record of decisions rather than a write-up produced at the end.
+<!-- gen:status -->
+**Stage:** F1 complete · **Next:** F2 — requirements, checks and dataset spec  
+**Built so far:** nothing yet — the harness comes first
+<!-- /gen:status -->
+
+Eight sessions: three foundations (frame, requirements with their checks, harness),
+four build slices, and a wrap-up. Each session closes by committing its section of the
+operating model, so this repository is the running record of decisions rather than a
+write-up produced at the end. The status line above is generated from
+[`spec/registers.toml`](spec/registers.toml) by `evals/check.py`.
 
 ---
 

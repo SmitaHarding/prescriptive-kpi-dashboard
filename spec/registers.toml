@@ -1,0 +1,199 @@
+# Registers — the machine-readable half of the ID chain.
+# Decision wording lives only in method/decisions.md; this file holds IDs and links.
+# Checked by evals/check.py. Metrics (M) are added in F2, claims (CL) in S1 (D43, D44).
+
+[status]
+stage = "F1 complete"
+next = "F2 — requirements, checks and dataset spec"
+built = []   # nothing is built yet; S1 adds the first entries
+
+# ── Decisions: links only ────────────────────────────────────────────────
+# prevents   = v1 defects this decision guards against
+# supersedes = decisions it replaces
+# safeguards = safeguards it brings into force
+
+[[decision]]
+id = "D1"
+[[decision]]
+id = "D2"
+[[decision]]
+id = "D3"
+[[decision]]
+id = "D4"
+[[decision]]
+id = "D5"
+[[decision]]
+id = "D6"
+[[decision]]
+id = "D7"
+[[decision]]
+id = "D8"
+[[decision]]
+id = "D9"
+prevents = ["V1-07"]
+[[decision]]
+id = "D10"
+[[decision]]
+id = "D11"
+[[decision]]
+id = "D12"
+[[decision]]
+id = "D13"
+[[decision]]
+id = "D14"
+[[decision]]
+id = "D15"
+[[decision]]
+id = "D16"
+[[decision]]
+id = "D17"
+[[decision]]
+id = "D18"
+[[decision]]
+id = "D19"
+[[decision]]
+id = "D20"
+[[decision]]
+id = "D21"
+[[decision]]
+id = "D22"
+prevents = ["V1-10", "V1-12"]
+[[decision]]
+id = "D23"
+[[decision]]
+id = "D24"
+prevents = ["V1-04", "V1-07", "V1-11"]
+[[decision]]
+id = "D25"
+[[decision]]
+id = "D26"
+prevents = ["V1-01", "V1-09"]
+[[decision]]
+id = "D27"
+prevents = ["V1-02", "V1-08"]
+[[decision]]
+id = "D28"
+prevents = ["V1-03", "V1-06"]
+[[decision]]
+id = "D29"
+prevents = ["V1-03", "V1-04"]
+[[decision]]
+id = "D30"
+prevents = ["V1-05"]
+[[decision]]
+id = "D31"
+prevents = ["V1-08", "V1-09", "V1-10"]
+[[decision]]
+id = "D32"
+safeguards = ["SG-07", "SG-08", "SG-09", "SG-10", "SG-11"]
+[[decision]]
+id = "D33"
+[[decision]]
+id = "D34"
+safeguards = ["SG-01", "SG-02", "SG-03", "SG-04", "SG-05", "SG-06"]
+[[decision]]
+id = "D35"
+[[decision]]
+id = "D36"
+prevents = ["V1-05"]
+[[decision]]
+id = "D37"
+supersedes = ["D13"]
+[[decision]]
+id = "D38"
+prevents = ["V1-12"]
+[[decision]]
+id = "D39"
+prevents = ["V1-06"]
+[[decision]]
+id = "D40"
+prevents = ["V1-11"]
+[[decision]]
+id = "D41"
+[[decision]]
+id = "D42"
+[[decision]]
+id = "D43"
+prevents = ["V1-12"]
+[[decision]]
+id = "D44"
+[[decision]]
+id = "D45"
+supersedes = ["D35"]  # partly: who flags stalls
+prevents = ["V1-04"]
+[[decision]]
+id = "D46"
+prevents = ["V1-02"]
+
+# ── v1 defects (the structural ones; full register in the v1 review) ─────
+[[v1_defect]]
+id = "V1-01"
+title = "Severity binary and level-only; recoveries flagged as critical"
+[[v1_defect]]
+id = "V1-02"
+title = "No constraint on recommendations: no capacity, working-time or authority limits"
+[[v1_defect]]
+id = "V1-03"
+title = "Exactly three interventions, mandatory — padding on thin weeks"
+[[v1_defect]]
+id = "V1-04"
+title = "Fabricated impact figures presented as forecasts"
+[[v1_defect]]
+id = "V1-05"
+title = "No abstention path: a confident cause was required every week"
+[[v1_defect]]
+id = "V1-06"
+title = "Nothing persisted: no audit trail, acceptance unmeasurable"
+[[v1_defect]]
+id = "V1-07"
+title = "Notes contained the answer and restated KPI values"
+[[v1_defect]]
+id = "V1-08"
+title = "A derived metric counted as independent evidence"
+[[v1_defect]]
+id = "V1-09"
+title = "No handling of month-end and quarterly cycles"
+[[v1_defect]]
+id = "V1-10"
+title = "Volume base contradicted between code and docs"
+[[v1_defect]]
+id = "V1-11"
+title = "Model output rendered as raw HTML — an injection path"
+[[v1_defect]]
+id = "V1-12"
+title = "Docs described a system that did not exist"
+
+# ── Safeguards ───────────────────────────────────────────────────────────
+[[safeguard]]
+id = "SG-01"
+title = "Rules baseline approved by the PMO lead and frozen before any scoring"
+[[safeguard]]
+id = "SG-02"
+title = "Both versions also scored on the sealed holdout, once per slice"
+[[safeguard]]
+id = "SG-03"
+title = "Blind, shuffled scoring wherever a person judges"
+[[safeguard]]
+id = "SG-04"
+title = "Case mix fixed before any results; results reported per case type"
+[[safeguard]]
+id = "SG-05"
+title = "Margin set before results, calibrated once from run-to-run variation"
+[[safeguard]]
+id = "SG-06"
+title = "Model cost shown alongside accuracy"
+[[safeguard]]
+id = "SG-07"
+title = "Spot-check about 1 in 5 of the labels everyone agreed on"
+[[safeguard]]
+id = "SG-08"
+title = "Holdout written by a separate agent and sealed from the build"
+[[safeguard]]
+id = "SG-09"
+title = "'The case is flawed' is an allowed outcome; labels never changed to fit"
+[[safeguard]]
+id = "SG-10"
+title = "Judgement labels are acceptable options plus rubric points"
+[[safeguard]]
+id = "SG-11"
+title = "Disagreements answered before seeing the two labels"
