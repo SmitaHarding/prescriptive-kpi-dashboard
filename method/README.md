@@ -12,5 +12,5 @@ export at the end (D18).
 | `03-dataset.md` | The simulated world: weeks, dispute tickets, issues — and why answers are kept apart | F2 |
 | `04-harness.md` | Generator, runner, scorecard, holdout | F3 |
 | `00-overview.md` | How to read this, and the shape of the process | W |
-| `05-release-monitor.md` | Replay, advisory mode, drift | W |
+| `05-release-monitor.md` | Replay, release staging, drift | W |
 | `annex-v1-postmortem.md` | What v1 got wrong, and which decision prevents each defect | W |

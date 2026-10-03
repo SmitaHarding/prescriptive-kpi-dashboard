@@ -11,11 +11,11 @@ rendering, persistence. Ordinary unit tests. Bar: 100%, blocking.
 **Red-line** — what must never happen. Recommendations exceeding available
 capacity, working hours above the legal cap, numeric claims not derivable from
 the input, unescaped model output reaching the DOM, high confidence alongside
-populated evidence gaps. Checked programmatically against model output. Bar:
+populated evidence gaps, a confidence level above what the evidence supports. Checked programmatically against model output. Bar:
 zero tolerance.
 
 **Judgement** — is the attributed cause right, is the intervention
-proportionate, is the register appropriate to the audience. Scored against a
+proportionate, is the tone and detail right for the audience (ops or exec). Scored against a
 rubric. Never 100%; tracked as a number per release.
 
 `registers.toml` holds the IDs and links the traceability check reads

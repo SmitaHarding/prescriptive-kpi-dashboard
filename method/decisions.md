@@ -3,9 +3,11 @@
 The single record of **what** has been decided. One line per decision. A change
 is a new entry that supersedes an old one — entries are never edited to say
 something different. Other documents refer to these IDs instead of restating
-them.
+them. A fully replaced entry moves, unchanged apart from its pointer, to the
+Superseded section at the end; it is never erased.
 
 Status of D25–D44: agreed at the close of the F1 decision pass (30 Sep 2026).
+D45–D50: agreed in the F1 review (1 Oct 2026).
 
 | ID | Decision |
 |----|----------|
@@ -18,10 +20,8 @@ Status of D25–D44: agreed at the close of the F1 decision pass (30 Sep 2026).
 | D7 | The Streamlit app is never deleted: holding page now, v2 later, same URL. |
 | D8 | Requirements are failable statements in three classes: deterministic (100%, blocking), red-line (zero tolerance, checked in code on model output), judgement (rubric-scored, never 100%). |
 | D9 | The golden set is kept apart from the world data; the data carries no answer key. |
-| D10 | Labels are applied cold by someone who did not write the case; one third is held out and not looked at during the build. |
 | D11 | The operating model is written one section per session. |
 | D12 | Baselines are measured, or explicitly labelled as assumptions. |
-| D13 | Value metric: interventions actioned within the week. **Superseded by D37.** |
 | D14 | The domain is described as a large-scale B2B payments operation; the employer is not named. |
 | D15 | "Clean main" means clean contents: v1 removed and v2 added without force-pushing, so the history stays visible. |
 | D16 | The holding page states the position; the v1 review is linked when the operating model ships. |
@@ -35,12 +35,10 @@ Status of D25–D44: agreed at the close of the F1 decision pass (30 Sep 2026).
 | D24 | The AI's drafts are constrained, checked in code before a human sees them, and monitored for drift. Hallucination is bounded and detected, never claimed to be zero. A new model version, prompt or playbook is used only after the full test set passes. |
 | D25 | One decision owner — the PMO lead — with several actors: team manager, Ops specialists and executives. One decision record per week, shown by code as an ops view and an exec view, each with only the fields tagged for it. The prototype has one user acting in every role, each action labelled by role. |
 | D26 | Colour against target, per metric and direction: "higher is better" rates are amber up to 2% worse than target (relative to the target), red beyond; low rates, counts and days use a band set per metric. Shown alongside: week-over-week change and change against the previous 4-week average (like-for-like while a dispute window is open), a 4-week sparkline, and "n/a" for the first 4 weeks. No graded states, no persistence rule, no seasonal targets. |
-| D27 | Capacity: a baseline team of 5 × 40 h = 200 h a week, 240 h with overtime; 48 h per person is a red line. Absence is not modelled — the team manager confirms availability. Required hours = 60 h weekly payment run + 20 h protected meetings and admin + 2 h per dispute + 15 min per exception + 30 min per stuck invoice + the effort of reported issue interventions. The capacity check runs every week with open issues or amber or red metrics: overtime first, then extra FTEs, which need exec authority. Improvement time remaining is shown on both views. |
 | D28 | Every cause has at least one intervention or a deferral with a reason. Several are allowed per cause and stage when each addresses a different need — no two of the same playbook type for the same cause and stage. Each names its cause and stage and cites its evidence; capacity is the overall limit. Nothing the AI drafts is shown until the PMO lead has reviewed it. Every draft, edit and decision is kept in an append-only weekly record with status (pending review, reported, rejected, deferred), reviewer, time, and a required note on reject or edit. |
 | D29 | Interventions come from a playbook: a data file the PMO lead edits, each entry with owner role, effort range, the causes it fits, whether it needs exec authority, and best-practice steps shown word for word. Code pre-filters entries by suspected cause; there is no retrieval step. Off-playbook interventions are allowed, labelled, and shown only after review. Playbook changes are approved by the PMO lead, versioned and re-tested; the agent may only propose them. |
 | D30 | Every proposed cause carries a confidence level (low, medium, high) and its evidence gaps. Evidence gaps together with high confidence is a red line: rejected, retried once, then shown as "needs human review". Whether the model held back when it should have is a judgement metric. |
 | D31 | Simulated data: 1,500 partners, one invoice each per week, 52 weeks, English-only text, labelled as synthetic. Coloured metrics: payment accuracy, dispute rate, exception rate, dispute resolution within 5 days, processing cycle days, stuck invoices; invoice volume is shown as context. Payment accuracy counts confirmed errors only. |
-| D32 | Test cases are written by Claude, except the holdout, which a separate agent writes. A fresh agent with no project context labels them; the PMO lead decides disagreements and labels the holdout. Safeguards SG-07 to SG-11 apply. |
 | D33 | The git history is not rewritten. |
 | D34 | The AI's clustering is compared with a rules-only baseline on the same dispute tickets, scored against the confirmed cause and on lead time. The model is used for a part only where it beats the rules by an agreed margin and is never worse on red lines. Safeguards SG-01 to SG-06 apply; decisions are routinely compared against the safeguard register. |
 | D35 | Issues move from Detected through Contained, Cause confirmed, Corrected and Prevented to Closed, with exit criteria checked in code; people move stages, the AI proposes actions and flags stalls. Metrics are tracked per invoice week. The dispute rate is the share of a week's invoices disputed within the two-week window, coloured on its current value and labelled "window open — provisional" until the week closes; the next update restates the final values and any colour change. The weekly ops and exec update shows the week number, performance, and each open issue's progress until it closes. |
@@ -54,4 +52,19 @@ Status of D25–D44: agreed at the close of the F1 decision pass (30 Sep 2026).
 | D43 | Document checks are phased in: no copied facts from F1, generated blocks and review stamps from F3, the claims check from S1. |
 | D44 | F1 runs in one session in slimmer form; later documents and registers are added when first used; S4's size is set in its charter. |
 | D45 | Stalled issues are detected by code: days in the current stage, from the recorded stage dates, against a limit per stage set in F2; an issue over its limit is marked overdue on the board and in the weekly update. The AI only proposes the next action for an overdue issue, reviewed like any other draft. Replaces the part of D35 that had the AI flag stalls. |
-| D46 | Overtime is approved by the team manager, within the 48-hour limit; extra FTEs remain an exec decision (D27). |
+| D46 | Overtime is approved by the team manager, within the 48-hour limit; extra FTEs remain an exec decision (D48). |
+| D47 | Labelling and holdout: test cases are written by Claude, except the holdout, which a separate agent writes. A fresh agent with no project context labels them cold; the PMO lead decides disagreements and labels the holdout. The holdout is set by D41 and is not looked at during the build. Safeguards SG-07 to SG-11 apply. Replaces D10 and D32. |
+| D48 | Capacity: a baseline team of 5 FTE × 40 h, less 4 h protected time each for meetings and admin, gives 180 productive hours a week; 220 h with overtime; 48 h per person is a red line. Absence is not modelled — the team manager confirms availability. Workload = 60 h weekly payment run + 2 h per dispute (counted in the week it is opened) + 15 min per exception + 30 min per stuck invoice + the effort of reported issue interventions. Utilisation = workload ÷ productive hours, against a target ceiling set in F2. The check runs every week with open issues or amber or red metrics; above the ceiling it proposes overtime first, then extra FTEs, which need exec authority. Improvement time remaining is shown on both views. Replaces D27. |
+| D49 | Confidence is measured, not asserted: high = at least two independent evidence types agree and there are no gaps; medium = one evidence type or minor gaps; low = thin or conflicting evidence. Code computes cluster size, field agreement and run-to-run consistency, and the model's label is checked against them. Calibration is measured on the test set and shown in the drift table. Exact rules are set in F2. Refines D30. |
+| D50 | Month-end and quarter-end weeks are marked in the data. Before proposing an issue, clustering compares a cycle week with the same point in earlier cycles; only a pattern beyond the usual cycle is proposed. Colours stay on target (D26: no seasonal targets). The comparison rule is set in F2. |
+
+## Superseded
+
+Kept for traceability. Each entry names the decision that replaced it.
+
+| ID | Decision |
+|----|----------|
+| D10 | Labels are applied cold by someone who did not write the case; one third is held out and not looked at during the build. **Superseded by D47.** |
+| D13 | Value metric: interventions actioned within the week. **Superseded by D37.** |
+| D27 | Capacity: a baseline team of 5 × 40 h = 200 h a week, 240 h with overtime; 48 h per person is a red line. Absence is not modelled — the team manager confirms availability. Required hours = 60 h weekly payment run + 20 h protected meetings and admin + 2 h per dispute + 15 min per exception + 30 min per stuck invoice + the effort of reported issue interventions. The capacity check runs every week with open issues or amber or red metrics: overtime first, then extra FTEs, which need exec authority. Improvement time remaining is shown on both views. **Superseded by D48.** |
+| D32 | Test cases are written by Claude, except the holdout, which a separate agent writes. A fresh agent with no project context labels them; the PMO lead decides disagreements and labels the holdout. Safeguards SG-07 to SG-11 apply. **Superseded by D47.** |

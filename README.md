@@ -7,13 +7,14 @@ real capacity, and only after the PMO lead has reviewed them. The AI spots patte
 people confirm causes.
 
 **v1 shipped in June 2026 and was retired in September**, after an adversarial review
-found twenty-one defects — chief among them a severity model with no concept of
-trajectory, and a reasoning layer that prescribed interventions nobody had the capacity
-to execute. **v2 is being rebuilt from the frame up** against a documented operating
-model: the decision the system exists to improve, requirements written as executable
-evaluations, and a harness the build must pass before it ships.
+raised twenty-one findings (the twelve structural defects are tracked in
+[`spec/registers.toml`](spec/registers.toml)) — chief among them a severity model with
+no concept of trajectory, and a reasoning layer that prescribed interventions nobody had
+the capacity to execute. **v2 is being rebuilt from the frame up** against a documented
+operating model: the decision the system exists to improve, requirements written as
+executable evaluations, and a harness the build must pass before it ships.
 
-[**→ Live**](https://project-aegis-kpi.streamlit.app) · v1 preserved on the
+[**→ Live**](https://project-aegis-kpi.streamlit.app) (holding page until v2) · v1 preserved on the
 [`archive/v1`](../../tree/archive/v1) branch
 
 ---

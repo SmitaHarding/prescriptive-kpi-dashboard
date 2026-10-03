@@ -8,8 +8,12 @@ Checks (F1 version; grows in F2 and F3):
   2. Every decision in the registers appears in method/decisions.md, and vice versa.
   3. Every link (prevents, supersedes, safeguards) points to an ID that exists.
   4. Every v1 defect is prevented by at least one decision; every safeguard is in force.
-  5. Every D / V1 / SG ID mentioned in method/, CLAUDE.md or README.md exists.
+  5. Every D / V1 / SG ID mentioned in the tracked docs (method/, spec/, data/, evals/,
+     CLAUDE.md, README.md) exists.
   6. The README status block matches the registers (it is generated, never hand-edited).
+  7. Every entry in the Superseded section is replaced by an active decision, says
+     which one, and carries no prevents or safeguards of its own.
+  8. No tracked doc other than decisions.md mentions a superseded decision.
 Exit code 0 when clean, 1 when anything fails.
 """
 import re
@@ -59,11 +63,36 @@ for v in sorted(ids["v1_defect"] - prevented):
 for sg in sorted(ids["safeguard"] - in_force):
     errors.append(f"{sg}: no decision brings it into force")
 
-docs = list((ROOT / "method").glob("*.md")) + [ROOT / "CLAUDE.md", ROOT / "README.md"]
+head, _, tail = log.partition("\n## Superseded")
+active = set(re.findall(r"^\| (D\d+) \|", head, re.M))
+replaced_by = {}
+for d in REG.get("decision", []):
+    for old in d.get("supersedes", []):
+        replaced_by.setdefault(old, set()).add(d["id"])
+by_id = {d["id"]: d for d in REG.get("decision", [])}
+for row in re.finditer(r"^\| (D\d+) \|(.*)\|$", tail, re.M):
+    old, body = row.group(1), row.group(2)
+    news = replaced_by.get(old, set()) & active
+    named = set(re.findall(r"Superseded by (D\d+)", body))
+    if not news:
+        errors.append(f"{old}: in Superseded but no active decision supersedes it")
+    elif not named & news:
+        errors.append(f"{old}: Superseded row does not name its replacement {sorted(news)}")
+    if by_id.get(old, {}).get("prevents") or by_id.get(old, {}).get("safeguards"):
+        errors.append(f"{old}: superseded but still carries prevents/safeguards")
+
+superseded = set(re.findall(r"^\| (D\d+) \|", tail, re.M))
+docs = [ROOT / "CLAUDE.md", ROOT / "README.md"]
+for folder in ("method", "spec", "data", "evals"):
+    docs += sorted((ROOT / folder).glob("*.md"))
 for doc in docs:
     if doc.exists():
-        for ref in sorted(set(MENTION.findall(doc.read_text(encoding="utf-8"))) - known):
+        found = set(MENTION.findall(doc.read_text(encoding="utf-8")))
+        for ref in sorted(found - known):
             errors.append(f"{doc.relative_to(ROOT)}: mentions unknown ID {ref}")
+        if doc.name != "decisions.md":
+            for ref in sorted(found & superseded):
+                errors.append(f"{doc.relative_to(ROOT)}: mentions superseded {ref}")
 
 
 def status_block():

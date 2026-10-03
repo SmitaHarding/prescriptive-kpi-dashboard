@@ -13,8 +13,8 @@ operation (D14).
 The problems surface in two ways:
 
 - **Reactive:** partners dispute an invoice with a short, often unclear text;
-  Ops opens a case, investigates with the partner, confirms the cause and
-  resolves it.
+  Ops opens a dispute ticket, investigates with the partner, confirms the cause
+  and resolves it.
 - **Proactive:** Ops spots an error before partners dispute, works out who is
   affected, confirms the cause and correction, and contacts the partners first.
   The metrics may not move, but the issue is real.
@@ -39,19 +39,21 @@ Each is answered by code wherever code can answer it — the least AI that works
 | **DEC-1** | Is anything off target? | Weekly metrics per invoice week (D31, D35) | Colour, trends, provisional status (D26, D35) | Code | — (a fact) |
 | **DEC-2** | Which new dispute tickets form a possible issue? | The week's new tickets: fixed fields and free text | Proposed clusters of ticket IDs, each with a suspected cause, a confidence level and evidence gaps (D30); counts computed by code (D24) | Two parts, each done by rules or by the model (see below) | PMO lead confirms → an issue is created |
 | **DEC-3** | What action now, and next, for each open issue? | Open issues with stage, playbook entries pre-filtered by cause in code (D29), hours still available (DEC-4) | Interventions per cause and stage (D28) | Model drafts from the pre-filtered entries; code runs the checks below | PMO lead reviews before anything is shown (D28) |
-| **DEC-4** | Do we have the capacity? | Workload and the effort of reported interventions (D27) | Hours needed against hours available; overtime, then extra FTEs | Code | Team manager confirms availability and approves overtime (D46); execs approve extra FTEs (D27) |
+| **DEC-4** | Do we have the capacity? | Workload and the effort of reported interventions (D48) | Utilisation against the ceiling; above it, overtime, then extra FTEs (D48) | Code | Team manager confirms availability and approves overtime (D46); execs approve extra FTEs (D48) |
 
 ### DEC-2: rules or model, part by part
 
 DEC-2 has two parts: **grouping** the tickets into clusters, and giving each
-cluster a **suspected cause**. For each part, a rules-only version and the
-model produce the same output — cluster, suspected cause, confidence, evidence
-gaps — and pass the same red lines, checked in code: every cited ticket ID
-exists, counts are computed by code, no high confidence alongside evidence gaps
-(D30). The model is used for a part only if it beats
-the rules on that part by the agreed margin and is never worse on red lines
-(D34). The margin is set in F2, before any results, and recorded as a D entry
-(SG-05). Until a part has passed that test, the rules version runs.
+cluster a **suspected cause**. For each part, a rules-only version and the model
+produce the same output — cluster, suspected cause, confidence, evidence gaps —
+and pass the same red lines, checked in code: every cited ticket ID exists,
+counts are computed by code, no high confidence alongside evidence gaps (D30),
+and the confidence level matches the evidence measured by code (D49). The model
+is used for a part only if it beats the rules on that part by the agreed margin
+and is never worse on red lines (D34). The margin is set in F2, before any
+results, and recorded as a D entry (SG-05). Until a part has passed that test,
+the rules version runs. Month-end and quarter-end weeks are compared with
+earlier cycles before an issue is proposed (D50).
 
 ### DEC-3: checks run in code before the PMO lead sees a draft
 
@@ -60,9 +62,11 @@ the rules on that part by the agreed margin and is never worse on red lines
 - Every intervention names its cause and stage; every cause has an intervention
   or a deferral with a reason; no two interventions of the same playbook type for
   the same cause and stage (D28).
-- Total effort fits the hours available, and nobody goes above the 48-hour
-  limit (D27).
-- No high confidence alongside evidence gaps (D30).
+- Total effort fits the hours available, including overtime once the team
+  manager approves it (D46, D48); nobody goes above the 48-hour limit.
+- No high confidence alongside evidence gaps (D30), and the confidence level
+  matches what code measures: cluster size, field agreement and run-to-run
+  consistency (D49).
 - Instructions inside ticket text have no effect (D24) — ticket text is passed
   to the model only as data, and planted injection cases in the test set prove it.
 
@@ -72,10 +76,11 @@ lead; either way it is labelled and passes the same checks (D29).
 
 ### Order within a week
 
-DEC-1, then DEC-4 computes the hours already committed (payment run, protected
-admin, problem work, interventions already reported). DEC-2 proposes clusters;
-DEC-3 drafts within the hours left; DEC-4 runs again on the drafted
-interventions before the PMO lead reviews them.
+DEC-1, then DEC-4 computes the hours already committed (payment run, problem
+work, interventions already reported) against the productive hours, which
+already exclude protected time (D48). DEC-2 proposes clusters; DEC-3 drafts
+within the hours left; DEC-4 runs again on the drafted interventions before the
+PMO lead reviews them.
 
 ## Issue lifecycle
 
@@ -111,6 +116,9 @@ Baselines are measured or labelled as assumptions (D12).
 - The margin for the rules-vs-model test in DEC-2 (SG-05).
 - Which value of a playbook entry's effort range the capacity check uses.
 - The time limit for each stage, after which an issue is marked overdue (D45).
+- The utilisation ceiling for the capacity check (D48).
+- The exact rules for each confidence level (D49).
+- How a month-end or quarter-end week is compared with earlier cycles (D50).
 
 ## What the prototype is
 

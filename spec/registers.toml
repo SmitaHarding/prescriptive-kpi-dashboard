@@ -70,22 +70,20 @@ id = "D26"
 prevents = ["V1-01", "V1-09"]
 [[decision]]
 id = "D27"
-prevents = ["V1-02", "V1-08"]
 [[decision]]
 id = "D28"
-prevents = ["V1-03", "V1-06"]
+prevents = ["V1-03", "V1-06", "V1-11"]
 [[decision]]
 id = "D29"
-prevents = ["V1-03", "V1-04"]
+prevents = ["V1-02", "V1-03", "V1-04"]
 [[decision]]
 id = "D30"
 prevents = ["V1-05"]
 [[decision]]
 id = "D31"
-prevents = ["V1-08", "V1-09", "V1-10"]
+prevents = ["V1-08", "V1-10"]
 [[decision]]
 id = "D32"
-safeguards = ["SG-07", "SG-08", "SG-09", "SG-10", "SG-11"]
 [[decision]]
 id = "D33"
 [[decision]]
@@ -98,6 +96,7 @@ id = "D36"
 prevents = ["V1-05"]
 [[decision]]
 id = "D37"
+prevents = ["V1-04", "V1-06"]
 supersedes = ["D13"]
 [[decision]]
 id = "D38"
@@ -112,18 +111,33 @@ prevents = ["V1-11"]
 id = "D41"
 [[decision]]
 id = "D42"
+prevents = ["V1-12"]
 [[decision]]
 id = "D43"
-prevents = ["V1-12"]
+prevents = ["V1-10", "V1-12"]
 [[decision]]
 id = "D44"
 [[decision]]
 id = "D45"
 supersedes = ["D35"]  # partly: who flags stalls
-prevents = ["V1-04"]
 [[decision]]
 id = "D46"
 prevents = ["V1-02"]
+[[decision]]
+id = "D47"
+prevents = ["V1-07"]
+supersedes = ["D10", "D32"]
+safeguards = ["SG-07", "SG-08", "SG-09", "SG-10", "SG-11"]
+[[decision]]
+id = "D48"
+prevents = ["V1-02"]
+supersedes = ["D27"]
+[[decision]]
+id = "D49"
+prevents = ["V1-05", "V1-08"]
+[[decision]]
+id = "D50"
+prevents = ["V1-09"]
 
 # ── v1 defects (the structural ones; full register in the v1 review) ─────
 [[v1_defect]]
