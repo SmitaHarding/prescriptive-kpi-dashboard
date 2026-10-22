@@ -1,0 +1,18 @@
+# Capacity file (R-DET-05, R-RL-01). Owned by the PMO lead; changes approved, versioned, re-tested.
+# Every figure is an assumption from operating experience (N7).
+
+team_fte = 5
+hours_per_fte = 40
+protected_hours_per_fte = 4        # meetings and admin
+overtime_hours_per_fte = 8         # approved by the team manager
+max_hours_per_person = 48          # red line R-RL-01
+
+[workload]
+payment_run_hours = 60             # weekly payment run
+hours_per_dispute = 2              # counted in the week the dispute is opened
+hours_per_exception = 0.25
+hours_per_stuck_invoice = 0.5
+# plus the effort of reported interventions, from the playbook
+
+[utilisation]
+ceiling = "set in F2a"

@@ -1,13 +1,14 @@
 # data/
 
-The world: the simulated operating history the system observes.
+The simulated operating history the system observes. **Empty today.** The dataset
+is designed in F2b and generated in F3.
 
-This folder contains **no answers**. A year of weekly metrics, dispute
-tickets and issue events, all simulated (D31). Ticket texts read like real
-partner messages and ticket descriptions — short, partial, sometimes wrong — and
-never restate KPI values. Month-end and quarter-end weeks are marked, so
-cycles can be told apart from issues (D50).
+It will hold the history and scenario quarters (N13): weekly metrics and dispute
+tickets, all simulated (N12), and **no answers**. The held-out quarter stays sealed outside
+the project until its single run (N14). Ticket texts will read like real partner
+messages: short, partial, sometimes wrong, never restating metric values
+(R-DET-12). Month-end and quarter-end weeks will be marked, so cycles can be told
+apart from issues (R-DET-02).
 
-What the right answer was for any given week lives in `evals/`, deliberately
-apart. v1's central mistake was seed data that carried its own answer key,
-which made the reasoning layer look capable when it was paraphrasing.
+The expected answer for each scenario lives in its definition, kept apart (N14). One of v1's mistakes was seed data that carried its own answer key, which
+made the reasoning layer look capable when it was paraphrasing.

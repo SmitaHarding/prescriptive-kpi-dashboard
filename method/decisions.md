@@ -1,70 +1,351 @@
 # Decisions
 
-The single record of **what** has been decided. One line per decision. A change
-is a new entry that supersedes an old one — entries are never edited to say
-something different. Other documents refer to these IDs instead of restating
-them. A fully replaced entry moves, unchanged apart from its pointer, to the
-Superseded section at the end; it is never erased.
+The choices made for Aegis, grouped by type, one choice per entry. Rules the
+system must meet are in [`02-requirements.md`](02-requirements.md). Where numbers
+live is set in N6.
 
-Status of D25–D44: agreed at the close of the F1 decision pass (30 Sep 2026).
-D45–D50: agreed in the F1 review (1 Oct 2026).
+A change is a new entry. The old entry moves to Superseded with a pointer to its
+replacement and is not otherwise edited.
 
-| ID | Decision |
-|----|----------|
-| D1 | Full rebuild, from the frame through monitoring. Nothing is lifted from v1 without passing the harness. |
-| D2 | The operating model is the front door; the prototype is the evidence. |
-| D3 | The dataset is simulated — redesigned, not reused from v1. |
-| D4 | v1 is preserved on the `archive/v1` branch and tag `v1.0`, not deleted. |
-| D5 | v2 is built on a clean `main` in the same repository. |
-| D6 | The README carries the arc; the v1 review is one click deep. |
-| D7 | The Streamlit app is never deleted: holding page now, v2 later, same URL. |
-| D8 | Requirements are failable statements in three classes: deterministic (100%, blocking), red-line (zero tolerance, checked in code on model output), judgement (rubric-scored, never 100%). |
-| D9 | The golden set is kept apart from the world data; the data carries no answer key. |
-| D11 | The operating model is written one section per session. |
-| D12 | Baselines are measured, or explicitly labelled as assumptions. |
-| D14 | The domain is described as a large-scale B2B payments operation; the employer is not named. |
-| D15 | "Clean main" means clean contents: v1 removed and v2 added without force-pushing, so the history stays visible. |
-| D16 | The holding page states the position; the v1 review is linked when the operating model ships. |
-| D17 | Personal working documents stay local and are never published. |
-| D18 | The method is written in markdown; any Word or PDF pack is an export at the end. |
-| D19 | `app.py` at the repository root is the Streamlit entry point. |
-| D20 | Slice-based build: each slice's test cases are written, and fail, before its code. |
-| D21 | Every build slice runs under a charter approved before it starts. The agent never edits a test, label or requirement to make something pass. |
-| D22 | Document content is checked, not just versioned: no copied facts, generated blocks, content-review stamps, and a claims check. |
-| D23 | Requirements and their checks are designed together; a validation plan names who outside the project judges fitness for purpose; the dataset follows from what the checks need. |
-| D24 | The AI's drafts are constrained, checked in code before a human sees them, and monitored for drift. Hallucination is bounded and detected, never claimed to be zero. A new model version, prompt or playbook is used only after the full test set passes. |
-| D25 | One decision owner — the PMO lead — with several actors: team manager, Ops specialists and executives. One decision record per week, shown by code as an ops view and an exec view, each with only the fields tagged for it. The prototype has one user acting in every role, each action labelled by role. |
-| D26 | Colour against target, per metric and direction: "higher is better" rates are amber up to 2% worse than target (relative to the target), red beyond; low rates, counts and days use a band set per metric. Shown alongside: week-over-week change and change against the previous 4-week average (like-for-like while a dispute window is open), a 4-week sparkline, and "n/a" for the first 4 weeks. No graded states, no persistence rule, no seasonal targets. |
-| D28 | Every cause has at least one intervention or a deferral with a reason. Several are allowed per cause and stage when each addresses a different need — no two of the same playbook type for the same cause and stage. Each names its cause and stage and cites its evidence; capacity is the overall limit. Nothing the AI drafts is shown until the PMO lead has reviewed it. Every draft, edit and decision is kept in an append-only weekly record with status (pending review, reported, rejected, deferred), reviewer, time, and a required note on reject or edit. |
-| D29 | Interventions come from a playbook: a data file the PMO lead edits, each entry with owner role, effort range, the causes it fits, whether it needs exec authority, and best-practice steps shown word for word. Code pre-filters entries by suspected cause; there is no retrieval step. Off-playbook interventions are allowed, labelled, and shown only after review. Playbook changes are approved by the PMO lead, versioned and re-tested; the agent may only propose them. |
-| D30 | Every proposed cause carries a confidence level (low, medium, high) and its evidence gaps. Evidence gaps together with high confidence is a red line: rejected, retried once, then shown as "needs human review". Whether the model held back when it should have is a judgement metric. |
-| D31 | Simulated data: 1,500 partners, one invoice each per week, 52 weeks, English-only text, labelled as synthetic. Coloured metrics: payment accuracy, dispute rate, exception rate, dispute resolution within 5 days, processing cycle days, stuck invoices; invoice volume is shown as context. Payment accuracy counts confirmed errors only. |
-| D33 | The git history is not rewritten. |
-| D34 | The AI's clustering is compared with a rules-only baseline on the same dispute tickets, scored against the confirmed cause and on lead time. The model is used for a part only where it beats the rules by an agreed margin and is never worse on red lines. Safeguards SG-01 to SG-06 apply; decisions are routinely compared against the safeguard register. |
-| D35 | Issues move from Detected through Contained, Cause confirmed, Corrected and Prevented to Closed, with exit criteria checked in code; people move stages, the AI proposes actions and flags stalls. Metrics are tracked per invoice week. The dispute rate is the share of a week's invoices disputed within the two-week window, coloured on its current value and labelled "window open — provisional" until the week closes; the next update restates the final values and any colour change. The weekly ops and exec update shows the week number, performance, and each open issue's progress until it closes. |
-| D36 | The product is framed around issues: the AI spots patterns across dispute tickets and never names a root cause; people confirm causes after investigation. Build slices: S1 metrics and capacity, S2 clustering, S3 contain, S4 lifecycle board and weekly update. |
-| D37 | Value is measured two ways. Adoption: reported interventions actioned by their due week. Outcome: time to contain (primary), share of issues caught proactively, share of affected partners contacted before they disputed. Replaces D13. |
-| D38 | Prototype scope. Built: metrics with colour and trends; capacity check; clustering against the rules baseline; Detect and Contain; review gate and audit record; weekly update; drift table in the scorecard. Illustrative, scripted by the generator and labelled "simulated outcome": Cause confirmed, Corrected, Prevented. Designed, not built: the real later-stage workflow, a playbook update workflow, a dashboard drift view, outcome tracking, retrieval over past issues. |
-| D39 | Records are plain-text, append-only weekly files, created locally and stored in git. The public app is a read-only replay that can show the state as of any week. |
-| D40 | The public app makes no AI calls. The README explains how to reproduce the run locally. |
-| D41 | Holdout: the last quarter of simulated tickets (weeks 40–52), scored once per slice; about 15 week-level scenarios, 5 of them held out and also used by an outside practitioner for validation. |
-| D42 | A short README with a generated status block, from F1 until the overview is written in W. |
-| D43 | Document checks are phased in: no copied facts from F1, generated blocks and review stamps from F3, the claims check from S1. |
-| D44 | F1 runs in one session in slimmer form; later documents and registers are added when first used; S4's size is set in its charter. |
-| D45 | Stalled issues are detected by code: days in the current stage, from the recorded stage dates, against a limit per stage set in F2; an issue over its limit is marked overdue on the board and in the weekly update. The AI only proposes the next action for an overdue issue, reviewed like any other draft. Replaces the part of D35 that had the AI flag stalls. |
-| D46 | Overtime is approved by the team manager, within the 48-hour limit; extra FTEs remain an exec decision (D48). |
-| D47 | Labelling and holdout: test cases are written by Claude, except the holdout, which a separate agent writes. A fresh agent with no project context labels them cold; the PMO lead decides disagreements and labels the holdout. The holdout is set by D41 and is not looked at during the build. Safeguards SG-07 to SG-11 apply. Replaces D10 and D32. |
-| D48 | Capacity: a baseline team of 5 FTE × 40 h, less 4 h protected time each for meetings and admin, gives 180 productive hours a week; 220 h with overtime; 48 h per person is a red line. Absence is not modelled — the team manager confirms availability. Workload = 60 h weekly payment run + 2 h per dispute (counted in the week it is opened) + 15 min per exception + 30 min per stuck invoice + the effort of reported issue interventions. Utilisation = workload ÷ productive hours, against a target ceiling set in F2. The check runs every week with open issues or amber or red metrics; above the ceiling it proposes overtime first, then extra FTEs, which need exec authority. Improvement time remaining is shown on both views. Replaces D27. |
-| D49 | Confidence is measured, not asserted: high = at least two independent evidence types agree and there are no gaps; medium = one evidence type or minor gaps; low = thin or conflicting evidence. Code computes cluster size, field agreement and run-to-run consistency, and the model's label is checked against them. Calibration is measured on the test set and shown in the drift table. Exact rules are set in F2. Refines D30. |
-| D50 | Month-end and quarter-end weeks are marked in the data. Before proposing an issue, clustering compares a cycle week with the same point in earlier cycles; only a pattern beyond the usual cycle is proposed. Colours stay on target (D26: no seasonal targets). The comparison rule is set in F2. |
+N1–N22 were agreed on 22 Oct 2026. They replace the 86 active earlier decisions
+(D1–D93; 7 others were already superseded), kept word for word in
+[`archive/decisions-2026-10-21.md`](archive/decisions-2026-10-21.md). The mapping
+table at the end shows where each one went.
+
+## 1. Purpose and scope
+
+**N1 · Scope.** Aegis is rebuilt from scratch. Nothing from v1 survives unless it
+passes the harness. The method is the main deliverable; the prototype is the
+evidence that it works.
+
+**N10 · What the prototype builds.**
+- To be built: metrics with colour and trends; the capacity check; DEC-2 against
+  its rules version; Detect and Contain; the PMO lead's review; the audit record,
+  including partner contacts and every reject and edit; the lifecycle board; the
+  weekly update; the drift table.
+- Simulated: lifecycle stages after Contained (N9).
+- Designed, not built: the real later-stage workflow; playbook updates; a drift
+  view on the dashboard; tracking whether interventions worked; search over past
+  issues; turning overrides into test cases (N21); independent validation (N20);
+  release staging (shadow, then advisory).
+
+**N20 · No outside validation.** No outside person validates the prototype. The
+author judges fitness for purpose. Every mention of validation states this limit.
+Independent validation is designed, not done.
+
+## 2. How the product works
+
+**N8 · The Monday decision.** Every Monday the PMO lead decides which issues need
+action this week, and what action. The decision has four parts:
+- DEC-1 · Is anything off target? Code.
+- DEC-2 · Which new dispute tickets form a possible issue? Rules, or the model if
+  it beats the rules (N15).
+- DEC-3 · Which interventions now, for each open issue and each new possible
+  issue? The model drafts, code checks, the PMO lead reviews. Off-playbook drafts
+  are allowed, labelled and reviewed.
+- DEC-4 · Do we have the capacity? Code.
+
+Weekly order: DEC-1, DEC-4 on committed hours, DEC-2, DEC-3 within the hours left,
+DEC-4 on the drafts, then the PMO lead's review.
+
+DEC-2 suggests a suspected cause; people confirm causes. Nothing names a root
+cause. The PMO lead owns the decision; the team manager, Ops specialists and
+executives act on parts of it. Each week has one decision record, shown as an ops
+view and an exec view. In the prototype the author plays every role, and each
+action is labelled with its role.
+
+**N9 · Issue lifecycle.** An issue moves through six stages: Detected, Contained,
+Cause confirmed, Corrected, Prevented, Closed. Up to Contained, people move it and
+code checks each stage's exit criteria. The model drafts only before Contained.
+After Contained, the generator scripts each stage, labelled "simulated outcome".
+Metrics are tracked per invoice week. The weekly update shows the week,
+performance and each open issue's progress until it closes.
+
+**N16 · Value measures.** Value is measured after a person acts.
+- Adoption: interventions actioned by their due week.
+- Outcome: time to contain (the main measure); share of issues caught before
+  partners dispute; share of affected partners contacted before they dispute.
+
+An issue the PMO lead opens by hand before any dispute counts as caught early. In
+the prototype the measures come from the simulated record, labelled "simulated".
+
+## 3. Data and testing
+
+**N12 · Simulated world.** The data is simulated, newly designed and labelled
+synthetic.
+- 1,500 partners, paid weekly by self-billing; one invoice per partner per week;
+  52 weeks; English text.
+- It follows the payment and dispute SOPs. The run is every Tuesday, on the most
+  accurate data available. Partners are paid within 14 days of service. They may
+  dispute within 14 days of the invoice appearing.
+- The coloured metrics are in the metrics register. Invoice volume is context only.
+- Payment accuracy counts confirmed errors only: those corrected by a back-payment
+  or a payment correction, whoever found them.
+- Ticket text reads as if the writer doesn't know the cause. It may include the
+  writer's guess; a share of guesses are wrong (set in F2b).
+
+**N13 · The year.** The simulated year has three parts:
+- Weeks 1–26, history. Code generates them; the model does not run.
+- Weeks 27–39, scenario quarter, used during the build. Each scenario spans
+  several weeks. At least one fits no listed cause.
+- Weeks 40–52, held-out quarter, run once after S4 (N15). New instances of the
+  same case types, plus a few new types whose answer is "requires human review:
+  no matching cause".
+
+A ticket belongs to the quarter of the week it is opened. Scenario-quarter
+scenarios reach Contained by week 39. Held-out scenarios start in week 40 or
+later, depend on no earlier issue and reach Contained by week 52. Dispute rates
+for weeks 38–39 stay provisional until the final run. Week 52 is an ordinary
+quarter-end. F2b sets the number of scenarios.
+
+**N14 · Scenarios and the holdout.**
+- Each scenario's expected answer is written into its definition. The model is
+  scored against it. The world data holds no answers.
+- Claude writes the scenario quarter. A separate agent writes the held-out
+  quarter.
+- A reviewer agent on a different model reads each scenario's data without the
+  answer. A mismatch means the scenario is ambiguous, and it is rewritten before
+  the freeze. In the scenario quarter, Claude rewrites it and the author reads the
+  mismatch. In the held-out quarter, its separate agent rewrites it and the author
+  sees only counts. After the freeze, a flawed scenario is excluded and reported,
+  never rewritten (SG-4).
+- The held-out quarter sits in a folder outside the project. Build sessions and
+  the builder never open it. Its fingerprint is committed in F3 and checked before
+  its one run.
+- Safeguards SG-1 to SG-4 apply: freeze first, holdout sealed, blind scoring,
+  never fit the answer.
+
+**N15 · Model against rules.** DEC-2 has a rules version: the rules the team would
+use without the model. The PMO lead writes it.
+- The scoring setup is frozen at the end of F3: the rules version, case mix,
+  margin, rubric and expected answers (SG-1). After the freeze, only the author
+  can change a frozen item, and only by a new decision.
+- Both versions are scored on the right possible issue, the right suspected cause
+  and lead time: how soon after a planted pattern starts each version flags it.
+- The deciding run is the scenario quarter, once S2 has built the model version.
+  The model is used only if it beats the rules by the frozen margin and is never
+  worse on a red line.
+- The held-out run after S4 checks the result. If it does not confirm it, this is
+  reported and the rules version is used.
+- SG-5 shows model cost beside every result.
+
+## 4. Quality and change
+
+**N17 · Requirements and evals.** Every requirement is a statement a test can
+fail. Each controls at least one listed risk and is proven by at least one eval.
+Three classes:
+- Deterministic: must pass 100%; a failure blocks.
+- Red line: zero tolerance; code checks every model output before it is shown.
+- Judgement: scored against a rubric or expected answers; never 100%.
+
+Deterministic and red-line cases are written first and fail before the product
+code exists. Judgement requirements come from the spike (N22). The dataset is
+designed from what the checks need.
+
+**N18 · Change control.** Scoring starts at the end of F3. From then on, a new
+model version, prompt or data file needs the whole scenario quarter to pass again
+(R-DET-14). Changes after the holdout run are disclosed as such. Hallucination is
+limited and detected, never claimed to be zero.
+
+**N21 · Overrides feed the tests.** Every PMO lead reject or edit will be captured
+with its note (to be built, N10). Turning overrides into test cases is designed,
+not built. The author would choose which join, as a separate set reported apart
+from the frozen test set. A new case never changes an existing expected answer
+(SG-4).
+
+**N22 · Build-and-look spike.** Between F2a and F2b, a short spike shows how the
+model fails before judgement requirements are written.
+- Generate 4–6 throwaway weeks of tickets.
+- Run one DEC-2 prompt and one DEC-3 prompt a few times each, plus quick keyword
+  rules for DEC-2.
+- The author reads about 50 outputs as the PMO lead and notes what is wrong.
+- Group the notes into failure categories and count them. Each category is fixed
+  in the prompt or code, becomes a code check, or becomes a judgement requirement.
+
+It stops after two prompt rounds, or when no new categories appear. It stays
+private in `_working/spike/`, uncommitted and unscored. Its keyword rules are
+throwaway, not N15's rules version.
+
+## 5. Build and delivery
+
+**N19 · Phases and the builder.**
+- Phases: F1 frame and decisions; F2a pass/fail requirements; the spike (N22);
+  F2b judgement requirements and dataset; F3 harness; S1–S4 slices; W wrap-up.
+- Slices: S1 metrics and capacity; S2 clustering; S3 contain; S4 lifecycle board
+  and weekly update.
+- The author and Claude work F1–F3 and W. The builder, an agent, builds S1–S4.
+- Claude and the builder prepare commits; only the author pushes.
+- Each phase ends with a gate: a fresh agent reviews all tracked files. HIGH
+  findings block; the rest are fixed in one batch.
+
+Each slice runs under a charter the author approves first. It sets the goal (a
+target scorecard), the paths the builder may edit, iteration and spend caps, the
+done condition and the author's approval points. The builder edits only those
+paths. It never changes a test, expected answer or requirement to make something
+pass. It escalates at a cap, when a failure repeats, or when a fix needs a test,
+answer or requirement changed. It prepares commits and never pushes; the author
+pushes.
+
+**N2 · Repo and deployment.** v1 stays on the `archive/v1` branch and tag `v1.0`.
+v2 is built on `main` in the same repository. History is never rewritten or
+force-pushed. `app.py` at the root is the Streamlit entry point. The app is never
+deleted: it shows a holding page now and v2 later, at the same URL.
+
+**N11 · Records and replay.** Records are append-only plain-text weekly files,
+created locally and kept in git. The public app replays them read-only and makes
+no model calls. It shows any week: all 52 weeks of metrics, the model's path in
+the scenario quarter, and the held-out quarter once run. The README will explain
+how to reproduce the run (from W).
+
+## 6. Documents and publishing
+
+**N3 · Public face.** The README tells the v1-to-v2 story. Until W, it stays
+short, with a status block generated from the registers. The holding page says v2
+is in development. The v1 review is published in W as the v1 post-mortem annex
+and linked from both.
+
+**N4 · Privacy.** The domain is described only as a large-scale B2B payments
+operation. No employer, internal tool or person is named, other than the author's
+name and GitHub link. Personal working documents stay local.
+
+**N5 · Method documents.** The method is written in markdown. F1, F2b, F3 and W
+each add a section; F2a and F2b complete `02-requirements.md`. Each slice adds a
+charter and scorecard. Sections cite IDs; W writes the full narrative. Word or PDF
+versions are exports made at the end.
+
+**N6 · One home per fact.**
+- Choices live here. Rules live in `02-requirements.md`.
+- Tunable numbers and lists live in data files: the metrics register, the capacity
+  file, the thresholds file, the cause list and the playbook.
+- Facts that define the design may be stated in decisions: the size of the
+  simulated world, the quarters, the SOP terms, the spike's size.
+- The registers hold IDs, links, built status, preferred terms, the safeguard
+  wording, and lists such as case types and evidence types.
+- A data file may mirror a design fact for the code; `check.py` confirms the two
+  match (from F2a).
+- Other documents cite IDs and restate no numbers; a script copies any wording
+  that must appear.
+- R-DET-15 sets the document checks: terms and numbers from F2a, review stamps
+  from F3, claims from S1.
+
+**N7 · Assumptions.** Every figure is measured or labelled an assumption. Capacity
+figures and metric targets and bands are assumptions from the author's operating
+experience.
 
 ## Superseded
 
-Kept for traceability. Each entry names the decision that replaced it.
+None yet. Entries replaced from now on move here, each naming its replacement.
 
-| ID | Decision |
-|----|----------|
-| D10 | Labels are applied cold by someone who did not write the case; one third is held out and not looked at during the build. **Superseded by D47.** |
-| D13 | Value metric: interventions actioned within the week. **Superseded by D37.** |
-| D27 | Capacity: a baseline team of 5 × 40 h = 200 h a week, 240 h with overtime; 48 h per person is a red line. Absence is not modelled — the team manager confirms availability. Required hours = 60 h weekly payment run + 20 h protected meetings and admin + 2 h per dispute + 15 min per exception + 30 min per stuck invoice + the effort of reported issue interventions. The capacity check runs every week with open issues or amber or red metrics: overtime first, then extra FTEs, which need exec authority. Improvement time remaining is shown on both views. **Superseded by D48.** |
-| D32 | Test cases are written by Claude, except the holdout, which a separate agent writes. A fresh agent with no project context labels them; the PMO lead decides disagreements and labels the holdout. Safeguards SG-07 to SG-11 apply. **Superseded by D47.** |
+## Mapping from the earlier log
+
+Every earlier entry and safeguard, and where it lives now. Full wording: [`archive/decisions-2026-10-21.md`](archive/decisions-2026-10-21.md).
+
+| Earlier | Title | Now |
+|---|---|---|
+| D1 | Full rebuild | N1 |
+| D2 | Front door | N1 |
+| D3 | Dataset | N12 |
+| D4 | v1 kept | N2 |
+| D5 | Where v2 lives | N2 |
+| D6 | README | N3 |
+| D7 | Streamlit app | N2 |
+| D8 | Requirement classes | N17; red-line list now in 02-requirements.md |
+| D9 | Answer key kept apart | N14 |
+| D10 | Labels are applied cold by someone who did not write the case; one third is held out and not looked at during the build (already superseded) | N14 |
+| D11 | Operating model | N5 |
+| D12 | Baselines | N7 |
+| D13 | Value metric: interventions actioned within the week (already superseded) | N16 |
+| D14 | Domain | N4 |
+| D15 | Clean main | N2 |
+| D16 | Holding page | N3 |
+| D17 | Private documents | N4 |
+| D18 | Format | N5 |
+| D19 | Entry point | N2 |
+| D20 | Slices | N17 |
+| D21 | Charter | N19 |
+| D22 | Document checks | N6 |
+| D23 | Requirements, checks, data | N17; outside validation dropped (N20) |
+| D24 | Model drafts | N18 |
+| D25 | Roles and views | N8 |
+| D26 | Colour rule | R-DET-01; bands in the metrics register |
+| D27 | Capacity (already superseded) | R-DET-05, R-RL-01; figures in the capacity file |
+| D28 | Interventions and the record | R-DET-06, R-DET-09, R-RL-07; N21 |
+| D29 | Playbook | R-DET-07; playbook format in 02-requirements.md |
+| D30 | Confidence and gaps | R-RL-04, R-DET-08 |
+| D31 | Simulated data | N12; metrics register |
+| D32 | Test cases are written by Claude, except the holdout, which a separate agent writes (already superseded) | N14 |
+| D33 | Git history | N2 |
+| D34 | Model against rules | N15 |
+| D35 | Issue lifecycle | N9, R-DET-03 |
+| D36 | Framing and slices | N8, N19 |
+| D37 | Value measures | N16 |
+| D38 | Prototype scope | N10 |
+| D39 | Records and replay | N11 |
+| D40 | No AI calls in public | N11 |
+| D41 | Holdout (already superseded) | N13 |
+| D42 | README status | N3 |
+| D43 | Document checks are phased in: no copied facts from F1, generated blocks and review stamps from F3, the claims check from S1 (already superseded) | N6 |
+| D44 | Phasing | N19 |
+| D45 | Stalled issues | R-DET-10 |
+| D46 | Overtime | R-DET-05 |
+| D47 | Labelling and holdout: test cases are written by Claude, except the holdout, which a separate agent writes (already superseded) | N14 |
+| D48 | Capacity | R-DET-05, R-RL-01 (now runs every week); figures in the capacity file |
+| D49 | Measured confidence | R-RL-04, R-JDG-02 |
+| D50 | Month-end and quarter-end | R-DET-02 |
+| D51 | Colour is the level | R-DET-01 |
+| D52 | Colour triggers nothing | R-DET-04, R-DET-11; N16 |
+| D53 | No numbers from the model | R-RL-05 |
+| D54 | No impact forecast | R-RL-05 |
+| D55 | Ticket text | N12, R-DET-12 |
+| D56 | Claims in tickets | R-RL-03 |
+| D57 | Derived figures | R-RL-04 |
+| D58 | Escaping | R-RL-06 |
+| D59 | One home for rules | N6 |
+| D60 | Planned or built | N6 |
+| D61 | Terms | N6; terms in the registers |
+| D62 | Measures are simulated | N10, N16 |
+| D63 | The year | N13, N11 |
+| D64 | Unrecognised patterns | R-RL-02 |
+| D65 | Two labellers | N14 (one reviewer agent replaces two labellers) |
+| D66 | Sealing the held-out quarter | N14 |
+| D67 | Quarter boundary | N13 |
+| D68 | Failed checks | R-DET-08 |
+| D69 | Cause list | R-RL-02; cause list format in 02-requirements.md |
+| D70 | Metrics register | R-DET-01; metrics register format in 02-requirements.md |
+| D71 | Assumptions | N7 |
+| D72 | Issues opened by hand | R-DET-11 |
+| D73 | Where the model stops | N9 |
+| D74 | Year-end | R-DET-02, N13 |
+| D75 | Due week | R-RL-05 |
+| D76 | Labelling the held-out quarter | N14 (author's blind labelling of the holdout dropped) |
+| D77 | Phases and gates | N19 |
+| D78 | Labelling guide | N14 (dropped with the two labellers) |
+| D79 | Full test set | N18 |
+| D80 | Rules and data files | N6 |
+| D81 | What each phase adds | N5 |
+| D82 | No outside validation | N20 |
+| D83 | Answer sheet | N14, SG-4 |
+| D84 | Red lines | Red lines R-RL-01 to R-RL-07 |
+| D85 | Builder limits | N19 |
+| D86 | Charter contents | N19 |
+| D87 | Privacy | N4 |
+| D88 | Definitions | Glossary in the registers; N12, N15 |
+| D89 | Holdout | N13, N14 |
+| D90 | Labelling | N14 |
+| D91 | Overrides as candidate cases | N21 |
+| D92 | Rules baseline roles | N15 |
+| D93 | Weekly order | N8 |
+
+| Earlier safeguard | Title | Now |
+|---|---|---|
+| SG-01 | Rules baseline written by the PMO lead and frozen by the author before any scoring | SG-1 |
+| SG-02 | Both versions also scored on the held-out quarter, once, after S4 | SG-2 |
+| SG-03 | Blind, shuffled scoring wherever a person judges | SG-3 |
+| SG-04 | Case mix fixed before any results; results reported per case type | SG-1 |
+| SG-05 | Margin set before results, calibrated once from run-to-run variation | SG-1 (calibration from run-to-run variation dropped; the margin is set in F3) |
+| SG-06 | Model cost shown alongside accuracy | SG-5 |
+| SG-07 | Spot-check a sample of the labels both labellers agreed on | Dropped with the two labellers (N14) |
+| SG-08 | Holdout written by a separate agent and sealed from the build | SG-2 |
+| SG-09 | 'The case is flawed' is an allowed outcome; labels never changed to fit | SG-4 |
+| SG-10 | Judgement labels are acceptable options plus rubric points | SG-1 |
+| SG-11 | Disagreements answered before seeing the two labels | Dropped with the two labellers (N14) |

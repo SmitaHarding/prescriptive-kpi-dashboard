@@ -1,0 +1,38 @@
+# Metrics register (R-DET-01). Owned by the PMO lead; changes approved, versioned, re-tested.
+# All targets and bands are assumptions from operating experience (N7). Targets are set in F2a.
+# Definitions are drafts written 22 Oct 2026 and are confirmed in F2a.
+
+[bands]
+higher_is_better_amber_relative = 0.02   # amber up to 2% worse than target, relative to the target; red beyond
+# bands for lower-is-better metrics: set in F2a
+
+[[metric]]
+id = "payment_accuracy"
+direction = "higher_is_better"
+definition = "Share of invoices with no confirmed payment error (N12)"
+[[metric]]
+id = "dispute_rate"
+direction = "lower_is_better"
+definition = "Share of a week's invoices disputed within the dispute window (R-DET-03)"
+[[metric]]
+id = "exception_rate"
+direction = "lower_is_better"
+definition = "Share of a week's invoices that raise a processing exception"
+[[metric]]
+id = "dispute_resolution_within_5_days"
+direction = "higher_is_better"
+definition = "Share of disputes resolved within 5 days; the 5-day figure needs a source, reviewed in F2a"
+[[metric]]
+id = "processing_cycle_days"
+direction = "lower_is_better"
+definition = "Days from service data received to payment released"
+[[metric]]
+id = "stuck_invoices"
+direction = "lower_is_better"
+definition = "Invoices not paid in the run they belong to"
+
+[windows]
+dispute_window_days = 14   # the dispute window in N12, held here for the code; R-DET-03
+
+[context]
+invoice_volume = "shown as context, never coloured"

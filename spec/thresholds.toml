@@ -1,0 +1,21 @@
+# Thresholds file (N6). Tunable limits the requirements cite. Owned by the PMO lead;
+# changes approved, versioned, re-tested (R-DET-14).
+# Items frozen under SG-1 (the margin) change only as N15 sets out. Every figure is an assumption (N7).
+
+[trends]
+trend_window_weeks = 4                 # R-DET-01: average, sparkline and "n/a" window
+
+[confidence]
+high_min_evidence_types = 2            # R-RL-04: independent evidence types needed for high
+
+[comparison]
+margin = "set in F3, before the freeze"            # N15, R-JDG-01 (SG-1)
+
+[drift]
+limits = "set in F3"                                # R-DET-14
+
+[lifecycle]
+stage_limits_days = "set in F2b"                    # R-DET-10
+
+[cycles]
+min_earlier_cycles = "set in F2b"                   # R-DET-02

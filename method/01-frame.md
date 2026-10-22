@@ -1,128 +1,97 @@
 # 01 · Frame
 
-What the system exists to improve, who acts on it, and where code ends and the
-model begins. Numbers and thresholds are not restated here; each point refers
-to its entry in [`decisions.md`](decisions.md) (D22: no copied facts).
+What Aegis exists to improve, who acts, and where code ends and the model begins.
+This page explains; it decides nothing. Choices are in
+[`decisions.md`](decisions.md), rules in [`02-requirements.md`](02-requirements.md).
+Where they differ from this page, they win.
+
+## The operation
+
+A large-scale B2B payments operation pays its partners weekly for completed
+services by self-billing: it calculates each payment, issues the invoice and pays
+it (N12). Partners may dispute an invoice within a fixed window. Errors that slip
+through the weekly run surface later as dispute tickets, or as corrections Ops
+specialists find themselves.
 
 ## The decision
 
-*Every Monday, the PMO lead decides which operational problems need action this
-week, and what that action should be* — for a large-scale B2B payments
-operation (D14).
+Aegis supports the PMO lead's Monday decision (N8).
 
-The problems surface in two ways:
+Issues arrive two ways:
 
-- **Reactive:** partners dispute an invoice with a short, often unclear text;
-  Ops opens a dispute ticket, investigates with the partner, confirms the cause
-  and resolves it.
-- **Proactive:** Ops spots an error before partners dispute, works out who is
-  affected, confirms the cause and correction, and contacts the partners first.
-  The metrics may not move, but the issue is real.
+- **Reactive:** dispute tickets form a pattern (DEC-2).
+- **Proactive:** the PMO lead opens an issue by hand before partners dispute
+  (R-DET-11).
 
-The root cause is only known **after** an investigation. So the system never
-names a root cause. It spots patterns across dispute tickets and proposes where
-to look; people confirm (D36). A proposed cluster carries a **suspected cause**
-— a hypothesis taken from the cause list below, always marked unconfirmed. The
-root cause is set only by a person, when the issue reaches *Cause confirmed*.
+A metric's colour opens nothing (R-DET-04). A cause is known only after people
+investigate, so DEC-2 proposes a suspected cause from the cause list, or says the
+pattern matches none (R-RL-02). People confirm causes.
 
-Common root causes, used as the cause list for confirmed issues: input errors by
-internal teams or partners · incorrect activity data behind an invoice · delayed
-reporting from external suppliers · a pricing or calculation error · a stuck
-invoice · a partner disputing because the payment was unclear.
+## Code where possible, the model where needed
 
-## Four sub-decisions
+Each part of the decision goes to code wherever code can do it.
 
-Each is answered by code wherever code can answer it — the least AI that works.
+| | Question | Done by | Checked by | Requirements |
+|---|---|---|---|---|
+| **DEC-1** | Is anything off target? | Code | Nobody: it is a fact | R-DET-01 to R-DET-04 |
+| **DEC-2** | Which new dispute tickets form a possible issue? | The rules version, or the model version if it wins (N15) | Code; the PMO lead accepts or rejects | R-JDG-01, R-RL-02 to R-RL-04, R-JDG-02 |
+| **DEC-3** | Which interventions now, for open issues and new possible issues? | The model drafts, mostly from playbook entries code has pre-filtered | Code checks every draft; the PMO lead reviews | R-RL-05, R-DET-06 to R-DET-08, R-JDG-03 |
+| **DEC-4** | Do we have the capacity? | Code | The team manager (availability, overtime); executives (extra FTEs) | R-DET-05, R-RL-01 |
 
-| | Question | Input | Output | Answered by | Confirmed by |
-|---|---|---|---|---|---|
-| **DEC-1** | Is anything off target? | Weekly metrics per invoice week (D31, D35) | Colour, trends, provisional status (D26, D35) | Code | — (a fact) |
-| **DEC-2** | Which new dispute tickets form a possible issue? | The week's new tickets: fixed fields and free text | Proposed clusters of ticket IDs, each with a suspected cause, a confidence level and evidence gaps (D30); counts computed by code (D24) | Two parts, each done by rules or by the model (see below) | PMO lead confirms → an issue is created |
-| **DEC-3** | What action now, and next, for each open issue? | Open issues with stage, playbook entries pre-filtered by cause in code (D29), hours still available (DEC-4) | Interventions per cause and stage (D28) | Model drafts from the pre-filtered entries; code runs the checks below | PMO lead reviews before anything is shown (D28) |
-| **DEC-4** | Do we have the capacity? | Workload and the effort of reported interventions (D48) | Utilisation against the ceiling; above it, overtime, then extra FTEs (D48) | Code | Team manager confirms availability and approves overtime (D46); execs approve extra FTEs (D48) |
+**DEC-2.** Dispute reasons are free text, so reading them for one underlying
+problem is where the model can add value. The rules version and the model version
+produce the same output and face the same red lines. N15 sets how they are
+compared and when the model is used.
 
-### DEC-2: rules or model, part by part
+**DEC-3.** The model adds no numbers, dates or impact forecasts (R-RL-05). A draft
+that fails a check is rejected, never repaired (R-DET-08). An off-playbook
+intervention is labelled and shown only after review (R-DET-07). For an issue
+opened by hand, the model drafts nothing (R-DET-11).
 
-DEC-2 has two parts: **grouping** the tickets into clusters, and giving each
-cluster a **suspected cause**. For each part, a rules-only version and the model
-produce the same output — cluster, suspected cause, confidence, evidence gaps —
-and pass the same red lines, checked in code: every cited ticket ID exists,
-counts are computed by code, no high confidence alongside evidence gaps (D30),
-and the confidence level matches the evidence measured by code (D49). The model
-is used for a part only if it beats the rules on that part by the agreed margin
-and is never worse on red lines (D34). The margin is set in F2, before any
-results, and recorded as a D entry (SG-05). Until a part has passed that test,
-the rules version runs. Month-end and quarter-end weeks are compared with
-earlier cycles before an issue is proposed (D50).
-
-### DEC-3: checks run in code before the PMO lead sees a draft
-
-- Every number in the draft appears in the evidence given to the model (D24).
-- Every cited ticket, evidence and cause ID exists.
-- Every intervention names its cause and stage; every cause has an intervention
-  or a deferral with a reason; no two interventions of the same playbook type for
-  the same cause and stage (D28).
-- Total effort fits the hours available, including overtime once the team
-  manager approves it (D46, D48); nobody goes above the 48-hour limit.
-- No high confidence alongside evidence gaps (D30), and the confidence level
-  matches what code measures: cluster size, field agreement and run-to-run
-  consistency (D49).
-- Instructions inside ticket text have no effect (D24) — ticket text is passed
-  to the model only as data, and planted injection cases in the test set prove it.
-
-A failed check rejects the draft — one retry, then "needs human review". An
-off-playbook intervention may be drafted by the model or written by the PMO
-lead; either way it is labelled and passes the same checks (D29).
-
-### Order within a week
-
-DEC-1, then DEC-4 computes the hours already committed (payment run, problem
-work, interventions already reported) against the productive hours, which
-already exclude protected time (D48). DEC-2 proposes clusters; DEC-3 drafts
-within the hours left; DEC-4 runs again on the drafted interventions before the
-PMO lead reviews them.
+The weekly order of the four parts is in N8.
 
 ## Issue lifecycle
 
-Detected → Contained → Cause confirmed → Corrected → Prevented → Closed (D35).
-Each stage has exit criteria checked in code; people move an issue forward, and
-code refuses a move whose criteria are not met. Code marks an issue overdue when
-it has been in a stage longer than that stage's limit (D45); the model only
-proposes next actions, and never moves a stage. In the prototype, the stages
-after Contained are illustrative, scripted by the data generator and labelled as
-simulated outcomes (D38).
+People move an issue up to Contained, where the model's part ends. Later stages
+are simulated (N9). Code marks an issue overdue when it stays in a stage too long
+(R-DET-10).
 
 ## Who does what
 
-| Role | Acts on |
-|---|---|
-| PMO lead | Owns the Monday decision; confirms clusters; reviews every drafted intervention; owns the weekly update |
-| Team manager | Confirms team availability; approves overtime (D46); assigns owners; marks interventions actioned |
-| Ops specialists | Investigate; contact partners; move issues through stages |
-| Executives | Approve extra FTEs and anything needing their authority |
+| Role | Acts on | IDs |
+|---|---|---|
+| PMO lead | Owns the Monday decision; accepts possible issues; reviews every draft; may open an issue by hand | N8, R-RL-07, R-DET-11 |
+| Team manager | Confirms availability; approves overtime | R-DET-05 |
+| Ops specialists | Investigate; contact affected partners | N8, N16 |
+| Executives | Approve extra FTEs and anything needing exec authority | R-DET-05 |
+| The author | Owns the project; plays every role in the prototype; judges fitness for purpose | N8, N20 |
 
-One decision record per week, shown as an ops view and an exec view by code
-(D25). In the prototype one user acts in every role, each action labelled by
-role.
+## Value and validation
 
-## How value is judged
+Value is measured after a person acts (N16). No outside person validates the
+prototype; this is a stated limitation (N20).
 
-Two measures, both on the far side of the human (D37): whether people act on
-what is proposed (adoption), and whether operations improve (outcome).
-Baselines are measured or labelled as assumptions (D12).
+## Risks
 
-## Open for F2
+The risks the requirements control, and the v1 defects that show they are real,
+are in [`../spec/registers.toml`](../spec/registers.toml). `check.py` confirms
+every v1 defect maps to a risk and every risk has a requirement.
 
-- The margin for the rules-vs-model test in DEC-2 (SG-05).
-- Which value of a playbook entry's effort range the capacity check uses.
-- The time limit for each stage, after which an issue is marked overdue (D45).
-- The utilisation ceiling for the capacity check (D48).
-- The exact rules for each confidence level (D49).
-- How a month-end or quarter-end week is compared with earlier cycles (D50).
+## Open for F2a, the spike and F2b
+
+- **F2a:** metric definitions, targets and lower-is-better bands; a source for the
+  dispute-resolution time in the metrics register; the utilisation ceiling; the
+  first cause list and playbook; the full form of every deterministic and red-line
+  requirement; requirements for the read-only public app, the value measures, and
+  the ops and exec views.
+- **Spike (N22):** how the model actually fails on DEC-2 and DEC-3.
+- **F2b:** the judgement requirements; the final case types; evidence types; the
+  cycle comparison rule and minimum; stage limits and exit criteria; the share of wrong partner
+  guesses; the number of scenarios.
 
 ## What the prototype is
 
-A replay of a year of simulated operation, run and reviewed locally and
-published read-only (D39, D40). Scope — what is built, illustrative, and
-designed but not built — is fixed in D38. Nothing is described as built unless
-its requirement passes (D22).
+A local run: the model drafts, code checks, and the author reviews in every role.
+The public app is a read-only replay of that run (N11). N10 sets what is to be
+built, simulated, or designed but not built. Nothing is called built until the
+registers mark it built (N6).

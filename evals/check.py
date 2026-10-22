@@ -1,19 +1,24 @@
-"""Traceability check — no model, no network.
+"""Traceability check: no model, no network.
 
 Run from the repository root:  python evals/check.py
 Update the README status block: python evals/check.py --update-readme
 
-Checks (F1 version; grows in F2 and F3):
+The chain (N6, N17): v1 defect -> risk -> requirement -> eval case -> code -> claim.
+This F1 version checks it up to requirement.
+Checks (F1 version; F2a adds cases and known-bad inputs, F3 the harness links):
   1. IDs in spec/registers.toml are unique and well formed.
-  2. Every decision in the registers appears in method/decisions.md, and vice versa.
-  3. Every link (prevents, supersedes, safeguards) points to an ID that exists.
-  4. Every v1 defect is prevented by at least one decision; every safeguard is in force.
-  5. Every D / V1 / SG ID mentioned in the tracked docs (method/, spec/, data/, evals/,
-     CLAUDE.md, README.md) exists.
-  6. The README status block matches the registers (it is generated, never hand-edited).
-  7. Every entry in the Superseded section is replaced by an active decision, says
-     which one, and carries no prevents or safeguards of its own.
-  8. No tracked doc other than decisions.md mentions a superseded decision.
+  2. Every decision in the registers is in method/decisions.md, and vice versa.
+  3. Every requirement in the registers is in method/02-requirements.md, and vice versa.
+  4. Every link points to an ID that exists (risk evidence, requirement risks,
+     decision safeguards).
+  5. Coverage: every v1 defect is evidence for a risk; every risk is controlled by a
+     requirement; every requirement controls a risk; every safeguard is in force.
+  6. Every ID mentioned in the tracked docs (top-level .md files in method/, spec/,
+     data/, evals/ and prototype/, the data files in spec/ other than registers.toml,
+     CLAUDE.md and README.md) exists, and no doc other than decisions.md mentions a retired ID
+     (D1-D93, SG-01-SG-11). method/archive/ is history and is not scanned.
+  7. Every entry in the Superseded section names an active decision that replaces it.
+  8. The README status block matches the registers (it is generated, never hand-edited).
 Exit code 0 when clean, 1 when anything fails.
 """
 import re
@@ -27,11 +32,19 @@ except ModuleNotFoundError:  # pragma: no cover
 
 ROOT = Path(__file__).resolve().parent.parent
 REG = tomllib.loads((ROOT / "spec" / "registers.toml").read_text(encoding="utf-8"))
-PATTERN = {"decision": r"D\d+", "v1_defect": r"V1-\d{2}", "safeguard": r"SG-\d{2}"}
-MENTION = re.compile(r"\b(V1-\d{2}|SG-\d{2}|D\d+)\b")
+PATTERN = {
+    "decision": r"N\d+",
+    "risk": r"RK-\d{2}",
+    "requirement": r"R-(?:DET|RL|JDG)-\d{2}",
+    "v1_defect": r"V1-\d{2}",
+    "safeguard": r"SG-\d",
+}
+MENTION = re.compile(r"\b(V1-\d{2}|SG-\d{1,2}|RK-\d{2}|R-(?:DET|RL|JDG)-\d{2}|N\d+|D\d+)\b")
+RETIRED = re.compile(r"^(D\d+|SG-\d{2})$")
 BLOCK = re.compile(r"(<!-- gen:status -->\n)(.*?)(<!-- /gen:status -->)", re.S)
 errors = []
 
+# 1. IDs
 ids = {}
 for kind, pat in PATTERN.items():
     seen = [e["id"] for e in REG.get(kind, [])]
@@ -43,61 +56,81 @@ for kind, pat in PATTERN.items():
     ids[kind] = set(seen)
 known = set().union(*ids.values())
 
+# 2. Decisions
 log = (ROOT / "method" / "decisions.md").read_text(encoding="utf-8")
-logged = set(re.findall(r"^\| (D\d+) \|", log, re.M))
-for d in sorted(ids["decision"] - logged):
+head, _, rest = log.partition("\n## Superseded")
+superseded_part, _, mapping = rest.partition("\n## Mapping")
+active = set(re.findall(r"^(?:\| |\*\*)(N\d+)(?: \||\s·)", head, re.M))
+superseded = set(re.findall(r"^\| (N\d+) \|", superseded_part, re.M))
+for d in sorted(ids["decision"] - active - superseded):
     errors.append(f"{d}: in registers but not in decisions.md")
-for d in sorted(logged - ids["decision"]):
+for d in sorted((active | superseded) - ids["decision"]):
     errors.append(f"{d}: in decisions.md but not in registers")
+retired = set(re.findall(r"^\| (D\d+|SG-\d{2}) \|", mapping, re.M))
 
-prevented, in_force = set(), set()
+# 3. Requirements
+reqs = (ROOT / "method" / "02-requirements.md").read_text(encoding="utf-8")
+written = set(re.findall(r"^\*\*(R-(?:DET|RL|JDG)-\d{2}) ·", reqs, re.M))
+for r in sorted(ids["requirement"] - written):
+    errors.append(f"{r}: in registers but not in 02-requirements.md")
+for r in sorted(written - ids["requirement"]):
+    errors.append(f"{r}: in 02-requirements.md but not in registers")
+
+# 4. Links and 5. coverage
+evidenced, controlled, in_force = set(), set(), set()
+for k in REG.get("risk", []):
+    for v in k.get("evidence", []):
+        if v not in ids["v1_defect"]:
+            errors.append(f"{k['id']}.evidence: unknown ID {v}")
+        evidenced.add(v)
+for r in REG.get("requirement", []):
+    if not r.get("risks"):
+        errors.append(f"{r['id']}: controls no risk")
+    for k in r.get("risks", []):
+        if k not in ids["risk"]:
+            errors.append(f"{r['id']}.risks: unknown ID {k}")
+        controlled.add(k)
 for d in REG.get("decision", []):
-    for field in ("prevents", "supersedes", "safeguards"):
-        for ref in d.get(field, []):
-            if ref not in known:
-                errors.append(f"{d['id']}.{field}: unknown ID {ref}")
-    prevented |= set(d.get("prevents", []))
-    in_force |= set(d.get("safeguards", []))
-for v in sorted(ids["v1_defect"] - prevented):
-    errors.append(f"{v}: no decision prevents it")
+    for sg in d.get("safeguards", []):
+        if sg not in ids["safeguard"]:
+            errors.append(f"{d['id']}.safeguards: unknown ID {sg}")
+        in_force.add(sg)
+for v in sorted(ids["v1_defect"] - evidenced):
+    errors.append(f"{v}: not evidence for any risk")
+for k in sorted(ids["risk"] - controlled):
+    errors.append(f"{k}: no requirement controls it")
 for sg in sorted(ids["safeguard"] - in_force):
     errors.append(f"{sg}: no decision brings it into force")
 
-head, _, tail = log.partition("\n## Superseded")
-active = set(re.findall(r"^\| (D\d+) \|", head, re.M))
-replaced_by = {}
-for d in REG.get("decision", []):
-    for old in d.get("supersedes", []):
-        replaced_by.setdefault(old, set()).add(d["id"])
-by_id = {d["id"]: d for d in REG.get("decision", [])}
-for row in re.finditer(r"^\| (D\d+) \|(.*)\|$", tail, re.M):
-    old, body = row.group(1), row.group(2)
-    news = replaced_by.get(old, set()) & active
-    named = set(re.findall(r"Superseded by (D\d+)", body))
-    if not news:
-        errors.append(f"{old}: in Superseded but no active decision supersedes it")
-    elif not named & news:
-        errors.append(f"{old}: Superseded row does not name its replacement {sorted(news)}")
-    if by_id.get(old, {}).get("prevents") or by_id.get(old, {}).get("safeguards"):
-        errors.append(f"{old}: superseded but still carries prevents/safeguards")
-
-superseded = set(re.findall(r"^\| (D\d+) \|", tail, re.M))
+# 6. Mentions in tracked docs
 docs = [ROOT / "CLAUDE.md", ROOT / "README.md"]
-for folder in ("method", "spec", "data", "evals"):
+for folder in ("method", "spec", "data", "evals", "prototype"):
     docs += sorted((ROOT / folder).glob("*.md"))
+docs += [p for p in sorted((ROOT / "spec").glob("*.toml")) if p.name != "registers.toml"]
 for doc in docs:
-    if doc.exists():
-        found = set(MENTION.findall(doc.read_text(encoding="utf-8")))
-        for ref in sorted(found - known):
+    if not doc.exists():
+        continue
+    found = set(MENTION.findall(doc.read_text(encoding="utf-8")))
+    for ref in sorted(found):
+        if RETIRED.match(ref):
+            if doc.name != "decisions.md":
+                errors.append(f"{doc.relative_to(ROOT)}: mentions retired {ref}")
+            elif ref not in retired:
+                errors.append(f"decisions.md: {ref} missing from the mapping table")
+        elif ref not in known:
             errors.append(f"{doc.relative_to(ROOT)}: mentions unknown ID {ref}")
-        if doc.name != "decisions.md":
-            for ref in sorted(found & superseded):
-                errors.append(f"{doc.relative_to(ROOT)}: mentions superseded {ref}")
+
+# 7. Superseded entries name their replacement
+for row in re.finditer(r"^\| (N\d+) \|(.*)\|$", superseded_part, re.M):
+    named = set(re.findall(r"Superseded by (N\d+)", row.group(2)))
+    if not named & active:
+        errors.append(f"{row.group(1)}: Superseded row does not name an active replacement")
 
 
+# 8. README status block
 def status_block():
     st = REG["status"]
-    built = ", ".join(st["built"]) or "nothing yet — the harness comes first"
+    built = ", ".join(st["built"]) or "no product code yet — the harness comes first"
     return (f"**Stage:** {st['stage']} · **Next:** {st['next']}  \n"
             f"**Built so far:** {built}\n")
 
@@ -118,5 +151,6 @@ if errors:
     print(f"check.py: {len(errors)} problem(s)")
     print("\n".join(f"  - {e}" for e in errors))
     sys.exit(1)
-print(f"check.py: clean — {len(ids['decision'])} decisions, "
-      f"{len(ids['v1_defect'])} v1 defects, {len(ids['safeguard'])} safeguards")
+print(f"check.py: clean — {len(ids['decision'])} decisions, {len(ids['risk'])} risks, "
+      f"{len(ids['requirement'])} requirements, {len(ids['v1_defect'])} v1 defects, "
+      f"{len(ids['safeguard'])} safeguards")
