@@ -33,7 +33,7 @@ Each part of the decision goes to code wherever code can do it.
 
 | | Question | Done by | Checked by | Requirements |
 |---|---|---|---|---|
-| **DEC-1** | Is anything off target? | Code | Nobody: it is a fact | R-DET-01 to R-DET-04 |
+| **DEC-1** | Is anything off target? | Code | Nobody: it is a fact | R-DET-01 to R-DET-04, R-DET-16 |
 | **DEC-2** | Which new dispute tickets form a possible issue? | The rules version, or the model version if it wins (N15) | Code; the PMO lead accepts or rejects | R-JDG-01, R-RL-02 to R-RL-04, R-JDG-02 |
 | **DEC-3** | Which interventions now, for open issues and new possible issues? | The model drafts, mostly from playbook entries code has pre-filtered | Code checks every draft; the PMO lead reviews | R-RL-05, R-DET-06 to R-DET-08, R-JDG-03 |
 | **DEC-4** | Do we have the capacity? | Code | The team manager (availability, overtime); executives (extra FTEs) | R-DET-05, R-RL-01 |
@@ -53,7 +53,7 @@ The weekly order of the four parts is in N8.
 ## Issue lifecycle
 
 People move an issue up to Contained, where the model's part ends. Later stages
-are simulated (N9). Code marks an issue overdue when it stays in a stage too long
+are simulated (N23). Code marks an issue overdue when it stays in a stage too long
 (R-DET-10).
 
 ## Who does what
@@ -62,7 +62,7 @@ are simulated (N9). Code marks an issue overdue when it stays in a stage too lon
 |---|---|---|
 | PMO lead | Owns the Monday decision; accepts possible issues; reviews every draft; may open an issue by hand | N8, R-RL-07, R-DET-11 |
 | Team manager | Confirms availability; approves overtime | R-DET-05 |
-| Ops specialists | Investigate; contact affected partners | N8, N16 |
+| Ops specialists | Investigate; contact affected partners; remedy stuck invoices | N8, N16, R-DET-16 |
 | Executives | Approve extra FTEs and anything needing exec authority | R-DET-05 |
 | The author | Owns the project; plays every role in the prototype; judges fitness for purpose | N8, N20 |
 
@@ -77,21 +77,20 @@ The risks the requirements control, and the v1 defects that show they are real,
 are in [`../spec/registers.toml`](../spec/registers.toml). `check.py` confirms
 every v1 defect maps to a risk and every risk has a requirement.
 
-## Open for F2a, the spike and F2b
+## Open for the spike and F2b
 
-- **F2a:** metric definitions, targets and lower-is-better bands; a source for the
-  dispute-resolution time in the metrics register; the utilisation ceiling; the
-  first cause list and playbook; the full form of every deterministic and red-line
-  requirement; requirements for the read-only public app, the value measures, and
-  the ops and exec views.
 - **Spike (N22):** how the model actually fails on DEC-2 and DEC-3.
-- **F2b:** the judgement requirements; the final case types; evidence types; the
-  cycle comparison rule and minimum; stage limits and exit criteria; the share of wrong partner
-  guesses; the number of scenarios.
+- **F2b:** the judgement requirements; the final case types; evidence types, and
+  what counts as a gap and a minor gap (R-RL-04); the cycle comparison rule and
+  minimum, and which weeks are month-ends (R-DET-02); stage limits and exit criteria
+  (R-DET-10); which weeks stay provisional at the quarter boundary (N13); the share
+  of wrong partner guesses; the number and layout of scenarios; runs per case; how
+  affected partners are identified (R-DET-18); what the history weeks contain; line
+  types and lines per invoice.
 
 ## What the prototype is
 
 A local run: the model drafts, code checks, and the author reviews in every role.
-The public app is a read-only replay of that run (N11). N10 sets what is to be
-built, simulated, or designed but not built. Nothing is called built until the
-registers mark it built (N6).
+The public app is a read-only replay of that run (N11). N24 sets what is to be
+built, simulated, or designed but not built. Nothing is called built until R-DET-15
+allows it.

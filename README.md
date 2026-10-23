@@ -34,16 +34,16 @@ speculative extrapolation. The prompt was never written, and nothing failed.
 | Path | Contents |
 |------|----------|
 | [`method/`](method/) | The operating model: [decisions](method/decisions.md), the [frame](method/01-frame.md) and the draft [requirements](method/02-requirements.md), built up phase by phase |
-| [`spec/`](spec/) | The registers the checks read, and the data files for metrics, capacity and thresholds |
+| [`spec/`](spec/) | The registers the checks read, and the data files for metrics, capacity, thresholds, causes and the playbook |
 | [`data/`](data/) | The simulated world, designed in F2b and generated in F3. Empty today |
-| [`evals/`](evals/) | The harness, built from F2a to F3. Today only the traceability check, `check.py` |
+| [`evals/`](evals/) | The harness, built from F2a to F3. Today the traceability and document check, `check.py`, and the known-bad inputs |
 | [`prototype/`](prototype/) | v2 application code. Empty until the harness exists |
 | [`CLAUDE.md`](CLAUDE.md) | Standing rules for Claude and the builder |
 
 ## Status
 
 <!-- gen:status -->
-**Stage:** F1 gate passed (pass with fixes); fixes applied · **Next:** F1 commit, then F2a — complete the pass/fail requirements and data files  
+**Stage:** F2a: pass/fail requirements complete; some thresholds and cases follow in F2b and F3 · **Next:** F2a gate re-run and commit, then the spike (N22)  
 **Built so far:** no product code yet — the harness comes first
 <!-- /gen:status -->
 

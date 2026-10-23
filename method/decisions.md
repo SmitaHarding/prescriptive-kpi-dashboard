@@ -7,7 +7,7 @@ live is set in N6.
 A change is a new entry. The old entry moves to Superseded with a pointer to its
 replacement and is not otherwise edited.
 
-N1–N22 were agreed on 22 Oct 2026. They replace the 86 active earlier decisions
+N1–N22 were agreed on 22 Oct 2026; N23–N24 replaced N9–N10 on 23 Oct (F2a). They replace the 86 active earlier decisions
 (D1–D93; 7 others were already superseded), kept word for word in
 [`archive/decisions-2026-10-21.md`](archive/decisions-2026-10-21.md). The mapping
 table at the end shows where each one went.
@@ -18,12 +18,13 @@ table at the end shows where each one went.
 passes the harness. The method is the main deliverable; the prototype is the
 evidence that it works.
 
-**N10 · What the prototype builds.**
+**N24 · What the prototype builds.**
 - To be built: metrics with colour and trends; the capacity check; DEC-2 against
   its rules version; Detect and Contain; the PMO lead's review; the audit record,
   including partner contacts and every reject and edit; the lifecycle board; the
-  weekly update; the drift table.
-- Simulated: lifecycle stages after Contained (N9).
+  weekly update; the stuck-invoice list; the ops and exec views; the value
+  measures, labelled simulated (N16); the drift table.
+- Simulated: lifecycle stages after Contained (N23).
 - Designed, not built: the real later-stage workflow; playbook updates; a drift
   view on the dashboard; tracking whether interventions worked; search over past
   issues; turning overrides into test cases (N21); independent validation (N20);
@@ -54,11 +55,11 @@ executives act on parts of it. Each week has one decision record, shown as an op
 view and an exec view. In the prototype the author plays every role, and each
 action is labelled with its role.
 
-**N9 · Issue lifecycle.** An issue moves through six stages: Detected, Contained,
+**N23 · Issue lifecycle.** An issue moves through six stages: Detected, Contained,
 Cause confirmed, Corrected, Prevented, Closed. Up to Contained, people move it and
 code checks each stage's exit criteria. The model drafts only before Contained.
 After Contained, the generator scripts each stage, labelled "simulated outcome".
-Metrics are tracked per invoice week. The weekly update shows the week,
+Each metric's week is set in the metrics register. The weekly update shows the week,
 performance and each open issue's progress until it closes.
 
 **N16 · Value measures.** Value is measured after a person acts.
@@ -234,7 +235,12 @@ experience.
 
 ## Superseded
 
-None yet. Entries replaced from now on move here, each naming its replacement.
+Each replaced entry, word for word (line breaks flattened for the table), and what replaces it.
+
+| ID | Entry | Replaced |
+|---|---|---|
+| N9 | **Issue lifecycle.** An issue moves through six stages: Detected, Contained, Cause confirmed, Corrected, Prevented, Closed. Up to Contained, people move it and code checks each stage's exit criteria. The model drafts only before Contained. After Contained, the generator scripts each stage, labelled "simulated outcome". Metrics are tracked per invoice week. The weekly update shows the week, performance and each open issue's progress until it closes. | Superseded by N23 (23 Oct 2026, F2a): each metric's week is set in the metrics register; dispute resolution is keyed to the week a ticket is opened, not the invoice week. |
+| N10 | **What the prototype builds.** - To be built: metrics with colour and trends; the capacity check; DEC-2 against its rules version; Detect and Contain; the PMO lead's review; the audit record, including partner contacts and every reject and edit; the lifecycle board; the weekly update; the drift table. - Simulated: lifecycle stages after Contained (N9). - Designed, not built: the real later-stage workflow; playbook updates; a drift view on the dashboard; tracking whether interventions worked; search over past issues; turning overrides into test cases (N21); independent validation (N20); release staging (shadow, then advisory). | Superseded by N24 (23 Oct 2026, F2a): adds the stuck-invoice list, the ops and exec views and the value measures to what is built (R-DET-16, R-DET-18, R-DET-19). |
 
 ## Mapping from the earlier log
 
@@ -276,10 +282,10 @@ Every earlier entry and safeguard, and where it lives now. Full wording: [`archi
 | D32 | Test cases are written by Claude, except the holdout, which a separate agent writes (already superseded) | N14 |
 | D33 | Git history | N2 |
 | D34 | Model against rules | N15 |
-| D35 | Issue lifecycle | N9, R-DET-03 |
+| D35 | Issue lifecycle | N23 (was N9), R-DET-03 |
 | D36 | Framing and slices | N8, N19 |
 | D37 | Value measures | N16 |
-| D38 | Prototype scope | N10 |
+| D38 | Prototype scope | N24 (was N10) |
 | D39 | Records and replay | N11 |
 | D40 | No AI calls in public | N11 |
 | D41 | Holdout (already superseded) | N13 |
@@ -303,7 +309,7 @@ Every earlier entry and safeguard, and where it lives now. Full wording: [`archi
 | D59 | One home for rules | N6 |
 | D60 | Planned or built | N6 |
 | D61 | Terms | N6; terms in the registers |
-| D62 | Measures are simulated | N10, N16 |
+| D62 | Measures are simulated | N24 (was N10), N16 |
 | D63 | The year | N13, N11 |
 | D64 | Unrecognised patterns | R-RL-02 |
 | D65 | Two labellers | N14 (one reviewer agent replaces two labellers) |
@@ -314,7 +320,7 @@ Every earlier entry and safeguard, and where it lives now. Full wording: [`archi
 | D70 | Metrics register | R-DET-01; metrics register format in 02-requirements.md |
 | D71 | Assumptions | N7 |
 | D72 | Issues opened by hand | R-DET-11 |
-| D73 | Where the model stops | N9 |
+| D73 | Where the model stops | N23 (was N9) |
 | D74 | Year-end | R-DET-02, N13 |
 | D75 | Due week | R-RL-05 |
 | D76 | Labelling the held-out quarter | N14 (author's blind labelling of the holdout dropped) |

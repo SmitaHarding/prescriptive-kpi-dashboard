@@ -7,7 +7,7 @@ export at the end.
 | File | Section | Written in |
 |------|---------|------------|
 | [`decisions.md`](decisions.md) | Every choice, stated once, with the mapping from the earlier log | F1, then as needed |
-| [`01-frame.md`](01-frame.md) | The decision the system supports, the four sub-decisions, roles, lifecycle, value | F1 |
+| [`01-frame.md`](01-frame.md) | The decision the system supports, the four sub-decisions, roles, lifecycle, value | F1; updated F2a |
 | [`02-requirements.md`](02-requirements.md) | Every rule, in three classes, each controlling a risk and with its check | Drafted F1; F2a, F2b |
 | `03-dataset.md` | The simulated world: weeks, dispute tickets, issues, and why answers are kept apart | F2b |
 | `04-harness.md` | Generator, runner, scorecard, holdout | F3 |

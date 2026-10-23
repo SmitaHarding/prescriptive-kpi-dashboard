@@ -1,0 +1,88 @@
+# Known-bad inputs for DEC-4: R-DET-05 and R-RL-01 (N17).
+# Each case is an output a broken build would produce. The requirement's check must fail `bad`
+# and pass `right`. A check that passes a `bad` output is itself broken.
+# Values mirror spec/capacity.toml and spec/playbook.toml for the code (N6); check.py confirms
+# they still follow from those files (check.py check 12).
+#
+# Workloads are inputs; check.py (check 12) recomputes each row's result from the capacity file.
+# Workload = the payment run, plus time per dispute, confirmed error and stuck invoice, plus
+# reported interventions at the top of their effort range (R-DET-05).
+
+# ── R-DET-05 · Capacity check ──────────────────────────────────────────
+[[case]]
+requirement = "R-DET-05"
+covers = "weeks at, just over and far over the ceiling"
+rows = [
+  { week = "target",                   workload = 150.0, right = { overtime = 0,   exec_hours = 0,    room = 12.0 }, bad = "room = 30.0 (productive hours minus workload)" },
+  { week = "target + 12 h reported",   workload = 162.0, right = { overtime = 0,   exec_hours = 0,    room = 0.0  }, bad = "overtime proposed at the ceiling" },
+  { week = "target + 12.5 h reported", workload = 162.5, right = { overtime = 0.5, exec_hours = 0,    room = 0.0  }, bad = "no overtime proposed" },
+  { week = "both amber (4.0%, 93.0%)", workload = 202.5, right = { overtime = 40,  exec_hours = 0.5,  room = 0.0  }, bad = "overtime = 40.5" },
+  { week = "both at the red line (5.0%, 90.0%: still amber)", workload = 247.5, right = { overtime = 40,  exec_hours = 45.5, room = 0.0  }, bad = "extra FTEs proposed without exec authority" },
+]
+
+[[case]]
+requirement = "R-DET-05"
+covers = "reported interventions count at the top of their effort range, in the week reported"
+intervention = { type = "investigate", effort_hours = [2, 4] }
+right = 4
+bad = [2, 3]                 # bottom of range; midpoint
+
+[[case]]
+requirement = "R-DET-05"
+covers = "an off-playbook draft counts nothing until the PMO lead sets its effort"
+draft = { off_playbook = true, effort_stated_by_model = 2 }
+right = "0 h until set in review; then the PMO lead's figure"
+bad = "2 h counted from the draft"
+
+[[case]]
+requirement = "R-DET-05"
+covers = "a dispute counts in the week it is opened; a confirmed error in the week it is confirmed"
+rows = [
+  { item = "dispute",         invoice_week = 30, event_week = 32, right_week = 32, bad_week = 30 },
+  { item = "confirmed error", invoice_week = 30, event_week = 35, right_week = 35, bad_week = 30 },
+]
+
+[[case]]
+requirement = "R-DET-05"
+covers = "an overtime proposal is a capacity proposal, not an intervention"
+week = "target + 20 h reported"
+right = "overtime proposal of 8 h, outside the intervention list"
+bad = "overtime listed as an intervention, or its hours added to workload"
+
+[[case]]
+requirement = "R-DET-05"
+covers = "a stuck invoice counts in the week it is on the stuck-invoice list (R-DET-16)"
+row = { item = "stuck invoice", invoice_week = 31, listed_week = 33 }
+right = "counted in week 33"
+bad = "counted in week 31, its invoice week"
+
+[[case]]
+requirement = "R-DET-05"
+covers = "overtime is recorded per person; both views show the improvement time remaining"
+bad = [
+  "overtime recorded as a team total with no per-person split",
+  "improvement time remaining missing from the exec view",
+  "improvement time remaining missing from the ops view",
+]
+
+# ── R-RL-01 · Weekly hours limit ───────────────────────────────────────
+[[case]]
+requirement = "R-RL-01"
+covers = "no person above the weekly hours limit"
+plan = { person = "Ops specialist 1", contracted = 40, overtime = 8.5 }
+right = "fail: 48.5 h"
+bad = "plan shown"
+
+[[case]]
+requirement = "R-RL-01"
+covers = "no plan commits more than productive hours plus approved overtime"
+rows = [
+  { approved_overtime = 40, committed = 220.5, bad = "plan shown" },
+  { approved_overtime = 30, committed = 210.5, bad = "plan shown" },
+]
+
+[[case]]
+requirement = "R-RL-01"
+covers = "proposed overtime counts only once the team manager approves it"
+plan = { proposed_overtime = 20, approved_overtime = 0, committed = 195.0 }
+bad = "plan shown as if the 20 h were approved"

@@ -1,0 +1,166 @@
+# Known-bad inputs for DEC-1: R-DET-01 to R-DET-04 and R-DET-16 (N17).
+# Each case is an output a broken build would produce. The requirement's check must fail `bad`
+# and pass `right`. A check that passes a `bad` output is itself broken.
+# Values mirror spec/metrics.toml and spec/thresholds.toml for the code (N6); check.py (check 12)
+# confirms each case still gets the colour, rounding or count it states. Weeks are invoice weeks unless stated.
+
+# ── R-DET-01 · Colour shows the level ──────────────────────────────────
+[[case]]
+requirement = "R-DET-01"
+covers = "one display step either side of every threshold"
+rows = [
+  { metric = "payment_accuracy",           shown = 89.9, right = "red",   bad = "amber" },
+  { metric = "payment_accuracy",           shown = 90.0, right = "amber", bad = "red"   },
+  { metric = "payment_accuracy",           shown = 96.9, right = "amber", bad = "green" },
+  { metric = "payment_accuracy",           shown = 97.0, right = "green", bad = "amber" },
+  { metric = "dispute_resolution_on_time", shown = 84.9, right = "red",   bad = "amber" },
+  { metric = "dispute_resolution_on_time", shown = 85.0, right = "amber", bad = "red"   },
+  { metric = "dispute_resolution_on_time", shown = 94.9, right = "amber", bad = "green" },
+  { metric = "dispute_resolution_on_time", shown = 95.0, right = "green", bad = "amber" },
+  { metric = "dispute_rate",               shown = 3.0,  right = "green", bad = "amber" },
+  { metric = "dispute_rate",               shown = 3.1,  right = "amber", bad = "green" },
+  { metric = "dispute_rate",               shown = 5.0,  right = "amber", bad = "red"   },
+  { metric = "dispute_rate",               shown = 5.1,  right = "red",   bad = "amber" },
+]
+
+[[case]]
+requirement = "R-DET-01"
+covers = "colour is set on the figure as shown, rounded half up"
+rows = [
+  # Python's round(3.05, 1) gives 3.0: a build that uses it shows green.
+  { metric = "dispute_rate",     raw = 3.05,  shown = 3.1,  right = "amber", bad = "green" },
+  { metric = "payment_accuracy", raw = 96.95, shown = 97.0, right = "green", bad = "amber" },
+  { metric = "payment_accuracy", raw = 89.95, shown = 90.0, right = "amber", bad = "red"   },
+]
+
+[[case]]
+requirement = "R-DET-01"
+covers = "a red metric stays red while it recovers; it leaves red only inside the threshold"
+metric = "dispute_rate"
+weeks = [
+  { week = 20, shown = 6.2, right = "red" },
+  { week = 21, shown = 5.6, right = "red",   bad = "amber" },   # improving, still beyond red
+  { week = 22, shown = 4.8, right = "amber", bad = "red"   },   # back inside the threshold
+]
+
+[[case]]
+requirement = "R-DET-01"
+covers = "a monitored metric carries no colour"
+metric = "stuck_invoices"
+shown = 4.0
+right = "none"
+bad = "amber"
+
+[[case]]
+requirement = "R-DET-01"
+covers = "the trend sits beside the colour and never changes it"
+metric = "payment_accuracy"
+weeks = [
+  { week = 20, shown = 99.5, right = "green" },
+  { week = 21, shown = 97.2, right = "green", bad = "amber" },   # worse week over week, still at target
+]
+
+[[case]]
+requirement = "R-DET-01"
+covers = "trend figures show n/a until a full trend window exists"
+metric = "dispute_rate"
+earlier_weeks = 3           # one fewer than trend_window_weeks
+right = "n/a"
+bad = "an average of the 3 earlier weeks"
+
+# ── R-DET-02 · Cycle weeks ─────────────────────────────────────────────
+[[case]]
+requirement = "R-DET-02"
+covers = "cycle weeks are coloured against the normal targets"
+metric = "dispute_rate"
+week_kind = "month-end"
+shown = 3.4
+right = "amber"
+bad = "green"               # a looser month-end target was applied
+
+[[case]]
+requirement = "R-DET-02"
+covers = "a cycle week with too few earlier cycles is labelled; DEC-2 proposes nothing in it"
+week_kind = "the year's first month-end"     # no earlier cycles, whatever F2b sets as the minimum
+right = "label 'no cycle comparison available'; any pattern left to the PMO lead"
+bad = "a possible issue proposed, no label"
+# Cycle-comparison cases are added in F2b with the comparison rule.
+
+# ── R-DET-03 · Provisional weeks ───────────────────────────────────────
+# Invoice week 30: first reviewed in week 32; dispute window closes Tuesday of week 33.
+[[case]]
+requirement = "R-DET-03"
+covers = "labelled provisional until final, and not after"
+metric = "dispute_rate"
+week = 30
+rows = [
+  { review_week = 32, right = "provisional", bad = "unlabelled" },
+  { review_week = 33, right = "provisional", bad = "unlabelled" },
+  { review_week = 34, right = "final",       bad = "provisional" },
+]
+
+[[case]]
+requirement = "R-DET-03"
+covers = "dispute resolution is final once every ticket opened that week has had its time limit"
+metric = "dispute_resolution_on_time"
+opened_week = 30            # tickets opened in calendar week 30, the last on its Sunday
+rows = [
+  { review_week = 31, right = "provisional", bad = "unlabelled" },
+  { review_week = 32, right = "final",       bad = "provisional" },
+]
+
+[[case]]
+requirement = "R-DET-03"
+covers = "the update restates the final value and any change of colour"
+metric = "dispute_rate"
+week = 30
+provisional = { review_week = 33, shown = 4.6, colour = "amber" }
+final       = { review_week = 34, shown = 5.3, colour = "red" }
+right = "week 34 update restates week 30: 5.3, amber to red"
+bad = "week 34 update shows 5.3 red with no restatement"
+
+[[case]]
+requirement = "R-DET-03"
+covers = "a correction after the final point is restated in the next update"
+metric = "payment_accuracy"
+week = 30
+correction_confirmed_week = 40
+right = "week 41 update restates week 30"
+bad = "week 30 changes silently"
+
+# ── R-DET-04 · Colour triggers nothing ─────────────────────────────────
+[[case]]
+requirement = "R-DET-04"
+covers = "every issue traces to an accepted proposal or a manual entry"
+week = 25
+metrics = { dispute_rate = 5.6 }
+tickets = 0
+bad = "issue opened with source = none"
+
+[[case]]
+requirement = "R-DET-04"
+covers = "a colour never creates an intervention"
+week = 25
+bad = "intervention with source = colour"
+
+# ── R-DET-16 · Stuck-invoice list ──────────────────────────────────────
+# stuck_limit_calendar_days mirrors spec/metrics.toml; days count from the day after entry (the
+# day rule). Review on Monday.
+[[case]]
+requirement = "R-DET-16"
+covers = "one day either side of the stuck limit"
+review = "Mon week 33"
+rows = [
+  { entered_step = "Fri week 32", step = "approval", days = 3, right = "listed",     bad = "missing" },
+  { entered_step = "Sat week 32", step = "approval", days = 2, right = "not listed", bad = "listed"  },
+]
+
+[[case]]
+requirement = "R-DET-16"
+covers = "only unpaid invoices; each entry complete; the list opens nothing"
+bad = [
+  "a paid invoice listed",
+  "an entry without its step",
+  "an entry without its days at that step",
+  "an issue opened from the list (R-DET-04)",
+]

@@ -15,7 +15,7 @@ margin = "set in F3, before the freeze"            # N15, R-JDG-01 (SG-1)
 limits = "set in F3"                                # R-DET-14
 
 [lifecycle]
-stage_limits_days = "set in F2b"                    # R-DET-10
+stage_limits_calendar_days = "set in F2b"           # R-DET-10
 
 [cycles]
 min_earlier_cycles = "set in F2b"                   # R-DET-02

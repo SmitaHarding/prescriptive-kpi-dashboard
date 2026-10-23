@@ -1,12 +1,12 @@
 # Registers: the machine-readable half of the ID chain (N6).
 # Chain: v1 defect -> risk -> requirement -> eval case -> code -> claim. evals/check.py checks it up to
-# requirement today; the later links are added from F2a.
+# requirement today; the later links are added from F3.
 # Decision wording lives only in method/decisions.md; requirement wording only in method/02-requirements.md.
 # Earlier IDs (D1-D93, SG-01-SG-11) are retired; their mapping is in method/decisions.md.
 
 [status]
-stage = "F1 gate passed (pass with fixes); fixes applied"
-next = "F1 commit, then F2a — complete the pass/fail requirements and data files"
+stage = "F2a: pass/fail requirements complete; some thresholds and cases follow in F2b and F3"
+next = "F2a gate re-run and commit, then the spike (N22)"
 built = []   # no product code yet; S1 adds the first entries
 
 # ── Decisions ──────────────────────────────────────────────────────────
@@ -29,8 +29,10 @@ id = "N7"
 id = "N8"
 [[decision]]
 id = "N9"
+superseded_by = "N23"
 [[decision]]
 id = "N10"
+superseded_by = "N24"
 [[decision]]
 id = "N11"
 [[decision]]
@@ -57,6 +59,10 @@ id = "N20"
 id = "N21"
 [[decision]]
 id = "N22"
+[[decision]]
+id = "N23"
+[[decision]]
+id = "N24"
 
 # ── Risks: what the requirements control ───────────────────────────────
 # evidence = v1 defects showing the risk is real
@@ -128,6 +134,14 @@ evidence = []
 id = "RK-17"
 title = "Docs overclaim or contradict: they describe more than is built, or state numbers that disagree"
 evidence = ["V1-10", "V1-12"]
+[[risk]]
+id = "RK-18"
+title = "Missed stuck invoice: an invoice stuck in the process chain is missing from the ops list, so nobody remedies it before the partner chases payment"
+evidence = []
+[[risk]]
+id = "RK-19"
+title = "Views disagree: the ops and exec views show different figures for the same week, or leave out what a role must act on"
+evidence = []
 
 # ── Requirements: wording in method/02-requirements.md ─────────────────
 # class: DET deterministic, RL red line, JDG judgement (N17); risks = risks it controls
@@ -231,6 +245,26 @@ risks = ["RK-16"]
 id = "R-DET-15"
 part = "evidence"
 risks = ["RK-17"]
+[[requirement]]
+id = "R-DET-16"
+part = "DEC-1"
+risks = ["RK-18"]
+[[requirement]]
+id = "R-DET-17"
+part = "week"
+risks = ["RK-09", "RK-10"]
+[[requirement]]
+id = "R-DET-18"
+part = "week"
+risks = ["RK-10"]
+[[requirement]]
+id = "R-DET-19"
+part = "week"
+risks = ["RK-19"]
+[[requirement]]
+id = "R-DET-20"
+part = "week"
+risks = ["RK-08"]
 
 # ── v1 defects (the structural ones; full register in the v1 review, published in W) ─────
 [[v1_defect]]
@@ -317,6 +351,14 @@ use = "review screen"
 replaces = []
 meaning = "where drafts and ticket claims are shown before anything reaches the ops or exec view"
 [[term]]
+use = "committed hours"
+replaces = []
+meaning = "the whole workload in R-DET-05, including every reported intervention; DEC-4 starts from it (N8)"
+[[term]]
+use = "weekly hours limit"
+replaces = ["working-time limit"]
+meaning = "max_hours_per_person in the capacity file: the most anyone works in a week (R-RL-01)"
+[[term]]
 use = "overtime proposal"
 replaces = []
 meaning = "a capacity proposal, not an intervention"
@@ -331,7 +373,7 @@ meaning = "the record of one dispute; 'case' alone means a test case"
 [[term]]
 use = "intervention"
 replaces = ["containment action"]
-meaning = "an action drafted or entered to contain an issue"
+meaning = "an action that moves an issue towards its next stage; the model drafts only those that contain it (N23)"
 [[term]]
 use = "case type"
 replaces = ["scenario type", "scenario kind"]

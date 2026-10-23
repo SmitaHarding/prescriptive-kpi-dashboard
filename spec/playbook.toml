@@ -1,0 +1,153 @@
+# Playbook (R-DET-07, R-DET-05, R-DET-06, R-RL-05). Owned by the PMO lead; changes approved, versioned,
+# re-tested (R-DET-14). The model may only propose changes, through a workflow designed, not built (N24).
+# v0, F2a. Every figure is an assumption from operating experience (N7).
+#
+# stage: the lifecycle stage the intervention moves an issue towards (N23); which entries the
+#   model sees: R-DET-07.
+# effort_hours: [low, high]; how the capacity check uses it: R-DET-05.
+# weeks_allowed: sets the due week (R-RL-05).
+# Each correction's own time is counted per confirmed error in the capacity file; entries count
+# only finding and coordinating the work.
+
+types = [
+  "investigate", "correct_affected", "contact_partners", "add_run_check", "escalate",
+  "confirm_cause", "correct_payments", "fix_source_data", "make_check_permanent", "change_process",
+]
+# Never a type (R-DET-07): the load check fails a playbook that holds any of these.
+forbidden_types = ["hold_run", "stop_run", "delay_run", "pay_outside_approval", "skip_approval"]
+
+# ── Containment: the model may draft these ─────────────────────────────
+[[entry]]
+type = "investigate"
+stage = "Contained"
+owner = "Ops specialist"
+effort_hours = [2, 4]
+weeks_allowed = 1
+exec_authority = false
+causes = "all"
+steps = [
+  "Pull a sample of 10 affected invoices.",
+  "Compare their lines with the service data and the rate card.",
+  "Record whether the suspected cause holds.",
+  "Report to the PMO lead.",
+]
+
+[[entry]]
+type = "correct_affected"
+stage = "Contained"
+owner = "Ops specialist"
+effort_hours = [1, 3]
+weeks_allowed = 2
+exec_authority = false
+causes = "all"
+steps = [
+  "Find invoices with the same error that have not been disputed.",
+  "Put each through the normal correction process in the next run.",
+]
+
+[[entry]]
+type = "contact_partners"
+stage = "Contained"
+owner = "Ops specialist"
+effort_hours = [1, 3]
+weeks_allowed = 1
+exec_authority = false
+causes = "all"
+steps = [
+  "List the affected partners from the record.",
+  "Send the standard message.",
+  "Record which partners were contacted and when.",
+]
+
+[[entry]]
+type = "add_run_check"
+stage = "Contained"
+owner = "team manager"
+effort_hours = [2, 4]
+weeks_allowed = 1
+exec_authority = false
+causes = ["unit_count", "unit_price", "wrong_incentive", "wrong_fuel", "wrong_deduction", "wrong_tax", "duplicate_payment", "wrong_partner_details"]
+steps = [
+  "Add a pre-run check on the affected line type or detail.",
+  "Run it inside the normal run window; it never holds the run.",
+  "Send flagged invoices down the normal correction path.",
+]
+
+[[entry]]
+type = "escalate"
+stage = "Contained"
+owner = "PMO lead"
+effort_hours = [0.5, 1]
+weeks_allowed = 1
+exec_authority = false
+causes = "all"
+steps = [
+  "Send the issue and its evidence to the owner outside the team.",
+  "Record who was told and when.",
+]
+
+# ── Later stages: the PMO lead and the simulated outcomes, never the model ──
+[[entry]]
+type = "confirm_cause"
+stage = "Cause confirmed"
+owner = "PMO lead"
+effort_hours = [2, 4]
+weeks_allowed = 2
+exec_authority = false
+causes = "all"
+steps = [
+  "Review the investigation with the owner of the affected data or step.",
+  "Confirm the cause from the cause list, or record that it is a different one.",
+]
+
+[[entry]]
+type = "correct_payments"
+stage = "Corrected"
+owner = "Ops specialist"
+effort_hours = [2, 4]
+weeks_allowed = 2
+exec_authority = false
+causes = "all"
+steps = [
+  "Identify every invoice the confirmed cause affected, disputed or not.",
+  "Coordinate the back-payments or payment corrections for the next run, through the approval chain.",
+  "Record each correction against its invoice week.",
+]
+
+[[entry]]
+type = "fix_source_data"
+stage = "Corrected"
+owner = "team manager"
+effort_hours = [1, 4]
+weeks_allowed = 2
+exec_authority = false
+causes = ["unit_price", "wrong_incentive", "wrong_fuel", "wrong_deduction", "wrong_tax", "wrong_partner_details"]
+steps = [
+  "Correct the rate card, incentive setup, deduction rule, tax status or bank details.",
+  "Get the change approved through the approval chain.",
+]
+
+[[entry]]
+type = "make_check_permanent"
+stage = "Prevented"
+owner = "team manager"
+effort_hours = [1, 2]
+weeks_allowed = 4
+exec_authority = false
+causes = ["unit_count", "unit_price", "wrong_incentive", "wrong_fuel", "wrong_deduction", "wrong_tax", "duplicate_payment", "wrong_partner_details"]
+steps = [
+  "Make the temporary run check part of the standard pre-run checks.",
+]
+
+[[entry]]
+type = "change_process"
+stage = "Prevented"
+owner = "PMO lead"
+effort_hours = [2, 6]
+weeks_allowed = 8
+exec_authority = false        # sign-off by several stakeholders is needed; out of scope for this project
+causes = "all"
+steps = [
+  "Propose the change to the SOP or control, with the evidence.",
+  "Record the sign-off.",
+]

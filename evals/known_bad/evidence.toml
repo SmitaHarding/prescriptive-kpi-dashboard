@@ -1,0 +1,81 @@
+# Known-bad inputs for the evidence: R-DET-12 to R-DET-15 (N17).
+# The check must fail every `bad` and pass every `must_pass`.
+# Cause ids mirror spec/causes.toml; terms mirror spec/registers.toml (N6).
+
+# ── R-DET-12 · No answer in the world ──────────────────────────────────
+[[case]]
+requirement = "R-DET-12"
+covers = "the leakage scan rejects cause ids, expected-answer text and metric values in tickets"
+runs_in = "CI, before generated data is accepted"
+bad = [
+  { ticket = "Line 3 looks like a unit_price problem.",                  why = "a cause id" },
+  { ticket = "Looks like wrong_fuel to me.",                             why = "a cause id (renamed so none is a plain word)" },
+  { ticket = "Rate card not updated for tier B from week 29.",           why = "expected-answer text of the scenario that planted it" },
+  { ticket = "Your dispute rate is 4.6% this week, fix it.",             why = "that week's metric value as shown" },
+]
+must_pass = [
+  "I think the fuel surcharge is wrong again.",       # the writer's guess is allowed (N12)
+  "Disputed amount EUR 97.00 on line 2.",            # an amount, not a metric value
+]
+
+[[case]]
+requirement = "R-DET-12"
+covers = "prototype code cannot read the scenario definitions"
+runs_in = "CI"
+bad = "a prototype module imports from, or opens a file in, the scenario definitions"
+
+# ── R-DET-13 · The holdout stays sealed ────────────────────────────────
+# The fingerprint method is set in F3; these cases hold whatever it is.
+[[case]]
+requirement = "R-DET-13"
+covers = "the single held-out run starts only on a matching fingerprint"
+runs_in = "local (the held-out quarter is outside the project)"
+bad = [
+  "one byte changed in a held-out file, and the run starts",
+  "no committed fingerprint, and the run starts",
+  "a mismatch logged as a warning, and the run starts",
+  "a second held-out run starts after the first",
+  "the expected answers changed after the freeze, and a scored run starts",
+]
+
+# ── R-DET-14 · Change gate ─────────────────────────────────────────────
+# Drift-limit boundary cases follow when F3 sets the limits.
+[[case]]
+requirement = "R-DET-14"
+covers = "a changed model version, prompt or data file is used only after a full, clean scenario-quarter run"
+runs_in = "local (needs the model)"
+bad = [
+  "the DEC-3 prompt changed; the last passing scorecard was for the old prompt",
+  "the playbook changed; only the happy-path cases re-run",
+  "total score up, but the thin-evidence case type down: shown as a pass",
+]
+
+# ── R-DET-15 · Documents match what exists ─────────────────────────────
+# Document checks come in stages (R-DET-15).
+[[case]]
+requirement = "R-DET-15"
+covers = "preferred terms: exact replaced phrases fail; correct uses pass"
+runs_in = "CI"
+bad = [
+  "The AI proposes a cause.",
+  "Each proposed cause is reviewed.",
+  "The review gate comes after DEC-3.",
+]
+must_pass = [
+  "A separate agent writes the held-out quarter.",
+  "A reviewer agent on a different model reads each scenario.",
+]
+
+[[case]]
+requirement = "R-DET-15"
+covers = "tunable numbers appear only in data files"
+runs_in = "CI"
+bad = "method/01-frame.md: 'the utilisation ceiling is 90%'"
+must_pass = "method/decisions.md: '1,500 partners' (a design fact, N6)"
+
+[[case]]
+requirement = "R-DET-15"
+covers = "nothing is called built unless the registers mark it built (from S1)"
+runs_in = "CI"
+registers_built = []
+bad = "README.md: 'The capacity check is built.'"

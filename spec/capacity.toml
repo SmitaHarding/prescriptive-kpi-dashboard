@@ -8,11 +8,11 @@ overtime_hours_per_fte = 8         # approved by the team manager
 max_hours_per_person = 48          # red line R-RL-01
 
 [workload]
-payment_run_hours = 60             # weekly payment run
-hours_per_dispute = 2              # counted in the week the dispute is opened
-hours_per_exception = 0.25
+payment_run_hours = 50             # weekly payment run
+hours_per_dispute = 1.5            # investigate and reply (R-DET-05)
+hours_per_confirmed_error = 0.5    # back-payment or correction, whoever found it (R-DET-05)
 hours_per_stuck_invoice = 0.5
-# plus the effort of reported interventions, from the playbook
+# plus reported interventions, as R-DET-05 sets.
 
 [utilisation]
-ceiling = "set in F2a"
+ceiling = 0.90                     # share of productive hours; the rest is the buffer for absence, which is not modelled

@@ -4,8 +4,8 @@ Run from the repository root:  python evals/check.py
 Update the README status block: python evals/check.py --update-readme
 
 The chain (N6, N17): v1 defect -> risk -> requirement -> eval case -> code -> claim.
-This F1 version checks it up to requirement.
-Checks (F1 version; F2a adds cases and known-bad inputs, F3 the harness links):
+It checks the chain up to requirement, and the documents and data files around it.
+Checks 1-8 date from F1; 9-12 from F2a. Later checks follow R-DET-15; F3 adds the harness links.
   1. IDs in spec/registers.toml are unique and well formed.
   2. Every decision in the registers is in method/decisions.md, and vice versa.
   3. Every requirement in the registers is in method/02-requirements.md, and vice versa.
@@ -19,6 +19,19 @@ Checks (F1 version; F2a adds cases and known-bad inputs, F3 the harness links):
      (D1-D93, SG-01-SG-11). method/archive/ is history and is not scanned.
   7. Every entry in the Superseded section names an active decision that replaces it.
   8. The README status block matches the registers (it is generated, never hand-edited).
+  9. Terms: no tracked .md doc uses a phrase the registers say a preferred term replaces.
+     Exact phrases only, so "a separate agent" and "reviewer agent" pass.
+ 10. Numbers: no tracked .md doc states a tunable value from the data files with its unit
+     (a percentage, hours, calendar or business days, weeks, FTEs). Design facts with no
+     tunable twin, such as "52 weeks", pass.
+ 11. Mirrors: a data file that mirrors a design fact matches it. Today: the dispute window
+     in spec/metrics.toml matches N12.
+ 12. Known-bad inputs (evals/known_bad/) still sit where the data files put them: colours,
+     rounding, capacity results, effort ranges, due weeks, forbidden types, the stuck limit,
+     the trend window, the confidence minimum and day counts. Data-file lists hold together:
+     every cause id has an underscore (R-DET-12), the playbook cites only listed causes, and
+     no playbook type is forbidden (R-DET-07). Checks 9 and 10 must also reject R-DET-15's
+     known-bad lines and pass its must-pass lines (the check tests itself).
 Exit code 0 when clean, 1 when anything fails.
 """
 import re
@@ -127,6 +140,227 @@ for row in re.finditer(r"^\| (N\d+) \|(.*)\|$", superseded_part, re.M):
         errors.append(f"{row.group(1)}: Superseded row does not name an active replacement")
 
 
+# Data files used by checks 9-12
+def load(rel):
+    return tomllib.loads((ROOT / rel).read_text(encoding="utf-8"))
+
+
+METRICS = load("spec/metrics.toml")
+CAPACITY = load("spec/capacity.toml")
+THRESHOLDS = load("spec/thresholds.toml")
+PLAYBOOK = load("spec/playbook.toml")
+METRIC = {m["id"]: m for m in METRICS["metric"]}
+ENTRY = {e["type"]: e for e in PLAYBOOK["entry"]}
+md_docs = [d for d in docs if d.suffix == ".md" and d.exists()]
+
+# 9. Terms
+REPLACED = [(t["use"], old) for t in REG.get("term", []) for old in t.get("replaces", [])]
+
+
+def term_hits(text):
+    return [(use, old) for use, old in REPLACED
+            if re.search(r"\b" + re.escape(old) + r"\b", text, re.I)]
+
+
+for doc in md_docs:
+    for i, line in enumerate(doc.read_text(encoding="utf-8").splitlines(), 1):
+        for use, old in term_hits(line):
+            errors.append(f"{doc.relative_to(ROOT)}:{i}: '{old}' — use '{use}' (N6)")
+
+
+# 10. Numbers: tunable values with their unit
+def num(v):
+    v = float(v)
+    return str(int(v)) if v == int(v) else str(v)
+
+
+tunable = []  # (value text, unit pattern, source)
+for m in METRICS["metric"]:
+    for key in ("target", "red_beyond"):
+        if key in m:
+            tunable.append((num(m[key]), r"\s?%", f"metrics.toml {m['id']}.{key}"))
+    if "time_limit_business_days" in m:
+        tunable.append((num(m["time_limit_business_days"]), r"\s(?:working|business)\sdays?",
+                        f"metrics.toml {m['id']}"))
+    if "stuck_limit_calendar_days" in m:
+        tunable.append((num(m["stuck_limit_calendar_days"]), r"\s(?:calendar\s)?days?",
+                        f"metrics.toml {m['id']}"))
+tunable.append((num(CAPACITY["utilisation"]["ceiling"] * 100), r"\s?%", "capacity.toml ceiling"))
+tunable.append((num(CAPACITY["team_fte"]), r"\s?(?:FTEs?|people)\b", "capacity.toml team_fte"))
+for key, val in list(CAPACITY.items()) + list(CAPACITY["workload"].items()):
+    if "hours" in key and isinstance(val, (int, float)):
+        tunable.append((num(val), r"\s?(?:h|hours?)\b", f"capacity.toml {key}"))
+for e in PLAYBOOK["entry"]:
+    for v in e["effort_hours"]:
+        tunable.append((num(v), r"\s?(?:h|hours?)\b", f"playbook.toml {e['type']}"))
+for e in PLAYBOOK["entry"]:
+    tunable.append((num(e["weeks_allowed"]), r"[\s-]weeks?\b", f"playbook.toml {e['type']}.weeks_allowed"))
+tunable.append((num(THRESHOLDS["trends"]["trend_window_weeks"]), r"[\s-]weeks?\b",
+                "thresholds.toml trend_window_weeks"))
+NUMBER = [(re.compile(r"(?<![\d.,])" + re.escape(v) + r"(?:\.0+)?" + unit, re.I), src)
+          for v, unit, src in tunable]
+
+
+def number_hits(text):
+    return sorted({src for pat, src in NUMBER if pat.search(text)})
+
+
+for doc in md_docs:
+    for i, line in enumerate(doc.read_text(encoding="utf-8").splitlines(), 1):
+        for src in number_hits(line):
+            errors.append(f"{doc.relative_to(ROOT)}:{i}: states a tunable number ({src}); "
+                          f"cite the data file instead (N6)")
+
+# 11. Mirrors
+n12 = re.search(r"\*\*N12 ·.*?(?=\n\*\*N\d+ ·)", log, re.S)
+window = re.search(r"dispute\s+within\s+(\d+)\s+days", n12.group(0)) if n12 else None
+if not window:
+    errors.append("decisions.md: N12's dispute window not found")
+elif int(window.group(1)) != METRICS["windows"]["dispute_window_days"]:
+    errors.append(f"metrics.toml dispute_window_days ({METRICS['windows']['dispute_window_days']}) "
+                  f"differs from N12 ({window.group(1)} days)")
+
+# 12. Known-bad inputs still match the data files
+from decimal import Decimal, ROUND_HALF_UP  # noqa: E402
+
+DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+COLOURS = {"red", "amber", "green"}
+
+
+def day(s):  # "Wed week 31" -> a day number
+    d, _, w = s.split()
+    return int(w) * 7 + DAYS.index(d)
+
+
+def colour(metric, shown):
+    m = METRIC[metric]
+    t, r = m["target"], m["red_beyond"]
+    if m["direction"] == "higher_is_better":
+        return "green" if shown >= t else "red" if shown < r else "amber"
+    return "green" if shown <= t else "red" if shown > r else "amber"
+
+
+def known_bad(name):
+    path = ROOT / "evals" / "known_bad" / f"{name}.toml"
+    return tomllib.loads(path.read_text(encoding="utf-8"))["case"] if path.exists() else []
+
+
+def kb_fail(name, case, msg):
+    errors.append(f"known_bad/{name}.toml {case['requirement']} ({case['covers'][:40]}): {msg}")
+
+
+places = Decimal(1).scaleb(-METRICS["display"]["decimals"])
+for c in known_bad("dec1"):
+    rows = c.get("rows") or c.get("weeks") or [c]
+    rows += [dict(v, metric=c.get("metric"), right=v["colour"]) for k, v in c.items()
+             if k in ("provisional", "final") and isinstance(v, dict)]
+    for r in rows:
+        metric, shown, right = r.get("metric", c.get("metric")), r.get("shown"), r.get("right")
+        if "raw" in r and Decimal(str(r["raw"])).quantize(places, ROUND_HALF_UP) != Decimal(str(shown)):
+            kb_fail("dec1", c, f"raw {r['raw']} does not show as {shown}")
+        if metric in METRIC and shown is not None and right in COLOURS:
+            if colour(metric, shown) != right:
+                kb_fail("dec1", c, f"{metric} {shown} is {colour(metric, shown)}, case says {right}")
+        if "days" in r and "entered_step" in r:
+            limit = METRIC["stuck_invoices"]["stuck_limit_calendar_days"]
+            if day(c["review"]) - day(r["entered_step"]) != r["days"]:
+                kb_fail("dec1", c, f"{r['entered_step']}: day count is not {r['days']}")
+            if (r["days"] > limit) != (r["right"] == "listed"):
+                kb_fail("dec1", c, f"{r['days']} days against a limit of {limit}: not {r['right']}")
+    if c.get("right") == "none" and METRIC[c["metric"]]["shown"] != "monitored":
+        kb_fail("dec1", c, f"{c['metric']} is not monitored")
+    if "earlier_weeks" in c and c["earlier_weeks"] != THRESHOLDS["trends"]["trend_window_weeks"] - 1:
+        kb_fail("dec1", c, "earlier_weeks is not one fewer than the trend window")
+
+cap = CAPACITY
+productive = cap["team_fte"] * (cap["hours_per_fte"] - cap["protected_hours_per_fte"])
+ceiling_h = cap["utilisation"]["ceiling"] * productive
+overtime_max = cap["team_fte"] * cap["overtime_hours_per_fte"]
+for c in known_bad("dec4"):
+    for r in c.get("rows", []):
+        if "workload" in r:
+            over = max(0.0, r["workload"] - ceiling_h)
+            got = {"overtime": min(over, overtime_max), "exec_hours": over - min(over, overtime_max),
+                   "room": max(0.0, ceiling_h - r["workload"])}
+            for k, v in r["right"].items():
+                if abs(got[k] - v) > 1e-9:
+                    kb_fail("dec4", c, f"{r['week']}: {k} is {got[k]:g}, case says {v}")
+        if "committed" in r and r["committed"] <= productive + r["approved_overtime"]:
+            kb_fail("dec4", c, f"committed {r['committed']} fits; the bad plan is not bad")
+    if "intervention" in c:
+        top = max(ENTRY[c["intervention"]["type"]]["effort_hours"])
+        if c["intervention"]["effort_hours"] != ENTRY[c["intervention"]["type"]]["effort_hours"] or c["right"] != top:
+            kb_fail("dec4", c, "effort range or its top no longer matches the playbook")
+    plan = c.get("plan", {})
+    if "contracted" in plan and plan["contracted"] + plan["overtime"] <= cap["max_hours_per_person"]:
+        kb_fail("dec4", c, "the person is within the limit; the bad plan is not bad")
+    if "proposed_overtime" in plan and plan["committed"] <= productive + plan["approved_overtime"]:
+        kb_fail("dec4", c, "the plan fits without the unapproved overtime; not bad")
+
+high_min = THRESHOLDS["confidence"]["high_min_evidence_types"]
+for c in known_bad("dec2"):
+    for r in c.get("rows", []):
+        if r.get("computed") == "high" and (len(r["evidence_types"]) < high_min or r["gaps"]):
+            kb_fail("dec2", c, "a row computed high has too few types or a gap")
+        if r.get("bad") == "high" and not r["gaps"] and len(r["evidence_types"]) >= high_min:
+            kb_fail("dec2", c, "a row labelled bad for too few types now meets the minimum")
+
+CAUSES = load("spec/causes.toml")
+cause_ids = {c["id"] for c in CAUSES["cause"]}
+for cid in sorted(cause_ids):
+    if "_" not in cid:
+        errors.append(f"causes.toml: id '{cid}' has no underscore; the leakage scan (R-DET-12) "
+                      f"cannot tell it from a partner's words")
+for e in PLAYBOOK["entry"]:
+    if e["causes"] != "all":
+        for cid in sorted(set(e["causes"]) - cause_ids):
+            errors.append(f"playbook.toml {e['type']}: cause '{cid}' is not in the cause list")
+forbidden = set(PLAYBOOK.get("forbidden_types", []))
+if not forbidden:
+    errors.append("playbook.toml: forbidden_types missing (R-DET-07)")
+for t in sorted(forbidden & set(PLAYBOOK["types"])):
+    errors.append(f"playbook.toml: type '{t}' is forbidden (R-DET-07)")
+for c in known_bad("dec3"):
+    if "week_reported" in c:
+        for r in c.get("bad", []):
+            if isinstance(r, dict) and "due_week" in r and \
+                    r["due_week"] == c["week_reported"] + ENTRY[c["type"]]["weeks_allowed"]:
+                kb_fail("dec3", c, f"due week {r['due_week']} is what code sets; not bad")
+    if c["requirement"] == "R-DET-07" and isinstance(c.get("bad"), list):
+        for line in c["bad"]:
+            if "both include" in line:
+                for name in re.findall(r"'(\w+)'", line):
+                    if name not in forbidden:
+                        kb_fail("dec3", c, f"'{name}' is not in forbidden_types")
+    for r in c.get("bad", []) if isinstance(c.get("bad"), list) else []:
+        if isinstance(r, dict) and "type" in r and r["effort_hours"] == ENTRY[r["type"]]["effort_hours"]:
+            kb_fail("dec3", c, f"{r['type']} {r['effort_hours']} now matches the playbook; not bad")
+
+for c in known_bad("week"):
+    issue = c.get("issue", {})
+    if isinstance(c.get("right"), dict) and "days_open" in c["right"]:
+        if day(c["review"]) - day(issue["detected"]) != c["right"]["days_open"] or \
+           day(c["review"]) - day(issue["contained"]) != c["right"]["days_in_stage"]:
+            kb_fail("week", c, "days open or days in stage do not match the dates")
+    if "contained" in issue and isinstance(c.get("right"), int):
+        if day(issue["contained"]) - day(issue["detected"]) != c["right"]:
+            kb_fail("week", c, "time to contain does not match the dates")
+
+for c in known_bad("evidence"):
+    if c["requirement"] != "R-DET-15":
+        continue
+    bad = c.get("bad", [])
+    for line in bad if isinstance(bad, list) else [bad]:
+        if "built" in c["covers"]:
+            continue  # the claims check comes in S1 (N6)
+        if not (term_hits(line) or number_hits(line)):
+            kb_fail("evidence", c, f"checks 9-10 do not catch: {line}")
+    good = c.get("must_pass", [])
+    for line in good if isinstance(good, list) else [good]:
+        if term_hits(line) or number_hits(line):
+            kb_fail("evidence", c, f"checks 9-10 wrongly reject: {line}")
+
+
 # 8. README status block
 def status_block():
     st = REG["status"]
@@ -147,10 +381,17 @@ if not m:
 elif m.group(2) != status_block():
     errors.append("README.md: status block is stale — run with --update-readme")
 
+for d in REG.get("decision", []):
+    sb = d.get("superseded_by")
+    if sb and (d["id"] not in superseded or f"Superseded by {sb}" not in superseded_part):
+        errors.append(f"{d['id']}: registers say superseded by {sb}; decisions.md does not")
+    if not sb and d["id"] in superseded:
+        errors.append(f"{d['id']}: superseded in decisions.md but not marked in the registers")
 if errors:
     print(f"check.py: {len(errors)} problem(s)")
     print("\n".join(f"  - {e}" for e in errors))
     sys.exit(1)
-print(f"check.py: clean — {len(ids['decision'])} decisions, {len(ids['risk'])} risks, "
+n_sup = sum(1 for d in REG.get("decision", []) if d.get("superseded_by"))
+print(f"check.py: clean — {len(ids['decision']) - n_sup} active decisions ({n_sup} superseded), {len(ids['risk'])} risks, "
       f"{len(ids['requirement'])} requirements, {len(ids['v1_defect'])} v1 defects, "
       f"{len(ids['safeguard'])} safeguards")

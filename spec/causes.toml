@@ -1,0 +1,67 @@
+# Cause list (R-RL-02, R-DET-11). Owned by the PMO lead; changes approved, versioned, re-tested (R-DET-14).
+# v0, F2a. Drafted from the payment and dispute SOPs' dispute reasons; every entry is an assumption (N7).
+#
+# A cause names what is wrong on the invoice or payment, never why it went wrong: people investigate
+# the why, and nothing names a root cause (N8). Ops specialists tag causes at closure from this same list (the dispute SOP).
+# Every id contains an underscore, so the leakage scan (R-DET-12) can tell a label from a
+# partner's own words; check.py enforces this.
+# A pattern that fits no cause gets R-RL-02's fixed text.
+#
+# supported_by names the ticket fields and metrics that can support a cause. A ticket's stated reason
+# is the writer's claim and never counts as evidence (R-RL-03). Ticket fields the dataset must carry
+# (F2b): stated_reason, invoice_line, amount_disputed, partner_segment, service_week; per invoice:
+# payment_status, bank_details_changed_week.
+
+[[cause]]
+id = "unit_count"
+name = "Wrong unit count"
+description = "The invoice pays for more or fewer service units than were delivered."
+supported_by = ["invoice_line = units", "confirmed errors on unit lines"]
+
+[[cause]]
+id = "unit_price"
+name = "Wrong price per unit"
+description = "The units are right but the rate is wrong: rate card, partner tier or the date of a rate change."
+supported_by = ["invoice_line = price", "confirmed errors on price lines", "partner_segment"]
+
+[[cause]]
+id = "wrong_incentive"
+name = "Missing or wrong incentive"
+description = "A bonus or incentive is left out or miscalculated."
+supported_by = ["invoice_line = incentive", "confirmed errors on incentive lines", "partner_segment"]
+
+[[cause]]
+id = "wrong_fuel"
+name = "Wrong fuel"
+description = "The fuel surcharge or allowance is wrong."
+supported_by = ["invoice_line = fuel", "confirmed errors on fuel lines"]
+
+[[cause]]
+id = "wrong_deduction"
+name = "Wrong deduction"
+description = "A deduction is applied wrongly: wrong amount, no valid reason, or applied twice."
+supported_by = ["invoice_line = deduction", "confirmed errors on deduction lines"]
+
+[[cause]]
+id = "wrong_tax"
+name = "Wrong tax or VAT"
+description = "Tax or VAT on the invoice is wrong: rate, treatment or the partner's tax status."
+supported_by = ["invoice_line = tax", "confirmed errors on tax lines", "partner_segment"]
+
+[[cause]]
+id = "duplicate_payment"
+name = "Duplicate invoice or payment"
+description = "The same service is invoiced or paid more than once."
+supported_by = ["amount_disputed", "confirmed errors: duplicate invoices", "payment_status"]
+
+[[cause]]
+id = "wrong_partner_details"
+name = "Wrong partner or bank details"
+description = "The invoice or payment goes to the wrong partner entity or bank account."
+supported_by = ["bank_details_changed_week", "payment_status"]
+
+[[cause]]
+id = "payment_not_received"
+name = "Payment not received"
+description = "The invoice is right but the payment has not arrived: stuck in the process chain or failed."
+supported_by = ["stuck_invoices", "payment_status"]
