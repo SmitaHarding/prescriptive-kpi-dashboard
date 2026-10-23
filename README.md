@@ -43,7 +43,7 @@ speculative extrapolation. The prompt was never written, and nothing failed.
 ## Status
 
 <!-- gen:status -->
-**Stage:** F2a: pass/fail requirements complete; some thresholds and cases follow in F2b and F3 · **Next:** F2a gate re-run and commit, then the spike (N22)  
+**Stage:** F2a: pass/fail requirements complete; some thresholds and cases follow in F2b and F3 · **Next:** a short decision change, then the spike (N22)  
 **Built so far:** no product code yet — the harness comes first
 <!-- /gen:status -->
 

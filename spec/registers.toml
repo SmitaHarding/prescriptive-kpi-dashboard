@@ -6,7 +6,7 @@
 
 [status]
 stage = "F2a: pass/fail requirements complete; some thresholds and cases follow in F2b and F3"
-next = "F2a gate re-run and commit, then the spike (N22)"
+next = "a short decision change, then the spike (N22)"
 built = []   # no product code yet; S1 adds the first entries
 
 # ── Decisions ──────────────────────────────────────────────────────────

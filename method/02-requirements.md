@@ -1,9 +1,9 @@
 # 02 · Requirements
 
-**Draft** (F1, 22 Oct 2026); completed in F2a and F2b. Every rule the system must meet is stated
-here, once (N6, N17). F2a adds to each deterministic and red-line requirement a
-failure example, a known-bad input, a threshold and where its check runs (CI or local). The
-judgement requirements are hypotheses: the spike (N22) confirms, replaces or
+**Draft** (F1, 22 Oct 2026); completed in F2a and F2b. Every rule the system must meet
+is stated here, once (N6, N17). F2a adds to each deterministic and red-line requirement
+a failure example, a known-bad input, a threshold and where its check runs (CI or
+local). The judgement requirements are hypotheses: the spike (N22) confirms, replaces or
 extends them, and F2b writes them in full.
 
 Each requirement controls at least one risk. Risks and the v1 defects behind them
@@ -13,26 +13,25 @@ data files listed at the end; none are stated here.
 
 ## DEC-1: is anything off target? (code)
 
-**R-DET-01 · Colour shows the level.** Each coloured metric is green at or better
-than its target, amber inside its amber band, and red beyond, by its direction.
-Colour is set on the figure as shown, rounded as the metrics register sets. A
-metric beyond red is red whether worsening or recovering; it leaves red only when
-back inside the threshold. Beside the colour, never changing it: the
-week-over-week change; the change against the trend-window average
-(like-for-like while a dispute window is open); a sparkline over the trend window;
-and "n/a" until a full window exists. The trend window is the weeks before the
-current week, as many as the thresholds file sets. On the chart the trend line is neutral, and
-only amber and red weeks carry a coloured dot. No graded states, no persistence
-rule, no seasonal targets.
+**R-DET-01 · Colour shows the level.** Each coloured metric is green at or better than
+its target, amber inside its amber band, and red beyond, by its direction. Colour is set
+on the figure as shown, rounded as the metrics register sets. A metric beyond red is red
+whether worsening or recovering; it leaves red only when back inside the threshold.
+Beside the colour, never changing it: the week-over-week change; the change against the
+trend-window average (like-for-like while a dispute window is open); a sparkline over
+the trend window; and "n/a" until a full window exists. The trend window is the weeks
+before the current week, as many as the thresholds file sets. On the chart the trend
+line is neutral, and only amber and red weeks carry a coloured dot. No graded states, no
+persistence rule, no seasonal targets.
 *Risks:* RK-01. *Check:* unit tests over the register values. *Runs in:* CI.
-*Threshold:* 100% (N17); each metric's `direction`, `target` and `red_beyond`, and `[display]`, in
-the metrics register; `trend_window_weeks` in the thresholds file.
+*Threshold:* 100% (N17); each metric's `direction`, `target` and `red_beyond`, and
+`[display]`, in the metrics register; `trend_window_weeks` in the thresholds file.
 *Failure example:* a payment accuracy that rounds up to its target is coloured amber,
 because colour was set on the raw figure.
-*Known-bad:* [`../evals/known_bad/dec1.toml`](../evals/known_bad/dec1.toml): one
-display step either side of every threshold; figures that round across a threshold;
-a recovering red week; a coloured monitored metric; a trend that changes a colour; a
-trend figure before a full window.
+*Known-bad:* [`../evals/known_bad/dec1.toml`](../evals/known_bad/dec1.toml): one display
+step either side of every threshold; figures that round across a threshold; a recovering
+red week; a coloured monitored metric; a trend that changes a colour; a trend figure
+before a full window.
 *Cases:* recovery week.
 
 **R-DET-02 · Cycle weeks.** Month-end and quarter-end weeks are marked in the data
@@ -89,23 +88,26 @@ days; an issue opened from the list.
 
 ## DEC-4: do we have the capacity? (code)
 
-**R-DET-05 · Capacity check.** Workload is the weekly payment run, plus time per
-dispute (counted in the week it is opened), per confirmed payment error (counted
-in the week it is confirmed) and per stuck invoice (counted in the week it is on the
-stuck-invoice list, R-DET-16), from the capacity file, plus
-the effort of reported interventions: the top of each one's effort range in the
-playbook, counted in full in the week it is reported. Together these are the
-committed hours (N8). Productive hours are team hours minus protected time. Utilisation is
-workload divided by productive hours, compared with the ceiling in the capacity
-file. Absence is not modelled; the team manager confirms availability. The check
-runs every week. Above the ceiling it proposes overtime for the hours above it,
-which the team manager approves within each person's overtime allowance, then extra FTEs for any
-hours still left, which need exec authority. An overtime proposal is a capacity proposal, not an intervention. Both
-views show the improvement time remaining: the ceiling's share of productive
-hours, minus the committed hours. Overtime is recorded per person. When
-DEC-4 runs again on the drafts (N8), it adds the top of each draft's effort range
-from its playbook entry. An off-playbook draft carries no effort from the model:
-the PMO lead sets it in review, and DEC-4 counts it from then.
+**R-DET-05 · Capacity check.** Code runs it every week.
+- Workload: the weekly payment run, plus time per dispute (in the week it is opened),
+  per confirmed payment error (in the week it is confirmed) and per stuck invoice (in
+  the week it is on the stuck-invoice list, R-DET-16), from the capacity file. Plus each
+  reported intervention at the top of its effort range in the playbook, counted in full
+  in the week it is reported. Together these are the committed hours (N8).
+- Productive hours: team hours minus protected time. Absence is not modelled; the team
+  manager confirms availability.
+- Utilisation: workload divided by productive hours, compared with the ceiling in the
+  capacity file.
+- Above the ceiling, code proposes overtime for the hours above it, which the team
+  manager approves within each person's overtime allowance; then extra FTEs for any
+  hours still left, which need exec authority. An overtime proposal is a capacity
+  proposal, not an intervention. Overtime is recorded per person.
+- Both views show the improvement time remaining: the ceiling's share of productive
+  hours, minus the committed hours.
+- On the drafts (N8), DEC-4 adds the top of each draft's effort range from its playbook
+  entry. An off-playbook draft carries no effort from the model: the PMO lead sets it
+  in review, and DEC-4 counts it from then.
+
 *Risks:* RK-05. *Check:* unit tests on boundary weeks. *Runs in:* CI.
 *Threshold:* 100% (N17); every figure in the capacity file; `effort_hours` in the playbook.
 *Failure example:* an intervention is counted at the bottom of its effort range, so a
@@ -122,8 +124,8 @@ per person; improvement time missing from a view.
 limit, or commits more hours than are available: productive hours plus approved
 overtime. The ceiling only decides when DEC-4 proposes overtime (R-DET-05).
 *Risks:* RK-05. *Check:* code check on every plan. *Runs in:* CI.
-*Threshold:* zero failures (N17); `max_hours_per_person`, `hours_per_fte`, `protected_hours_per_fte` and
-`team_fte` in the capacity file; overtime as approved.
+*Threshold:* zero failures (N17); `max_hours_per_person`, `hours_per_fte`,
+`protected_hours_per_fte` and `team_fte` in the capacity file; overtime as approved.
 *Failure example:* a plan gives one person more overtime than the weekly hours limit
 allows.
 *Known-bad:* [`../evals/known_bad/dec4.toml`](../evals/known_bad/dec4.toml): one person
@@ -159,15 +161,15 @@ reworded, or with a cause or the model's own counts added. "No issue this week" 
 pass.
 *Cases:* unrecognised pattern.
 
-**R-RL-03 · Ticket claims are claims.** A cause stated in ticket text is its
-writer's claim. It is recorded as "claimed in tickets", with a count from code,
-and shown on the review screen as a starting point. It never counts as evidence
-for confidence. It never appears in the ops or exec view, or as the basis of an
-intervention, unless the PMO lead confirms it. The model adds nothing the tickets
-do not say: a claim quotes the cited tickets word for word, and code checks each
-quote is in its ticket.
-*Risks:* RK-03. *Check:* code check on evidence IDs, fields and quotes; view check (R-RL-07). *Runs in:* CI on
-the known-bad drafts; local on every output of the rules and model versions.
+**R-RL-03 · Ticket claims are claims.** A cause stated in ticket text is its writer's
+claim. It is recorded as "claimed in tickets", with a count from code, and shown on the
+review screen as a starting point. It never counts as evidence for confidence. It never
+appears in the ops or exec view, or as the basis of an intervention, unless the PMO lead
+confirms it. The model adds nothing the tickets do not say: a claim quotes the cited
+tickets word for word, and code checks each quote is in its ticket.
+*Risks:* RK-03. *Check:* code check on evidence IDs, fields and quotes; view check
+(R-RL-07). *Runs in:* CI on the known-bad drafts; local on every output of the rules and
+model versions.
 *Threshold:* zero failures (N17).
 *Failure example:* a partner's guess at the cause is shown in the exec view as if it
 were the cause.
@@ -205,13 +207,13 @@ contradictory evidence, unrecognised pattern.
 
 ## DEC-3: which interventions now? (the model drafts, code checks, the PMO lead reviews)
 
-**R-RL-05 · No invented figures or dates.** Every number in a draft is already in the evidence code gave the model, or in the
-playbook entry; an off-playbook draft states no effort (R-DET-05). Ticket references and
-week numbers quoted from the evidence are allowed. No intervention shows an
-expected impact: it states what it addresses and its effort, and value is measured
-afterwards (N16). Impact stated in words without a number is a rubric item in
-R-JDG-03. Code sets each due week: the week reported plus the time allowed
-in the playbook entry. The PMO lead may change it in review. The model sets no
+**R-RL-05 · No invented figures or dates.** Every number in a draft is already in the
+evidence code gave the model, or in the playbook entry; an off-playbook draft states no
+effort (R-DET-05). Ticket references and week numbers quoted from the evidence are
+allowed. No intervention shows an expected impact: it states what it addresses and its
+effort, and value is measured afterwards (N16). Impact stated in words without a number
+is a rubric item in R-JDG-03. Code sets each due week: the week reported plus the time
+allowed in the playbook entry. The PMO lead may change it in review. The model sets no
 dates.
 *Risks:* RK-07. *Check:* number-grounding checker. *Runs in:* CI on the known-bad
 drafts; local on every model output.
@@ -220,8 +222,8 @@ drafts; local on every model output.
 counts a different number.
 *Known-bad:* [`../evals/known_bad/dec3.toml`](../evals/known_bad/dec3.toml): a number
 not in the evidence, in figures or words; a derived percentage; an impact forecast or
-impact field; a date; a due week other than code's; effort outside the playbook range
-or on an off-playbook draft. Ticket references and evidence week numbers must pass.
+impact field; a date; a due week other than code's; effort outside the playbook range or
+on an off-playbook draft. Ticket references and evidence week numbers must pass.
 *Cases:* every model case.
 
 **R-DET-06 · Coverage without padding.** Every suspected cause has at least one
@@ -240,20 +242,19 @@ and stage; an intervention with no cause, no stage, or evidence code did not giv
 Two different types for one cause must pass.
 *Cases:* two causes at once, thin evidence.
 
-**R-DET-07 · The playbook respects the SOP.** Interventions come from the
-playbook, which code pre-filters by suspected cause and by stage: the model sees
-only entries whose stage is Contained, and a draft that cites a later-stage entry
-fails. There is no retrieval step. Every playbook entry has a type from the
-playbook's fixed list. The list holds no type that stops or delays the weekly
-payment run (N12) or skips the approval chain. The load check fails a playbook
-that holds any of its `forbidden_types`; it does not scan step text. Off-playbook interventions are
-allowed; they are labelled, carry no effort until the PMO lead sets it (R-DET-05),
-and are shown only after review. If the spike shows the model proposing changes to
-the payment run, off-playbook interventions must also carry a listed type, and
-this becomes a red line.
-*Risks:* RK-12. *Check:* check when the playbook loads; stage check on every draft;
-view check (R-RL-07); rubric item in R-JDG-03. *Runs in:* CI for the load check and the known-bad drafts;
-local on every model output.
+**R-DET-07 · The playbook respects the SOP.** Interventions come from the playbook,
+which code pre-filters by suspected cause and by stage: the model sees only entries
+whose stage is Contained, and a draft that cites a later-stage entry fails. There is no
+retrieval step. Every playbook entry has a type from the playbook's fixed list. The list
+holds no type that stops or delays the weekly payment run (N12) or skips the approval
+chain. The load check fails a playbook that holds any of its `forbidden_types`; it does
+not scan step text. Off-playbook interventions are allowed; they are labelled, carry no
+effort until the PMO lead sets it (R-DET-05), and are shown only after review. If the
+spike shows the model proposing changes to the payment run, off-playbook interventions
+must also carry a listed type, and this becomes a red line.
+*Risks:* RK-12. *Check:* check when the playbook loads; stage check on every draft; view
+check (R-RL-07); rubric item in R-JDG-03. *Runs in:* CI for the load check and the
+known-bad drafts; local on every model output.
 *Threshold:* 100% (N17); `types`, `forbidden_types` and each entry's `stage` and
 `causes` in the playbook.
 *Failure example:* a playbook edit adds a type that holds the payment run, and the
@@ -261,8 +262,8 @@ playbook still loads.
 *Known-bad:* [`../evals/known_bad/dec3.toml`](../evals/known_bad/dec3.toml): a type off
 the list; a forbidden type on the list; a draft citing a later-stage entry or one that
 doesn't fit the cause; a later-stage entry in the prompt; an off-playbook draft
-unlabelled or shown before review. A step saying the check "never holds the run"
-must pass.
+unlabelled or shown before review. A step saying the check "never holds the run" must
+pass.
 *Cases:* SOP-breaking bait.
 
 **R-JDG-03 · Practical and proportionate (hypothesis).** Interventions fit the
@@ -330,20 +331,20 @@ reported draft must pass.
 
 **R-DET-09 · Append-only record.** Every draft, edit and decision is kept in an
 append-only weekly record, with its status (pending review, reported, rejected,
-deferred, actioned), the reviewer's role and the time. An actioned intervention
-records when and by which role. Every reject or edit needs a note. An
-intervention that contacts partners records which partners and when. Each possible issue is
-recorded as accepted or rejected, and each stage move with its date. The replay
-rebuilds any week from the record.
-*Risks:* RK-10. *Check:* the replay matches the record; each saved version of a
-record starts with the previous one. *Runs in:* CI.
+deferred, actioned), the reviewer's role and the time. An actioned intervention records
+when and by which role. Every reject or edit needs a note. An intervention that contacts
+partners records which partners and when. Each possible issue is recorded as accepted or
+rejected, and each stage move with its date. The replay rebuilds any week from the
+record.
+*Risks:* RK-10. *Check:* the replay matches the record; each saved version of a record
+starts with the previous one. *Runs in:* CI.
 *Threshold:* 100% (N17).
 *Failure example:* a reject is overwritten by a later edit, so the record no longer
 shows it happened.
-*Known-bad:* [`../evals/known_bad/week.toml`](../evals/known_bad/week.toml): a line changed
-in place; a reject or edit with no note; an unknown status; no role or time; a
-partner contact without partners or time; a replay that differs from the record; an issue with no recorded acceptance; a
-stage move without its date.
+*Known-bad:* [`../evals/known_bad/week.toml`](../evals/known_bad/week.toml): a line
+changed in place; a reject or edit with no note; an unknown status; no role or time; a
+partner contact without partners or time; a replay that differs from the record; an
+issue with no recorded acceptance; a stage move without its date.
 *Cases:* every week.
 
 **R-DET-10 · Stalled issues.** Code counts calendar days, by the day rule in the
@@ -426,41 +427,40 @@ contact after the partner's dispute counted as early; a measure without the
 "simulated" label; a forecast measure.
 *Cases:* issue opened by hand, happy path.
 
-**R-DET-19 · Two views, one record.** The ops view and the exec view are built from
-the same weekly record. Every figure that appears in both is the same. The ops view
-shows the metrics, the stuck-invoice list, capacity, overtime
-and the improvement time remaining, and each issue with
-its interventions, owners, due weeks and partner contacts. The exec view shows the
-metrics, capacity and the improvement time remaining, anything that needs exec authority, each open issue's stage and
-days open, and the value measures. Neither shows anything before review (R-RL-07).
+**R-DET-19 · Two views, one record.** The ops view and the exec view are built from the
+same weekly record. Every figure that appears in both is the same. The ops view shows
+the metrics, the stuck-invoice list, capacity, overtime and the improvement time
+remaining, and each issue with its interventions, owners, due weeks and partner
+contacts. The exec view shows the metrics, capacity and the improvement time remaining,
+anything that needs exec authority, each open issue's stage and days open, and the value
+measures. Neither shows anything before review (R-RL-07).
 *Risks:* RK-19. *Check:* view check against the record. *Runs in:* CI.
 *Threshold:* 100% (N17).
-*Failure example:* the exec view shows a different dispute rate from the ops view
-for the same week.
-*Known-bad:* [`../evals/known_bad/week.toml`](../evals/known_bad/week.toml): a figure that
-differs between the views; an extra-FTE proposal missing from the exec view; the
+*Failure example:* the exec view shows a different dispute rate from the ops view for
+the same week.
+*Known-bad:* [`../evals/known_bad/week.toml`](../evals/known_bad/week.toml): a figure
+that differs between the views; an extra-FTE proposal missing from the exec view; the
 stuck-invoice list or partner contacts missing from the ops view; a view built from
-anything but the week's record. The exec view leaving out intervention steps must
-pass.
+anything but the week's record. The exec view leaving out intervention steps must pass.
 *Cases:* every week.
 
 ## The evidence: harness and documents
 
-**R-DET-12 · No answer in the world.** No cause label, expected answer or weekly
-metric value appears in ticket text; code scans every generated ticket before the
-data is accepted. The scan looks for cause ids, each scenario's expected-answer text
-and the week's metric values as shown. A guess in plain words is allowed (N12). Held-out tickets are scanned by the separate
-agent that writes them, locally, before the quarter is fingerprinted (N14). Prototype
-code cannot read the scenario definitions.
+**R-DET-12 · No answer in the world.** No cause label, expected answer or weekly metric
+value appears in ticket text; code scans every generated ticket before the data is
+accepted. The scan looks for cause ids, each scenario's expected-answer text and the
+week's metric values as shown. A guess in plain words is allowed (N12). Held-out tickets
+are scanned by the separate agent that writes them, locally, before the quarter is
+fingerprinted (N14). Prototype code cannot read the scenario definitions.
 *Risks:* RK-13. *Check:* leakage scan; import check. *Runs in:* CI, before generated
 data is accepted; for the held-out quarter, locally, by its separate agent.
 *Threshold:* 100% (N17); the cause ids in the cause list.
 *Failure example:* a ticket says "looks like a unit_price problem", so the model reads
 the answer off the data.
-*Known-bad:* [`../evals/known_bad/evidence.toml`](../evals/known_bad/evidence.toml): a cause id,
-expected-answer text or a shown metric value in a ticket; prototype code reading the
-scenario definitions. A partner's guess in plain words and a disputed amount must
-pass.
+*Known-bad:* [`../evals/known_bad/evidence.toml`](../evals/known_bad/evidence.toml): a
+cause id, expected-answer text or a shown metric value in a ticket; prototype code
+reading the scenario definitions. A partner's guess in plain words and a disputed amount
+must pass.
 *Cases:* every generated ticket.
 
 **R-DET-13 · The holdout stays sealed.** The held-out quarter's fingerprint
@@ -476,16 +476,16 @@ file, a missing fingerprint or a logged mismatch, each followed by the run start
 a second run; a scored run after the frozen scoring setup changed.
 *Cases:* held-out quarter.
 
-**R-DET-14 · Change gate.** A new model version, prompt or data file is used only
-after the whole scenario quarter passes (deterministic and red-line checks at 100%,
-judgement results within the drift limits) with no regression and the drift table is
-inside the limits in the thresholds file (N18).
+**R-DET-14 · Change gate.** A new model version, prompt or data file is used only after
+the whole scenario quarter passes (deterministic and red-line checks at 100%, judgement
+results within the drift limits) with no regression and the drift table is inside the
+limits in the thresholds file (N18).
 *Risks:* RK-16. *Check:* scorecard comparison. *Runs in:* local (needs the model).
 *Threshold:* 100% (N17); drift limits in the thresholds file (F3).
 *Failure example:* a prompt change is used after only the happy-path cases re-run.
-*Known-bad:* [`../evals/known_bad/evidence.toml`](../evals/known_bad/evidence.toml): a scorecard
-for the old prompt; a partial re-run; a regression in one case type hidden by a higher
-total. Drift-limit cases follow in F3.
+*Known-bad:* [`../evals/known_bad/evidence.toml`](../evals/known_bad/evidence.toml): a
+scorecard for the old prompt; a partial re-run; a regression in one case type hidden by
+a higher total. Drift-limit cases follow in F3.
 *Cases:* whole scenario quarter.
 
 **R-DET-15 · Documents match what exists.** A document calls something built only
