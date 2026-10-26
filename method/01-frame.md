@@ -15,7 +15,7 @@ specialists find themselves.
 
 ## The decision
 
-Aegis supports the PMO lead's Monday decision (N8).
+Aegis supports the PMO lead's Monday decision (N27).
 
 Issues arrive two ways:
 
@@ -35,7 +35,7 @@ Each part of the decision goes to code wherever code can do it.
 |---|---|---|---|---|
 | **DEC-1** | Is anything off target? | Code | Nobody: it is a fact | R-DET-01 to R-DET-04, R-DET-16 |
 | **DEC-2** | Which new dispute tickets form a possible issue? | The rules version, or the model version if it wins (N15) | Code; the PMO lead accepts or rejects | R-JDG-01, R-RL-02 to R-RL-04, R-JDG-02 |
-| **DEC-3** | Which interventions now, for open issues and new possible issues? | The model drafts, mostly from playbook entries code has pre-filtered | Code checks every draft; the PMO lead reviews | R-RL-05, R-DET-06 to R-DET-08, R-JDG-03 |
+| **DEC-3** | Which interventions now, for new possible issues and overdue issues? | The model drafts, mostly from playbook entries code has pre-filtered | Code checks every draft; the PMO lead reviews | R-RL-05, R-DET-06 to R-DET-08, R-JDG-03 |
 | **DEC-4** | Do we have the capacity? | Code | The team manager (availability, overtime); executives (extra FTEs) | R-DET-05, R-RL-01 |
 
 **DEC-2.** Dispute reasons are free text, so reading them for one underlying
@@ -48,7 +48,7 @@ that fails a check is rejected, never repaired (R-DET-08). An off-playbook
 intervention is labelled and shown only after review (R-DET-07). For an issue
 opened by hand, the model drafts nothing (R-DET-11).
 
-The weekly order of the four parts is in N8.
+The weekly order of the four parts is in N27.
 
 ## Issue lifecycle
 
@@ -60,11 +60,11 @@ are simulated (N23). Code marks an issue overdue when it stays in a stage too lo
 
 | Role | Acts on | IDs |
 |---|---|---|
-| PMO lead | Owns the Monday decision; accepts possible issues; reviews every draft; may open an issue by hand | N8, R-RL-07, R-DET-11 |
+| PMO lead | Owns the Monday decision; accepts possible issues; reviews every draft; may open an issue by hand | N27, R-RL-07, R-DET-11 |
 | Team manager | Confirms availability; approves overtime | R-DET-05 |
-| Ops specialists | Investigate; contact affected partners; remedy stuck invoices | N8, N16, R-DET-16 |
+| Ops specialists | Investigate; contact affected partners; remedy stuck invoices | N27, N16, R-DET-16 |
 | Executives | Approve extra FTEs and anything needing exec authority | R-DET-05 |
-| The author | Owns the project; plays every role in the prototype; judges fitness for purpose | N8, N20 |
+| The author | Owns the project; plays every role in the prototype; judges fitness for purpose | N27, N20 |
 
 ## Value and validation
 
@@ -83,7 +83,8 @@ every v1 defect maps to a risk and every risk has a requirement.
 - **F2b:** the judgement requirements; the final case types; evidence types, and
   what counts as a gap and a minor gap (R-RL-04); the cycle comparison rule and
   minimum, and which weeks are month-ends (R-DET-02); stage limits and exit criteria
-  (R-DET-10); which weeks stay provisional at the quarter boundary (N13); the share
+  (R-DET-10); which weeks stay provisional at the quarter boundary (N28), including the held-out
+  quarter's last weeks, which no later review shows; the share
   of wrong partner guesses; the number and layout of scenarios; runs per case; how
   affected partners are identified (R-DET-18); what the history weeks contain; line
   types and lines per invoice.
@@ -91,6 +92,6 @@ every v1 defect maps to a risk and every risk has a requirement.
 ## What the prototype is
 
 A local run: the model drafts, code checks, and the author reviews in every role.
-The public app is a read-only replay of that run (N11). N24 sets what is to be
+The public app is a read-only replay of that run (N11). N32 sets what is to be
 built, simulated, or designed but not built. Nothing is called built until R-DET-15
 allows it.

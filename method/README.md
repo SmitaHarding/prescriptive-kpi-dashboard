@@ -1,6 +1,6 @@
 # method/
 
-The operating model, built up phase by phase (N5). Markdown, so it is
+The operating model, built up phase by phase (N25). Markdown, so it is
 version-controlled, diffable and readable on GitHub; any Word or PDF pack is an
 export at the end.
 

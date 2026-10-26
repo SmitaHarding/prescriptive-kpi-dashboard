@@ -5,20 +5,20 @@ scorecard. So far: `check.py`, and known-bad inputs in `known_bad/`, one file pe
 02-requirements). Scenarios come in F2b and F3; the runner and scorecard in F3 (N19).
 
 **How it works.** Every requirement controls a named risk and will be proven by an
-eval (N17). How cases are ordered against the spike is set in N17 and N22. The model is
+eval (N30). How cases are ordered against the spike is set in N30 and N22. The model is
 scored against the expected answer in each scenario, which the world data never
-contains (N14, R-DET-12).
+contains (N29, R-DET-12).
 
 **Refilling it.** PMO lead rejects and edits will be captured
-(to be built, N24). Turning them into a separate set of test cases is designed, not
-built (N21).
+(to be built, N32). Turning them into a separate set of test cases is designed, not
+built (N31).
 
 **The year.** History, a scenario quarter used during the build, and a held-out
-quarter that is sealed and run once after S4 (N13, N14, R-DET-13). Safeguards SG-1
+quarter that is sealed and run once after S4 (N28, N29, R-DET-13). Safeguards SG-1
 to SG-5 protect the comparison and the holdout.
 
 **Case types** (starter list; F2b sets the final list and moves it to the
-registers, N6):
+registers, N26):
 
 - happy path
 - thin evidence: the tickets do not explain the change

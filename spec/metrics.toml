@@ -53,7 +53,7 @@ stuck_limit_calendar_days = 2
 final_when = "all of week W's invoices are paid"
 
 [windows]
-dispute_window_days = 14   # calendar days; mirrors N12 for the code (N6)
+dispute_window_days = 14   # calendar days; mirrors N12 for the code (N26)
 
 [context]
 invoice_volume = "shown as context, never coloured"

@@ -2,7 +2,7 @@
 # v0, F2a. Drafted from the payment and dispute SOPs' dispute reasons; every entry is an assumption (N7).
 #
 # A cause names what is wrong on the invoice or payment, never why it went wrong: people investigate
-# the why, and nothing names a root cause (N8). Ops specialists tag causes at closure from this same list (the dispute SOP).
+# the why, and nothing names a root cause (N27). Ops specialists tag causes at closure from this same list (the dispute SOP).
 # Every id contains an underscore, so the leakage scan (R-DET-12) can tell a label from a
 # partner's own words; check.py enforces this.
 # A pattern that fits no cause gets R-RL-02's fixed text.

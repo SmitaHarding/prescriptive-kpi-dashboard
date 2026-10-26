@@ -3,9 +3,9 @@
 Run from the repository root:  python evals/check.py
 Update the README status block: python evals/check.py --update-readme
 
-The chain (N6, N17): v1 defect -> risk -> requirement -> eval case -> code -> claim.
+The chain (N26, N30): v1 defect -> risk -> requirement -> eval case -> code -> status claim.
 It checks the chain up to requirement, and the documents and data files around it.
-Checks 1-8 date from F1; 9-12 from F2a. Later checks follow R-DET-15; F3 adds the harness links.
+Checks 1-8 date from F1; 9-12 from F2a; 13 from the 26 Oct decision batch. Later checks follow R-DET-15; F3 adds the harness links.
   1. IDs in spec/registers.toml are unique and well formed.
   2. Every decision in the registers is in method/decisions.md, and vice versa.
   3. Every requirement in the registers is in method/02-requirements.md, and vice versa.
@@ -17,10 +17,12 @@ Checks 1-8 date from F1; 9-12 from F2a. Later checks follow R-DET-15; F3 adds th
      data/, evals/ and prototype/, the data files in spec/ other than registers.toml,
      CLAUDE.md and README.md) exists, and no doc other than decisions.md mentions a retired ID
      (D1-D93, SG-01-SG-11). method/archive/ is history and is not scanned.
-  7. Every entry in the Superseded section names an active decision that replaces it.
+  7. Every entry in the Superseded section names an active decision that replaces it,
+     directly or through a chain of replacements.
   8. The README status block matches the registers (it is generated, never hand-edited).
   9. Terms: no tracked .md doc uses a phrase the registers say a preferred term replaces.
-     Exact phrases only, so "a separate agent" and "reviewer agent" pass.
+     Exact phrases only, so "a separate agent" and "reviewer agent" pass. The Superseded
+     table in decisions.md keeps old wording word for word and is skipped.
  10. Numbers: no tracked .md doc states a tunable value from the data files with its unit
      (a percentage, hours, calendar or business days, weeks, FTEs). Design facts with no
      tunable twin, such as "52 weeks", pass.
@@ -32,6 +34,8 @@ Checks 1-8 date from F1; 9-12 from F2a. Later checks follow R-DET-15; F3 adds th
      every cause id has an underscore (R-DET-12), the playbook cites only listed causes, and
      no playbook type is forbidden (R-DET-07). Checks 9 and 10 must also reject R-DET-15's
      known-bad lines and pass its must-pass lines (the check tests itself).
+ 13. No stale citations: no tracked doc or known-bad file cites a superseded decision.
+     In decisions.md, the preamble and the Superseded table may name them.
 Exit code 0 when clean, 1 when anything fails.
 """
 import re
@@ -136,6 +140,11 @@ for doc in docs:
 # 7. Superseded entries name their replacement
 for row in re.finditer(r"^\| (N\d+) \|(.*)\|$", superseded_part, re.M):
     named = set(re.findall(r"Superseded by (N\d+)", row.group(2)))
+    NEXT = {d["id"]: d["superseded_by"] for d in REG.get("decision", []) if d.get("superseded_by")}
+    for n in list(named):  # follow a chain such as N10 -> N24 -> N32
+        while n in NEXT:
+            n = NEXT[n]
+            named.add(n)
     if not named & active:
         errors.append(f"{row.group(1)}: Superseded row does not name an active replacement")
 
@@ -162,10 +171,23 @@ def term_hits(text):
             if re.search(r"\b" + re.escape(old) + r"\b", text, re.I)]
 
 
+def scanned_lines(doc):
+    """A doc's lines, with decisions.md's Superseded table blanked (old wording stays as it was)."""
+    lines = doc.read_text(encoding="utf-8").splitlines()
+    if doc.name == "decisions.md":
+        inside = False
+        for i, line in enumerate(lines):
+            if line.startswith("## "):
+                inside = line.startswith("## Superseded")
+            if inside:
+                lines[i] = ""
+    return lines
+
+
 for doc in md_docs:
-    for i, line in enumerate(doc.read_text(encoding="utf-8").splitlines(), 1):
+    for i, line in enumerate(scanned_lines(doc), 1):
         for use, old in term_hits(line):
-            errors.append(f"{doc.relative_to(ROOT)}:{i}: '{old}' — use '{use}' (N6)")
+            errors.append(f"{doc.relative_to(ROOT)}:{i}: '{old}' — use '{use}' (N26)")
 
 
 # 10. Numbers: tunable values with their unit
@@ -209,7 +231,7 @@ for doc in md_docs:
     for i, line in enumerate(doc.read_text(encoding="utf-8").splitlines(), 1):
         for src in number_hits(line):
             errors.append(f"{doc.relative_to(ROOT)}:{i}: states a tunable number ({src}); "
-                          f"cite the data file instead (N6)")
+                          f"cite the data file instead (N26)")
 
 # 11. Mirrors
 n12 = re.search(r"\*\*N12 ·.*?(?=\n\*\*N\d+ ·)", log, re.S)
@@ -352,7 +374,7 @@ for c in known_bad("evidence"):
     bad = c.get("bad", [])
     for line in bad if isinstance(bad, list) else [bad]:
         if "built" in c["covers"]:
-            continue  # the claims check comes in S1 (N6)
+            continue  # the status-claims check comes in S1 (N26)
         if not (term_hits(line) or number_hits(line)):
             kb_fail("evidence", c, f"checks 9-10 do not catch: {line}")
     good = c.get("must_pass", [])
@@ -387,6 +409,21 @@ for d in REG.get("decision", []):
         errors.append(f"{d['id']}: registers say superseded by {sb}; decisions.md does not")
     if not sb and d["id"] in superseded:
         errors.append(f"{d['id']}: superseded in decisions.md but not marked in the registers")
+# 13. No stale citations of superseded decisions
+SUPERSEDED_IDS = {d["id"] for d in REG.get("decision", []) if d.get("superseded_by")}
+cited = docs + sorted((ROOT / "evals" / "known_bad").glob("*.toml"))
+for doc in cited:
+    if not doc.exists():
+        continue
+    lines = scanned_lines(doc)
+    if doc.name == "decisions.md":  # the preamble, before the first section, records history
+        first = next(i for i, line in enumerate(lines) if line.startswith("## "))
+        lines = [""] * first + lines[first:]
+    for i, line in enumerate(lines, 1):
+        for ref in re.findall(r"\b(N\d+)\b", line):
+            if ref in SUPERSEDED_IDS:
+                errors.append(f"{doc.relative_to(ROOT)}:{i}: cites superseded {ref}")
+
 if errors:
     print(f"check.py: {len(errors)} problem(s)")
     print("\n".join(f"  - {e}" for e in errors))

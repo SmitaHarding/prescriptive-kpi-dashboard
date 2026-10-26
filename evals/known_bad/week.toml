@@ -1,4 +1,4 @@
-# Known-bad inputs across the week: R-RL-06, R-RL-07, R-DET-09 to R-DET-11, R-DET-17 to R-DET-20 (N17).
+# Known-bad inputs across the week: R-RL-06, R-RL-07, R-DET-09 to R-DET-11, R-DET-17 to R-DET-20 (N30).
 # The check must fail every `bad`. Rendering and view cases run in CI; injection twins need the
 # model and run locally.
 

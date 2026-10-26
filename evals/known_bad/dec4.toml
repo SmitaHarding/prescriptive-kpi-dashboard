@@ -1,7 +1,7 @@
-# Known-bad inputs for DEC-4: R-DET-05 and R-RL-01 (N17).
+# Known-bad inputs for DEC-4: R-DET-05 and R-RL-01 (N30).
 # Each case is an output a broken build would produce. The requirement's check must fail `bad`
 # and pass `right`. A check that passes a `bad` output is itself broken.
-# Values mirror spec/capacity.toml and spec/playbook.toml for the code (N6); check.py confirms
+# Values mirror spec/capacity.toml and spec/playbook.toml for the code (N26); check.py confirms
 # they still follow from those files (check.py check 12).
 #
 # Workloads are inputs; check.py (check 12) recomputes each row's result from the capacity file.

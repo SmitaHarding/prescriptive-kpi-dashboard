@@ -1,7 +1,7 @@
 # spec/
 
 The registers and data files the checks read. Rules themselves are stated once, in
-[`../method/02-requirements.md`](../method/02-requirements.md) (N6).
+[`../method/02-requirements.md`](../method/02-requirements.md) (N26).
 
 | File | Holds |
 |---|---|

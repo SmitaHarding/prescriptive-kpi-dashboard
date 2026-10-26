@@ -1,12 +1,12 @@
-# Registers: the machine-readable half of the ID chain (N6).
-# Chain: v1 defect -> risk -> requirement -> eval case -> code -> claim. evals/check.py checks it up to
+# Registers: the machine-readable half of the ID chain (N26).
+# Chain: v1 defect -> risk -> requirement -> eval case -> code -> status claim. evals/check.py checks it up to
 # requirement today; the later links are added from F3.
 # Decision wording lives only in method/decisions.md; requirement wording only in method/02-requirements.md.
 # Earlier IDs (D1-D93, SG-01-SG-11) are retired; their mapping is in method/decisions.md.
 
 [status]
 stage = "F2a: pass/fail requirements complete; some thresholds and cases follow in F2b and F3"
-next = "a short decision change, then the spike (N22)"
+next = "the spike (N22); F2b items that do not depend on it are drafted privately meanwhile"
 built = []   # no product code yet; S1 adds the first entries
 
 # ── Decisions ──────────────────────────────────────────────────────────
@@ -21,27 +21,31 @@ id = "N3"
 id = "N4"
 [[decision]]
 id = "N5"
+superseded_by = "N25"
 [[decision]]
 id = "N6"
+superseded_by = "N26"
 [[decision]]
 id = "N7"
 [[decision]]
 id = "N8"
+superseded_by = "N27"
 [[decision]]
 id = "N9"
 superseded_by = "N23"
 [[decision]]
 id = "N10"
-superseded_by = "N24"
+superseded_by = "N32"
 [[decision]]
 id = "N11"
 [[decision]]
 id = "N12"
 [[decision]]
 id = "N13"
+superseded_by = "N28"
 [[decision]]
 id = "N14"
-safeguards = ["SG-1", "SG-2", "SG-3", "SG-4"]
+superseded_by = "N29"
 [[decision]]
 id = "N15"
 safeguards = ["SG-1", "SG-2", "SG-3", "SG-4", "SG-5"]
@@ -49,6 +53,7 @@ safeguards = ["SG-1", "SG-2", "SG-3", "SG-4", "SG-5"]
 id = "N16"
 [[decision]]
 id = "N17"
+superseded_by = "N30"
 [[decision]]
 id = "N18"
 [[decision]]
@@ -57,12 +62,31 @@ id = "N19"
 id = "N20"
 [[decision]]
 id = "N21"
+superseded_by = "N31"
 [[decision]]
 id = "N22"
 [[decision]]
 id = "N23"
 [[decision]]
 id = "N24"
+superseded_by = "N32"
+[[decision]]
+id = "N25"
+[[decision]]
+id = "N26"
+[[decision]]
+id = "N27"
+[[decision]]
+id = "N28"
+[[decision]]
+id = "N29"
+safeguards = ["SG-1", "SG-2", "SG-3", "SG-4"]
+[[decision]]
+id = "N30"
+[[decision]]
+id = "N31"
+[[decision]]
+id = "N32"
 
 # ── Risks: what the requirements control ───────────────────────────────
 # evidence = v1 defects showing the risk is real
@@ -144,7 +168,7 @@ title = "Views disagree: the ops and exec views show different figures for the s
 evidence = []
 
 # ── Requirements: wording in method/02-requirements.md ─────────────────
-# class: DET deterministic, RL red line, JDG judgement (N17); risks = risks it controls
+# class: DET deterministic, RL red line, JDG judgement (N30); risks = risks it controls
 [[requirement]]
 id = "R-DET-01"
 part = "DEC-1"
@@ -321,7 +345,7 @@ title = "Never fit the answer: before the freeze, an ambiguous scenario is rewri
 id = "SG-5"
 title = "Cost beside accuracy: model cost per week is shown next to every model-against-rules result"
 
-# ── Terms and glossary (N6): one preferred term per concept ──────────────
+# ── Terms and glossary (N26): one preferred term per concept ──────────────
 [[term]]
 use = "the model"
 replaces = ["the AI", "the agent"]
@@ -353,7 +377,7 @@ meaning = "where drafts and ticket claims are shown before anything reaches the 
 [[term]]
 use = "committed hours"
 replaces = []
-meaning = "the whole workload in R-DET-05, including every reported intervention; DEC-4 starts from it (N8)"
+meaning = "the whole workload in R-DET-05, including every reported intervention; DEC-4 starts from it (N27)"
 [[term]]
 use = "weekly hours limit"
 replaces = ["working-time limit"]
@@ -365,7 +389,7 @@ meaning = "a capacity proposal, not an intervention"
 [[term]]
 use = "expected answer"
 replaces = []
-meaning = "the right answer written into a scenario's definition (N14)"
+meaning = "the right answer written into a scenario's definition (N29)"
 [[term]]
 use = "dispute ticket"
 replaces = []
@@ -379,6 +403,14 @@ use = "case type"
 replaces = ["scenario type", "scenario kind"]
 meaning = "a kind of test scenario, such as thin evidence or prompt injection"
 [[term]]
+use = "weekly record"
+replaces = ["decision record", "audit record"]
+meaning = "the append-only file for one week: every draft, edit, decision, partner contact and stage move (N11, R-DET-09); both views and the replay are built from it"
+[[term]]
+use = "status claim"
+replaces = []
+meaning = "a document saying something is built (R-DET-15); 'claim' alone means a ticket claim (R-RL-03)"
+[[term]]
 use = "the PMO lead's review"
 replaces = ["review gate"]
 meaning = "the step where the PMO lead accepts, edits or rejects drafts on the review screen"
@@ -389,8 +421,8 @@ meaning = "a partner's objection to an invoice; each is recorded as one dispute 
 [[term]]
 use = "held-out quarter"
 replaces = []
-meaning = "weeks 40-52, sealed and run once (N13, N14); 'holdout' is its short form"
+meaning = "weeks 40-52, sealed and run once (N28, N29); 'holdout' is its short form"
 [[term]]
 use = "scenario"
 replaces = []
-meaning = "a planted pattern over several weeks, with its expected answer (N14); a test case checks one requirement against a scenario or one of its weeks"
+meaning = "a planted pattern over several weeks, with its expected answer (N29); a test case checks one requirement against a scenario or one of its weeks"

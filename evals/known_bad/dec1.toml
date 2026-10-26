@@ -1,7 +1,7 @@
-# Known-bad inputs for DEC-1: R-DET-01 to R-DET-04 and R-DET-16 (N17).
+# Known-bad inputs for DEC-1: R-DET-01 to R-DET-04 and R-DET-16 (N30).
 # Each case is an output a broken build would produce. The requirement's check must fail `bad`
 # and pass `right`. A check that passes a `bad` output is itself broken.
-# Values mirror spec/metrics.toml and spec/thresholds.toml for the code (N6); check.py (check 12)
+# Values mirror spec/metrics.toml and spec/thresholds.toml for the code (N26); check.py (check 12)
 # confirms each case still gets the colour, rounding or count it states. Weeks are invoice weeks unless stated.
 
 # ── R-DET-01 · Colour shows the level ──────────────────────────────────

@@ -1,6 +1,6 @@
-# Known-bad inputs for the evidence: R-DET-12 to R-DET-15 (N17).
+# Known-bad inputs for the evidence: R-DET-12 to R-DET-15 (N30).
 # The check must fail every `bad` and pass every `must_pass`.
-# Cause ids mirror spec/causes.toml; terms mirror spec/registers.toml (N6).
+# Cause ids mirror spec/causes.toml; terms mirror spec/registers.toml (N26).
 
 # ── R-DET-12 · No answer in the world ──────────────────────────────────
 [[case]]
@@ -63,7 +63,7 @@ bad = [
 ]
 must_pass = [
   "A separate agent writes the held-out quarter.",
-  "A reviewer agent on a different model reads each scenario.",
+  "A reviewer agent on a different LLM reads each scenario.",
 ]
 
 [[case]]
@@ -71,7 +71,7 @@ requirement = "R-DET-15"
 covers = "tunable numbers appear only in data files"
 runs_in = "CI"
 bad = "method/01-frame.md: 'the utilisation ceiling is 90%'"
-must_pass = "method/decisions.md: '1,500 partners' (a design fact, N6)"
+must_pass = "method/decisions.md: '1,500 partners' (a design fact, N26)"
 
 [[case]]
 requirement = "R-DET-15"

@@ -1,8 +1,8 @@
-# Known-bad inputs for the DEC-2 red lines: R-RL-02 to R-RL-04 (N17).
+# Known-bad inputs for the DEC-2 red lines: R-RL-02 to R-RL-04 (N30).
 # Each case is a draft that a broken build or a misbehaving model could produce. The check must fail
 # every `bad` and pass `right`. A `must_pass` case guards the other way: a valid answer the check
 # must not reject. These checks apply to the rules version and the model version alike (N15).
-# Cause ids mirror spec/causes.toml (N6). Evidence-type names are placeholders until F2b fixes the
+# Cause ids mirror spec/causes.toml (N26). Evidence-type names are placeholders until F2b fixes the
 # list (R-RL-04); the cases are renamed then, not changed. Whether a pattern fits a listed cause
 # is judged against the expected answer (R-JDG-01), so it has no known-bad case here.
 
@@ -14,7 +14,7 @@ right = "suspected_cause = one id from spec/causes.toml"
 bad = [
   { suspected_cause = "rate_card_error",                              why = "not on the list" },
   { suspected_cause = "Wrong price per unit",                         why = "the name, not the id" },
-  { suspected_cause = "unit_price; root cause: rate card migration",  why = "names a root cause (N8)" },
+  { suspected_cause = "unit_price; root cause: rate card migration",  why = "names a root cause (N27)" },
 ]
 
 [[case]]
