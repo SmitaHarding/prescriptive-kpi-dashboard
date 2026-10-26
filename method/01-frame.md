@@ -53,7 +53,7 @@ The weekly order of the four parts is in N27.
 ## Issue lifecycle
 
 People move an issue up to Contained, where the model's part ends. Later stages
-are simulated (N23). Code marks an issue overdue when it stays in a stage too long
+are simulated and labelled so (N23, R-DET-22). Code marks an issue overdue when it stays in a stage too long
 (R-DET-10).
 
 ## Who does what

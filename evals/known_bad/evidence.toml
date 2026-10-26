@@ -75,7 +75,33 @@ must_pass = "method/decisions.md: '1,500 partners' (a design fact, N26)"
 
 [[case]]
 requirement = "R-DET-15"
+covers = "every data file says its figures are assumptions"
+runs_in = "CI"
+check = "assumptions"
+bad = "# Capacity file. Owned by the PMO lead."
+must_pass = "# Every figure is an assumption from operating experience (N7)."
+
+[[case]]
+requirement = "R-DET-15"
+covers = "every mention of validation cites N20"
+runs_in = "CI"
+check = "validation"
+bad = ["The prototype has been validated.", "Results are validated against real operations."]
+must_pass = "No outside person validates the prototype; this is a stated limitation (N20)."
+
+[[case]]
+requirement = "R-DET-15"
 covers = "nothing is called built unless the registers mark it built (from S1)"
 runs_in = "CI"
 registers_built = []
 bad = "README.md: 'The capacity check is built.'"
+
+# ── R-DET-21 · Nothing private in tracked files ─────────────────────
+# The real deny-list is private (_working/); this case uses a made-up name.
+[[case]]
+requirement = "R-DET-21"
+covers = "a name on the deny-list fails; the author's name passes"
+runs_in = "local"
+test_list = ["Zorblax Freight"]
+bad = ["Built while at Zorblax Freight.", "zorblax freight's dispute SOP"]
+must_pass = "Smita Harding, the author"

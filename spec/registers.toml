@@ -11,10 +11,13 @@ built = []   # no product code yet; S1 adds the first entries
 
 # ── Decisions ──────────────────────────────────────────────────────────
 # safeguards = safeguards the decision brings into force
+# process = true: enforced by CLAUDE.md, the gates or check.py's structure checks, not by a requirement
 [[decision]]
 id = "N1"
+process = true
 [[decision]]
 id = "N2"
+process = true
 [[decision]]
 id = "N3"
 [[decision]]
@@ -58,6 +61,7 @@ superseded_by = "N30"
 id = "N18"
 [[decision]]
 id = "N19"
+process = true
 [[decision]]
 id = "N20"
 [[decision]]
@@ -65,6 +69,7 @@ id = "N21"
 superseded_by = "N31"
 [[decision]]
 id = "N22"
+process = true
 [[decision]]
 id = "N23"
 [[decision]]
@@ -72,6 +77,7 @@ id = "N24"
 superseded_by = "N32"
 [[decision]]
 id = "N25"
+process = true
 [[decision]]
 id = "N26"
 [[decision]]
@@ -83,6 +89,7 @@ id = "N29"
 safeguards = ["SG-1", "SG-2", "SG-3", "SG-4"]
 [[decision]]
 id = "N30"
+process = true
 [[decision]]
 id = "N31"
 [[decision]]
@@ -166,129 +173,173 @@ evidence = []
 id = "RK-19"
 title = "Views disagree: the ops and exec views show different figures for the same week, or leave out what a role must act on"
 evidence = []
+[[risk]]
+id = "RK-20"
+title = "Privacy leak: a tracked file names the employer, an internal tool or a person other than the author"
+evidence = []
 
 # ── Requirements: wording in method/02-requirements.md ─────────────────
-# class: DET deterministic, RL red line, JDG judgement (N30); risks = risks it controls
+# class: DET deterministic, RL red line, JDG judgement (N30); risks = risks it controls; decisions = decisions it carries out
 [[requirement]]
 id = "R-DET-01"
 part = "DEC-1"
 risks = ["RK-01"]
+decisions = ["N27", "N32"]
 [[requirement]]
 id = "R-DET-02"
 part = "DEC-1"
 risks = ["RK-01"]
+decisions = ["N27", "N28"]
 [[requirement]]
 id = "R-DET-03"
 part = "DEC-1"
 risks = ["RK-01"]
+decisions = ["N23", "N28"]
 [[requirement]]
 id = "R-DET-04"
 part = "DEC-1"
 risks = ["RK-01"]
+decisions = ["N27"]
 [[requirement]]
 id = "R-DET-05"
 part = "DEC-4"
 risks = ["RK-05"]
+decisions = ["N27", "N32"]
 [[requirement]]
 id = "R-RL-01"
 part = "DEC-4"
 risks = ["RK-05"]
+decisions = ["N27"]
 [[requirement]]
 id = "R-JDG-01"
 part = "DEC-2"
 risks = ["RK-02", "RK-15"]
+decisions = ["N15", "N27"]
 [[requirement]]
 id = "R-RL-02"
 part = "DEC-2"
 risks = ["RK-03"]
+decisions = ["N27", "N28"]
 [[requirement]]
 id = "R-RL-03"
 part = "DEC-2"
 risks = ["RK-03"]
+decisions = ["N12", "N27"]
 [[requirement]]
 id = "R-RL-04"
 part = "DEC-2"
 risks = ["RK-04"]
+decisions = ["N27"]
 [[requirement]]
 id = "R-JDG-02"
 part = "DEC-2"
 risks = ["RK-04"]
+decisions = ["N27"]
 [[requirement]]
 id = "R-RL-05"
 part = "DEC-3"
 risks = ["RK-07"]
+decisions = ["N16", "N27"]
 [[requirement]]
 id = "R-DET-06"
 part = "DEC-3"
 risks = ["RK-06"]
+decisions = ["N27"]
 [[requirement]]
 id = "R-DET-07"
 part = "DEC-3"
 risks = ["RK-12"]
+decisions = ["N12", "N27"]
 [[requirement]]
 id = "R-JDG-03"
 part = "DEC-3"
 risks = ["RK-06", "RK-12"]
+decisions = ["N27"]
 [[requirement]]
 id = "R-DET-08"
 part = "DEC-3"
 risks = ["RK-03", "RK-04", "RK-05", "RK-06", "RK-07"]
+decisions = ["N27"]
 [[requirement]]
 id = "R-RL-06"
 part = "week"
 risks = ["RK-08"]
+decisions = ["N11", "N27"]
 [[requirement]]
 id = "R-RL-07"
 part = "week"
 risks = ["RK-09"]
+decisions = ["N27"]
 [[requirement]]
 id = "R-DET-09"
 part = "week"
 risks = ["RK-10"]
+decisions = ["N11", "N27", "N31", "N32"]
 [[requirement]]
 id = "R-DET-10"
 part = "week"
 risks = ["RK-11"]
+decisions = ["N23", "N27"]
 [[requirement]]
 id = "R-DET-11"
 part = "week"
 risks = ["RK-02", "RK-09"]
+decisions = ["N23", "N27"]
 [[requirement]]
 id = "R-DET-12"
 part = "evidence"
 risks = ["RK-13"]
+decisions = ["N12", "N29"]
 [[requirement]]
 id = "R-DET-13"
 part = "evidence"
 risks = ["RK-14"]
+decisions = ["N15", "N28", "N29"]
 [[requirement]]
 id = "R-DET-14"
 part = "evidence"
 risks = ["RK-16"]
+decisions = ["N18"]
 [[requirement]]
 id = "R-DET-15"
 part = "evidence"
 risks = ["RK-17"]
+decisions = ["N3", "N7", "N20", "N26"]
 [[requirement]]
 id = "R-DET-16"
 part = "DEC-1"
 risks = ["RK-18"]
+decisions = ["N27", "N32"]
 [[requirement]]
 id = "R-DET-17"
 part = "week"
 risks = ["RK-09", "RK-10"]
+decisions = ["N11", "N32"]
 [[requirement]]
 id = "R-DET-18"
 part = "week"
 risks = ["RK-10"]
+decisions = ["N16", "N32"]
 [[requirement]]
 id = "R-DET-19"
 part = "week"
 risks = ["RK-19"]
+decisions = ["N27", "N32"]
 [[requirement]]
 id = "R-DET-20"
 part = "week"
 risks = ["RK-08"]
+decisions = ["N27"]
+[[requirement]]
+id = "R-DET-21"
+part = "evidence"
+risks = ["RK-20"]
+decisions = ["N4"]
+[[requirement]]
+id = "R-DET-22"
+part = "week"
+risks = ["RK-17"]
+decisions = ["N12", "N16", "N23"]
 
 # ── v1 defects (the structural ones; full register in the v1 review, published in W) ─────
 [[v1_defect]]

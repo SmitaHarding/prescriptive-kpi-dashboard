@@ -5,7 +5,8 @@ Update the README status block: python evals/check.py --update-readme
 
 The chain (N26, N30): v1 defect -> risk -> requirement -> eval case -> code -> status claim.
 It checks the chain up to requirement, and the documents and data files around it.
-Checks 1-8 date from F1; 9-12 from F2a; 13 from the 26 Oct decision batch. Later checks follow R-DET-15; F3 adds the harness links.
+Checks 1-8 date from F1; 9-12 from F2a; 13 from the 26 Oct decision batch; 14-17 from the
+26 Oct gap fixes. Later checks follow R-DET-15; F3 adds the harness links.
   1. IDs in spec/registers.toml are unique and well formed.
   2. Every decision in the registers is in method/decisions.md, and vice versa.
   3. Every requirement in the registers is in method/02-requirements.md, and vice versa.
@@ -32,10 +33,18 @@ Checks 1-8 date from F1; 9-12 from F2a; 13 from the 26 Oct decision batch. Later
      rounding, capacity results, effort ranges, due weeks, forbidden types, the stuck limit,
      the trend window, the confidence minimum and day counts. Data-file lists hold together:
      every cause id has an underscore (R-DET-12), the playbook cites only listed causes, and
-     no playbook type is forbidden (R-DET-07). Checks 9 and 10 must also reject R-DET-15's
-     known-bad lines and pass its must-pass lines (the check tests itself).
+     no playbook type is forbidden (R-DET-07). Checks 9, 10, 14, 15 and 16 must also reject
+     R-DET-15's and R-DET-21's known-bad lines and pass their must-pass lines (the checks
+     test themselves).
  13. No stale citations: no tracked doc or known-bad file cites a superseded decision.
      In decisions.md, the preamble and the Superseded table may name them.
+ 14. Assumptions: every data file in spec/ says in its first lines that its figures are
+     assumptions, citing N7.
+ 15. Validation: every tracked .md paragraph or table row that mentions validation cites N20.
+ 16. Privacy: no tracked file holds a name from the private deny-list
+     (_working/privacy-denylist.txt). Skipped, with a note, when the list is absent (CI).
+ 17. Decision links: every requirement names the active decisions it carries out; every
+     active decision is named by a requirement or marked process = true.
 Exit code 0 when clean, 1 when anything fails.
 """
 import re
@@ -368,19 +377,102 @@ for c in known_bad("week"):
         if day(issue["contained"]) - day(issue["detected"]) != c["right"]:
             kb_fail("week", c, "time to contain does not match the dates")
 
+# 14-16. Assumption labels, validation mentions, privacy (R-DET-15, R-DET-21)
+def assumptions_ok(text):
+    top = "\n".join(text.splitlines()[:6])
+    return "assumption" in top.lower() and "N7" in top
+
+
+def validation_bad(unit):
+    return bool(re.search(r"validat", unit, re.I)) and "N20" not in unit
+
+
+def privacy_hits(text, terms):
+    return [t for t in terms if re.search(r"\b" + re.escape(t) + r"\b", text, re.I)]
+
+
+def units(lines):
+    """Paragraphs, with each table row as its own unit; headings are skipped."""
+    out, cur = [], []
+    for i, line in enumerate(lines, 1):
+        if line.startswith("#"):
+            pass
+        elif line.startswith("|"):
+            out.append((i, line))
+        elif line.strip():
+            cur.append((i, line))
+            continue
+        if cur:
+            out.append((cur[0][0], " ".join(x for _, x in cur)))
+            cur = []
+    if cur:
+        out.append((cur[0][0], " ".join(x for _, x in cur)))
+    return out
+
+
+for f in sorted((ROOT / "spec").glob("*.toml")):
+    if f.name != "registers.toml" and not assumptions_ok(f.read_text(encoding="utf-8")):
+        errors.append(f"spec/{f.name}: header does not say its figures are assumptions (N7)")
+for doc in md_docs:
+    for i, unit in units(scanned_lines(doc)):
+        if validation_bad(unit):
+            errors.append(f"{doc.relative_to(ROOT)}:{i}: mentions validation without citing N20")
+
+notes = []
+DENY = ROOT / "_working" / "privacy-denylist.txt"
+if DENY.exists():
+    terms = [t.strip() for t in DENY.read_text(encoding="utf-8").splitlines()
+             if t.strip() and not t.startswith("#")]
+    for f in sorted(ROOT.rglob("*")):
+        rel = f.relative_to(ROOT)
+        if not f.is_file() or rel.parts[0] in (".git", "_working") or "__pycache__" in rel.parts:
+            continue
+        try:
+            text = f.read_text(encoding="utf-8")
+        except (UnicodeDecodeError, OSError):
+            continue
+        for t in privacy_hits(text, terms):
+            errors.append(f"{rel}: holds a name from the private deny-list (R-DET-21)")
+    notes.append(f"privacy check ran against {len(terms)} private term(s)")
+else:
+    notes.append("privacy check skipped: no private deny-list (R-DET-21)")
+
+KB_CHECK = {
+    None: (lambda line: bool(term_hits(line) or number_hits(line)), "checks 9-10"),
+    "assumptions": (lambda line: not assumptions_ok(line), "check 14"),
+    "validation": (validation_bad, "check 15"),
+}
 for c in known_bad("evidence"):
-    if c["requirement"] != "R-DET-15":
+    if c["requirement"] == "R-DET-21":
+        flags, name = (lambda line, c=c: bool(privacy_hits(line, c["test_list"]))), "check 16"
+    elif c["requirement"] == "R-DET-15" and "built" not in c["covers"]:  # status claims: S1 (N26)
+        flags, name = KB_CHECK[c.get("check")]
+    else:
         continue
     bad = c.get("bad", [])
     for line in bad if isinstance(bad, list) else [bad]:
-        if "built" in c["covers"]:
-            continue  # the status-claims check comes in S1 (N26)
-        if not (term_hits(line) or number_hits(line)):
-            kb_fail("evidence", c, f"checks 9-10 do not catch: {line}")
+        if not flags(line):
+            kb_fail("evidence", c, f"{name} does not catch: {line}")
     good = c.get("must_pass", [])
     for line in good if isinstance(good, list) else [good]:
-        if term_hits(line) or number_hits(line):
-            kb_fail("evidence", c, f"checks 9-10 wrongly reject: {line}")
+        if flags(line):
+            kb_fail("evidence", c, f"{name} wrongly rejects: {line}")
+
+# 17. Decision links
+ACTIVE = {d["id"] for d in REG.get("decision", []) if not d.get("superseded_by")}
+linked = set()
+for r in REG.get("requirement", []):
+    if not r.get("decisions"):
+        errors.append(f"{r['id']}: names no decision it carries out")
+    for d in r.get("decisions", []):
+        if d not in ACTIVE:
+            errors.append(f"{r['id']}.decisions: {d} is not an active decision")
+        linked.add(d)
+for d in REG.get("decision", []):
+    if d.get("process") and d.get("superseded_by"):
+        errors.append(f"{d['id']}: superseded but marked process")
+    if d["id"] in ACTIVE and d["id"] not in linked and not d.get("process"):
+        errors.append(f"{d['id']}: no requirement carries it out and it is not marked process")
 
 
 # 8. README status block
@@ -432,3 +524,5 @@ n_sup = sum(1 for d in REG.get("decision", []) if d.get("superseded_by"))
 print(f"check.py: clean — {len(ids['decision']) - n_sup} active decisions ({n_sup} superseded), {len(ids['risk'])} risks, "
       f"{len(ids['requirement'])} requirements, {len(ids['v1_defect'])} v1 defects, "
       f"{len(ids['safeguard'])} safeguards")
+for n in notes:
+    print(f"  note: {n}")

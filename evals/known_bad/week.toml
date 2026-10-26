@@ -178,10 +178,21 @@ must_pass = "an issue the PMO lead opened by hand in week 30, first dispute in w
 requirement = "R-DET-18"
 covers = "measured, labelled, never forecast"
 runs_in = "CI"
+bad = "time to contain projected for next week"
+
+# ── R-DET-22 · Simulated is labelled ─────────────────────────────────
+[[case]]
+requirement = "R-DET-22"
+covers = "scripted stages, value measures and the data say they are simulated"
+runs_in = "CI"
 bad = [
+  "week 34: issue moved to Corrected on the board with no 'simulated outcome' label",
+  "the weekly update lists a move to Prevented without 'simulated outcome'",
+  "the record logs a scripted move to Closed without its label",
   "a value measure shown without the 'simulated' label",
-  "time to contain projected for next week",
+  "a replayed week without the synthetic-data label",
 ]
+must_pass = "the PMO lead moves an issue to Contained in week 31: no label"
 
 # ── R-DET-19 · Two views, one record ───────────────────────────────────
 [[case]]

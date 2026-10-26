@@ -405,7 +405,7 @@ record must pass.
 *Cases:* every week.
 
 **R-DET-18 · Value measures.** Code computes the N16 measures from the record, after
-people act, and labels them "simulated" in the prototype.
+people act. They are labelled as R-DET-22 sets.
 - Adoption: the share of reported interventions, due by the review week, that were
   actioned by their due week. Rejected and deferred drafts are left out.
 - Time to contain: calendar days from an issue's Detected date to its Contained date,
@@ -423,8 +423,7 @@ They are shown in the exec view and the weekly update, and are never forecast
 *Known-bad:* [`../evals/known_bad/week.toml`](../evals/known_bad/week.toml): a late action
 counted on time; a rejected draft in the adoption base; time to contain in business
 days or from the wrong date; an issue formed from tickets counted as caught early; a
-contact after the partner's dispute counted as early; a measure without the
-"simulated" label; a forecast measure.
+contact after the partner's dispute counted as early; a forecast measure.
 *Cases:* issue opened by hand, happy path.
 
 **R-DET-19 · Two views, one record.** The ops view and the exec view are built from the
@@ -442,6 +441,20 @@ the same week.
 that differs between the views; an extra-FTE proposal missing from the exec view; the
 stuck-invoice list or partner contacts missing from the ops view; a view built from
 anything but the week's record. The exec view leaving out intervention steps must pass.
+*Cases:* every week.
+
+**R-DET-22 · Simulated is labelled.** Whatever is simulated says so wherever it is
+shown. Each stage move after Contained is labelled "simulated outcome" in the record,
+on the board and in the weekly update (N23). The value measures are labelled
+"simulated" (N16). The data, both views and the replay are labelled synthetic (N12).
+*Risks:* RK-17. *Check:* record and view check. *Runs in:* CI.
+*Threshold:* 100% (N30).
+*Failure example:* the board shows an issue moving to Corrected with no "simulated
+outcome" label, as if people had corrected it.
+*Known-bad:* [`../evals/known_bad/week.toml`](../evals/known_bad/week.toml): a scripted
+stage move without its label, in the record, on the board or in the weekly update; a
+value measure without "simulated"; a view or replayed week without the synthetic
+label. A move up to Contained, made by people, must pass without the label.
 *Cases:* every week.
 
 ## The evidence: harness and documents
@@ -490,16 +503,31 @@ a higher total. Drift-limit cases follow in F3.
 
 **R-DET-15 · Documents match what exists.** A document calls something built only
 when the registers mark it built and its requirements pass. Tunable numbers appear
-only in data files (N26). Preferred terms are used.
-*Risks:* RK-17. *Check:* `check.py`, added in stages: terms and numbers in F2a, review
-stamps in F3, status claims in S1 (N26). *Runs in:* CI.
+only in data files (N26). Preferred terms are used. Every data file says in its header
+that its figures are assumptions (N7). Every mention of validation cites N20, which
+sets its limit.
+*Risks:* RK-17. *Check:* `check.py`, added in stages: terms and numbers in F2a, assumption
+labels and validation mentions after it, review stamps in F3, status claims in S1 (N26). *Runs in:* CI.
 *Threshold:* 100% (N30); the terms and `built` in the registers.
 *Failure example:* the README says the capacity check is built while the registers
 mark nothing built.
 *Known-bad:* [`../evals/known_bad/evidence.toml`](../evals/known_bad/evidence.toml): a replaced
-term; a tunable number in a method document; a claim that something is built. "A
-separate agent", "reviewer agent" and a design fact in the decisions must pass.
+term; a tunable number in a method document; a status claim that something is built;
+a data file without its assumptions line; a mention of validation without N20. "A
+separate agent", "reviewer agent", a design fact in the decisions and a mention of
+validation that cites N20 must pass.
 *Cases:* every tracked document.
+
+**R-DET-21 · Nothing private in tracked files.** No tracked file names the employer, an
+internal tool or a person other than the author (N4). `check.py` scans every tracked
+file, the archive included, against a deny-list kept private in `_working/`. Without
+the list, the check is skipped and says so. The gate review also checks privacy.
+*Risks:* RK-20. *Check:* deny-list scan. *Runs in:* local (the list is private).
+*Threshold:* 100% (N30).
+*Failure example:* a known-bad case quotes the name of the employer's internal tool.
+*Known-bad:* [`../evals/known_bad/evidence.toml`](../evals/known_bad/evidence.toml): a
+made-up name on a test list, in a sentence. The author's name must pass.
+*Cases:* every tracked file.
 
 ## Data files
 
