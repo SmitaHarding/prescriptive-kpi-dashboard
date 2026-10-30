@@ -1,50 +1,50 @@
-"""Traceability check: no model, no network.
+"""Traceability and document check: no model, no network.
 
 Run from the repository root:  python evals/check.py
 Update the README status block: python evals/check.py --update-readme
 
-The chain (N26, N30): v1 defect -> risk -> requirement -> eval case -> code -> status claim.
-It checks the chain up to requirement, and the documents and data files around it.
-Checks 1-8 date from F1; 9-12 from F2a; 13 from the 26 Oct decision batch; 14-17 from the
-26 Oct gap fixes. Later checks follow R-DET-15; F3 adds the harness links.
-  1. IDs in spec/registers.toml are unique and well formed.
-  2. Every decision in the registers is in method/decisions.md, and vice versa.
-  3. Every requirement in the registers is in method/02-requirements.md, and vice versa.
-  4. Every link points to an ID that exists (risk evidence, requirement risks,
-     decision safeguards).
-  5. Coverage: every v1 defect is evidence for a risk; every risk is controlled by a
-     requirement; every requirement controls a risk; every safeguard is in force.
-  6. Every ID mentioned in the tracked docs (top-level .md files in method/, spec/,
-     data/, evals/ and prototype/, the data files in spec/ other than registers.toml,
-     CLAUDE.md and README.md) exists, and no doc other than decisions.md mentions a retired ID
-     (D1-D93, SG-01-SG-11). method/archive/ is history and is not scanned.
-  7. Every entry in the Superseded section names an active decision that replaces it,
-     directly or through a chain of replacements.
-  8. The README status block matches the registers (it is generated, never hand-edited).
-  9. Terms: no tracked .md doc uses a phrase the registers say a preferred term replaces.
-     Exact phrases only, so "a separate agent" and "reviewer agent" pass. The Superseded
-     table in decisions.md keeps old wording word for word and is skipped.
- 10. Numbers: no tracked .md doc states a tunable value from the data files with its unit
-     (a percentage, hours, calendar or business days, weeks, FTEs). Design facts with no
-     tunable twin, such as "52 weeks", pass.
- 11. Mirrors: a data file that mirrors a design fact matches it. Today: the dispute window
-     in spec/metrics.toml matches N12.
- 12. Known-bad inputs (evals/known_bad/) still sit where the data files put them: colours,
-     rounding, capacity results, effort ranges, due weeks, forbidden types, the stuck limit,
-     the trend window, the confidence minimum and day counts. Data-file lists hold together:
-     every cause id has an underscore (R-DET-12), the playbook cites only listed causes, and
-     no playbook type is forbidden (R-DET-07). Checks 9, 10, 14, 15 and 16 must also reject
-     R-DET-15's and R-DET-21's known-bad lines and pass their must-pass lines (the checks
-     test themselves).
- 13. No stale citations: no tracked doc or known-bad file cites a superseded decision.
-     In decisions.md, the preamble and the Superseded table may name them.
- 14. Assumptions: every data file in spec/ says in its first lines that its figures are
-     assumptions, citing N7.
- 15. Validation: every tracked .md paragraph or table row that mentions validation cites N20.
- 16. Privacy: no tracked file holds a name from the private deny-list
-     (_working/privacy-denylist.txt). Skipped, with a note, when the list is absent (CI).
- 17. Decision links: every requirement names the active decisions it carries out; every
-     active decision is named by a requirement or marked process = true.
+The chain ([One home per fact], [Requirements and evals]): v1 defect -> risk -> requirement
+-> eval case -> code -> status claim. It checks the chain up to requirement, and the documents
+and data files around it. Everything is cited by name ([Names, not codes]); each registers id
+is the entry's name as a GitHub heading anchor. Later checks follow [Documents match what
+exists]; the Harness phase adds the harness links.
+
+  well-formed names  Ids in spec/registers.toml are anchors (or V1-nn for v1 defects), unique
+                     within their kind; names are unique across decisions, requirements, risks
+                     and safeguards.
+  decisions match    Every decision in the registers is a heading in method/decisions.md,
+                     and vice versa.
+  requirements match Every requirement in the registers is a heading in
+                     method/02-requirements.md, with the class label the registers give, in the
+                     section its `question` names; the Red lines list holds exactly the red lines.
+  links resolve      Every link in the registers points to an entry that exists.
+  coverage           Every v1 defect is evidence for a risk; every risk is controlled by a
+                     requirement; every requirement controls a risk; every safeguard is in force.
+  citations          In the tracked docs, data files and known-bad files: every link to a
+                     heading resolves, every [Name] is a decision, requirement or Monday question, every relative
+                     link points to a file that exists, and no old code (N12, R-DET-05, DEC-2,
+                     F2b...) appears. method/archive/ is history and is not scanned.
+  archive chain      Every name in method/archive/code-map.md's decision and requirement tables
+                     is a current heading.
+  status block       The README status block matches the registers (generated, never hand-edited).
+  terms              No tracked .md doc uses a phrase the registers say a preferred term
+                     replaces. Exact phrases only, so "a separate agent" passes.
+  numbers            No tracked .md doc states a tunable value from the data files with its
+                     unit. Design facts with no tunable twin, such as "52 weeks", pass.
+  mirrors            A data file that mirrors a design fact matches it. Today: the dispute
+                     window in spec/metrics.toml matches [Simulated world].
+  known-bad          Known-bad inputs (evals/known_bad/) still sit where the data files put
+                     them; data-file lists hold together; each case names a registered
+                     requirement; the document checks reject their known-bad lines and pass
+                     their must-pass lines (the checks test themselves).
+  assumption labels  Every data file in spec/ says in its first lines that its figures are
+                     assumptions, citing [Assumptions].
+  validation         Every tracked .md paragraph or table row that mentions validation cites
+                     [No outside validation].
+  privacy            No tracked file holds a name from the private deny-list
+                     (_working/privacy-denylist.txt). Skipped, with a note, when it is absent.
+  decision links     Every requirement names the decisions it carries out; every decision is
+                     named by a requirement or marked process = true.
 Exit code 0 when clean, 1 when anything fails.
 """
 import re
@@ -58,107 +58,187 @@ except ModuleNotFoundError:  # pragma: no cover
 
 ROOT = Path(__file__).resolve().parent.parent
 REG = tomllib.loads((ROOT / "spec" / "registers.toml").read_text(encoding="utf-8"))
-PATTERN = {
-    "decision": r"N\d+",
-    "risk": r"RK-\d{2}",
-    "requirement": r"R-(?:DET|RL|JDG)-\d{2}",
-    "v1_defect": r"V1-\d{2}",
-    "safeguard": r"SG-\d",
-}
-MENTION = re.compile(r"\b(V1-\d{2}|SG-\d{1,2}|RK-\d{2}|R-(?:DET|RL|JDG)-\d{2}|N\d+|D\d+)\b")
-RETIRED = re.compile(r"^(D\d+|SG-\d{2})$")
+SLUG = r"[a-z0-9]+(?:-[a-z0-9]+)*"
+PATTERN = {"decision": SLUG, "risk": SLUG, "requirement": SLUG, "safeguard": SLUG,
+           "v1_defect": r"V1-\d{2}"}
+OLD_CODE = re.compile(r"\b(N\d{1,2}|R-(?:DET|RL|JDG)-\d{2}|RK-\d{2}|SG-\d{1,2}|DEC-\d|D\d{1,2}"
+                      r"|F1|F2a|F2b|F3|S[1-4])\b")
+LINK = re.compile(r"\[([^\]]+)\]\(([^)\s]+)\)")
+NAME = re.compile(r"\[([A-Z][^\[\]\"]*?)\](?!\()")
+CODE_SPAN = re.compile(r"`[^`]*`")
 BLOCK = re.compile(r"(<!-- gen:status -->\n)(.*?)(<!-- /gen:status -->)", re.S)
+CLASS_LABEL = {"pass/fail": "Pass/fail", "red line": "Red line", "judgement": "Judgement"}
 errors = []
 
-# 1. IDs
-ids = {}
+
+def err(check, msg):
+    errors.append(f"[{check}] {msg}")
+
+
+def slugify(heading):
+    """GitHub's heading anchor: lower case, punctuation dropped, spaces to hyphens."""
+    h = re.sub(r"[^\w\- ]", "", heading.strip().lower())
+    return h.replace(" ", "-")
+
+
+def headings(path, level=None):
+    """Anchors of a markdown file's headings (optionally of one level), in order."""
+    out = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        m = re.match(r"^(#{1,6}) (.+?)\s*$", line)
+        if m and (level is None or len(m.group(1)) == level):
+            out.append((slugify(m.group(2)), m.group(2), len(m.group(1))))
+    return out
+
+
+DECISIONS_MD = ROOT / "method" / "decisions.md"
+REQS_MD = ROOT / "method" / "02-requirements.md"
+
+# well-formed names
+ids, names = {}, {}
 for kind, pat in PATTERN.items():
     seen = [e["id"] for e in REG.get(kind, [])]
     for i in seen:
         if not re.fullmatch(pat, i):
-            errors.append(f"{kind} {i}: malformed ID")
+            err("well-formed names", f"{kind} {i}: not a well-formed id")
     for i in {x for x in seen if seen.count(x) > 1}:
-        errors.append(f"{kind} {i}: duplicate ID")
+        err("well-formed names", f"{kind} {i}: duplicate")
     ids[kind] = set(seen)
-known = set().union(*ids.values())
+for kind in ("decision", "requirement", "risk", "safeguard"):
+    for i in ids[kind]:
+        if i in names:
+            err("well-formed names", f"{i}: used by both a {names[i]} and a {kind}")
+        names[i] = kind
 
-# 2. Decisions
-log = (ROOT / "method" / "decisions.md").read_text(encoding="utf-8")
-head, _, rest = log.partition("\n## Superseded")
-superseded_part, _, mapping = rest.partition("\n## Mapping")
-active = set(re.findall(r"^(?:\| |\*\*)(N\d+)(?: \||\s·)", head, re.M))
-superseded = set(re.findall(r"^\| (N\d+) \|", superseded_part, re.M))
-for d in sorted(ids["decision"] - active - superseded):
-    errors.append(f"{d}: in registers but not in decisions.md")
-for d in sorted((active | superseded) - ids["decision"]):
-    errors.append(f"{d}: in decisions.md but not in registers")
-retired = set(re.findall(r"^\| (D\d+|SG-\d{2}) \|", mapping, re.M))
+# decisions match
+dec_heads = {s: t for s, t, lvl in headings(DECISIONS_MD, 3)}
+for d in sorted(ids["decision"] - set(dec_heads)):
+    err("decisions match", f"{d}: in registers but not a heading in decisions.md")
+for d in sorted(set(dec_heads) - ids["decision"]):
+    err("decisions match", f"{d}: a heading in decisions.md but not in registers")
 
-# 3. Requirements
-reqs = (ROOT / "method" / "02-requirements.md").read_text(encoding="utf-8")
-written = set(re.findall(r"^\*\*(R-(?:DET|RL|JDG)-\d{2}) ·", reqs, re.M))
-for r in sorted(ids["requirement"] - written):
-    errors.append(f"{r}: in registers but not in 02-requirements.md")
-for r in sorted(written - ids["requirement"]):
-    errors.append(f"{r}: in 02-requirements.md but not in registers")
+# requirements match
+section, req_heads, red_list = None, {}, set()
+lines = REQS_MD.read_text(encoding="utf-8").splitlines()
+for i, line in enumerate(lines):
+    if line.startswith("## "):
+        section = slugify(line[3:])
+    elif line.startswith("### "):
+        label = next((x for x in lines[i + 1:i + 4] if x.strip()), "")
+        m = re.match(r"^\*([A-Za-z/ ]+?)(?: \(hypothesis\))?\.\*", label)
+        req_heads[slugify(line[4:])] = (section, m.group(1) if m else None)
+    elif section == "red-lines":
+        red_list |= {a.lstrip("#") for _, a in LINK.findall(line)}
+for r in REG.get("requirement", []):
+    if r["id"] not in req_heads:
+        err("requirements match", f"{r['id']}: in registers but not a heading in 02-requirements.md")
+        continue
+    sec, label = req_heads[r["id"]]
+    if label != CLASS_LABEL.get(r.get("class")):
+        err("requirements match", f"{r['id']}: label '{label}' but the registers say '{r.get('class')}'")
+    if sec != r.get("question"):
+        err("requirements match", f"{r['id']}: under section '{sec}' but the registers say '{r.get('question')}'")
+for h in sorted(set(req_heads) - ids["requirement"]):
+    err("requirements match", f"{h}: a heading in 02-requirements.md but not in registers")
+reds = {r["id"] for r in REG.get("requirement", []) if r.get("class") == "red line"}
+for x in sorted(reds ^ red_list):
+    err("requirements match", f"{x}: the Red lines list and the registers disagree")
 
-# 4. Links and 5. coverage
+# links resolve, coverage
 evidenced, controlled, in_force = set(), set(), set()
 for k in REG.get("risk", []):
     for v in k.get("evidence", []):
         if v not in ids["v1_defect"]:
-            errors.append(f"{k['id']}.evidence: unknown ID {v}")
+            err("links resolve", f"{k['id']}.evidence: unknown {v}")
         evidenced.add(v)
 for r in REG.get("requirement", []):
     if not r.get("risks"):
-        errors.append(f"{r['id']}: controls no risk")
+        err("coverage", f"{r['id']}: controls no risk")
     for k in r.get("risks", []):
         if k not in ids["risk"]:
-            errors.append(f"{r['id']}.risks: unknown ID {k}")
+            err("links resolve", f"{r['id']}.risks: unknown {k}")
         controlled.add(k)
 for d in REG.get("decision", []):
     for sg in d.get("safeguards", []):
         if sg not in ids["safeguard"]:
-            errors.append(f"{d['id']}.safeguards: unknown ID {sg}")
+            err("links resolve", f"{d['id']}.safeguards: unknown {sg}")
         in_force.add(sg)
 for v in sorted(ids["v1_defect"] - evidenced):
-    errors.append(f"{v}: not evidence for any risk")
+    err("coverage", f"{v}: not evidence for any risk")
 for k in sorted(ids["risk"] - controlled):
-    errors.append(f"{k}: no requirement controls it")
+    err("coverage", f"{k}: no requirement controls it")
 for sg in sorted(ids["safeguard"] - in_force):
-    errors.append(f"{sg}: no decision brings it into force")
+    err("coverage", f"{sg}: no decision brings it into force")
 
-# 6. Mentions in tracked docs
+# citations
 docs = [ROOT / "CLAUDE.md", ROOT / "README.md"]
 for folder in ("method", "spec", "data", "evals", "prototype"):
     docs += sorted((ROOT / folder).glob("*.md"))
-docs += [p for p in sorted((ROOT / "spec").glob("*.toml")) if p.name != "registers.toml"]
-for doc in docs:
-    if not doc.exists():
-        continue
-    found = set(MENTION.findall(doc.read_text(encoding="utf-8")))
-    for ref in sorted(found):
-        if RETIRED.match(ref):
-            if doc.name != "decisions.md":
-                errors.append(f"{doc.relative_to(ROOT)}: mentions retired {ref}")
-            elif ref not in retired:
-                errors.append(f"decisions.md: {ref} missing from the mapping table")
-        elif ref not in known:
-            errors.append(f"{doc.relative_to(ROOT)}: mentions unknown ID {ref}")
-
-# 7. Superseded entries name their replacement
-for row in re.finditer(r"^\| (N\d+) \|(.*)\|$", superseded_part, re.M):
-    named = set(re.findall(r"Superseded by (N\d+)", row.group(2)))
-    NEXT = {d["id"]: d["superseded_by"] for d in REG.get("decision", []) if d.get("superseded_by")}
-    for n in list(named):  # follow a chain such as N10 -> N24 -> N32
-        while n in NEXT:
-            n = NEXT[n]
-            named.add(n)
-    if not named & active:
-        errors.append(f"{row.group(1)}: Superseded row does not name an active replacement")
+docs = [d for d in docs if d.exists()]
+data_files = sorted((ROOT / "spec").glob("*.toml"))
+kb_files = sorted((ROOT / "evals" / "known_bad").glob("*.toml"))
+CITABLE = {}  # name as written -> kind
+for path, kind in ((DECISIONS_MD, "decision"), (REQS_MD, "requirement")):
+    for s, title, lvl in headings(path, 3):
+        CITABLE[title] = kind
+for s, title, lvl in headings(REQS_MD, 2):
+    if title.endswith("?"):
+        CITABLE[title] = "question"   # the four Monday questions
+ANCHORS = {}
 
 
-# Data files used by checks 9-12
+def anchors(path):
+    if path not in ANCHORS:
+        ANCHORS[path] = {s for s, _, _ in headings(path)} if path.exists() else set()
+    return ANCHORS[path]
+
+
+def citation_problems(line, src, toml=False):
+    """Problems in one line: old codes, unknown [Name]s, links to missing files or headings."""
+    out = []
+    text = CODE_SPAN.sub("", line)
+    for m in OLD_CODE.finditer(text):
+        out.append(f"old code {m.group(1)}: cite by name")
+    if toml and re.match(r"^\s*\[", text):
+        return out
+    for n in NAME.findall(text):
+        if n not in CITABLE:
+            out.append(f"[{n}] is not a decision, requirement or Monday question")
+    for _, href in LINK.findall(text):
+        if re.match(r"^[a-z]+:", href):
+            continue
+        path, _, anchor = href.partition("#")
+        target = (src.parent / path).resolve() if path else src
+        if path and not target.exists():
+            out.append(f"link to a missing file: {href}")
+        elif anchor and target.suffix == ".md" and anchor not in anchors(target):
+            out.append(f"link to a missing heading: {href}")
+    return out
+
+
+KB_CITATION_BAD = set()
+for f in kb_files:
+    for c in tomllib.loads(f.read_text(encoding="utf-8")).get("case", []):
+        if c.get("check") == "citations":
+            KB_CITATION_BAD |= set(c.get("bad", [])) | set(c.get("must_pass", []))
+for f in docs + data_files + kb_files:
+    toml = f.suffix == ".toml"
+    for i, line in enumerate(f.read_text(encoding="utf-8").splitlines(), 1):
+        if toml and any(b in line for b in KB_CITATION_BAD):
+            continue
+        for p in citation_problems(line, f, toml):
+            err("citations", f"{f.relative_to(ROOT)}:{i}: {p}")
+
+# archive chain
+cmap = (ROOT / "method" / "archive" / "code-map.md").read_text(encoding="utf-8")
+for part in ("## Decisions", "## Requirements"):
+    block = cmap.split(part, 1)[1].split("\n## ", 1)[0]
+    for code, nm in re.findall(r"^\| ([A-Z][\w-]*) \| (.+?)(?: \(superseded.*?\))? \|$", block, re.M):
+        if code != "Code" and nm not in CITABLE:
+            err("archive chain", f"code-map.md: {code} maps to '{nm}', which is not a current heading")
+
+
+# Data files used by the terms, numbers, mirrors and known-bad checks
 def load(rel):
     return tomllib.loads((ROOT / rel).read_text(encoding="utf-8"))
 
@@ -169,7 +249,7 @@ THRESHOLDS = load("spec/thresholds.toml")
 PLAYBOOK = load("spec/playbook.toml")
 METRIC = {m["id"]: m for m in METRICS["metric"]}
 ENTRY = {e["type"]: e for e in PLAYBOOK["entry"]}
-md_docs = [d for d in docs if d.suffix == ".md" and d.exists()]
+md_docs = [d for d in docs if d.suffix == ".md"]
 
 # 9. Terms
 REPLACED = [(t["use"], old) for t in REG.get("term", []) for old in t.get("replaces", [])]
@@ -181,22 +261,13 @@ def term_hits(text):
 
 
 def scanned_lines(doc):
-    """A doc's lines, with decisions.md's Superseded table blanked (old wording stays as it was)."""
-    lines = doc.read_text(encoding="utf-8").splitlines()
-    if doc.name == "decisions.md":
-        inside = False
-        for i, line in enumerate(lines):
-            if line.startswith("## "):
-                inside = line.startswith("## Superseded")
-            if inside:
-                lines[i] = ""
-    return lines
+    return doc.read_text(encoding="utf-8").splitlines()
 
 
 for doc in md_docs:
     for i, line in enumerate(scanned_lines(doc), 1):
         for use, old in term_hits(line):
-            errors.append(f"{doc.relative_to(ROOT)}:{i}: '{old}' — use '{use}' (N26)")
+            err("terms", f"{doc.relative_to(ROOT)}:{i}: '{old}' — use '{use}'")
 
 
 # 10. Numbers: tunable values with their unit
@@ -239,17 +310,18 @@ def number_hits(text):
 for doc in md_docs:
     for i, line in enumerate(doc.read_text(encoding="utf-8").splitlines(), 1):
         for src in number_hits(line):
-            errors.append(f"{doc.relative_to(ROOT)}:{i}: states a tunable number ({src}); "
-                          f"cite the data file instead (N26)")
+            err("numbers", f"{doc.relative_to(ROOT)}:{i}: states a tunable number ({src}); "
+                           f"cite the data file instead")
 
 # 11. Mirrors
-n12 = re.search(r"\*\*N12 ·.*?(?=\n\*\*N\d+ ·)", log, re.S)
-window = re.search(r"dispute\s+within\s+(\d+)\s+days", n12.group(0)) if n12 else None
+log = DECISIONS_MD.read_text(encoding="utf-8")
+world = re.search(r"^### Simulated world\n(.*?)(?=^##)", log, re.S | re.M)
+window = re.search(r"dispute\s+within\s+(\d+)\s+days", world.group(1)) if world else None
 if not window:
-    errors.append("decisions.md: N12's dispute window not found")
+    err("mirrors", "decisions.md: the dispute window in 'Simulated world' not found")
 elif int(window.group(1)) != METRICS["windows"]["dispute_window_days"]:
-    errors.append(f"metrics.toml dispute_window_days ({METRICS['windows']['dispute_window_days']}) "
-                  f"differs from N12 ({window.group(1)} days)")
+    err("mirrors", f"metrics.toml dispute_window_days ({METRICS['windows']['dispute_window_days']}) "
+                   f"differs from 'Simulated world' ({window.group(1)} days)")
 
 # 12. Known-bad inputs still match the data files
 from decimal import Decimal, ROUND_HALF_UP  # noqa: E402
@@ -277,37 +349,37 @@ def known_bad(name):
 
 
 def kb_fail(name, case, msg):
-    errors.append(f"known_bad/{name}.toml {case['requirement']} ({case['covers'][:40]}): {msg}")
+    err("known-bad", f"known_bad/{name}.toml {case['requirement']} ({case['covers'][:40]}): {msg}")
 
 
 places = Decimal(1).scaleb(-METRICS["display"]["decimals"])
-for c in known_bad("dec1"):
+for c in known_bad("off_target"):
     rows = c.get("rows") or c.get("weeks") or [c]
     rows += [dict(v, metric=c.get("metric"), right=v["colour"]) for k, v in c.items()
              if k in ("provisional", "final") and isinstance(v, dict)]
     for r in rows:
         metric, shown, right = r.get("metric", c.get("metric")), r.get("shown"), r.get("right")
         if "raw" in r and Decimal(str(r["raw"])).quantize(places, ROUND_HALF_UP) != Decimal(str(shown)):
-            kb_fail("dec1", c, f"raw {r['raw']} does not show as {shown}")
+            kb_fail("off_target", c, f"raw {r['raw']} does not show as {shown}")
         if metric in METRIC and shown is not None and right in COLOURS:
             if colour(metric, shown) != right:
-                kb_fail("dec1", c, f"{metric} {shown} is {colour(metric, shown)}, case says {right}")
+                kb_fail("off_target", c, f"{metric} {shown} is {colour(metric, shown)}, case says {right}")
         if "days" in r and "entered_step" in r:
             limit = METRIC["stuck_invoices"]["stuck_limit_calendar_days"]
             if day(c["review"]) - day(r["entered_step"]) != r["days"]:
-                kb_fail("dec1", c, f"{r['entered_step']}: day count is not {r['days']}")
+                kb_fail("off_target", c, f"{r['entered_step']}: day count is not {r['days']}")
             if (r["days"] > limit) != (r["right"] == "listed"):
-                kb_fail("dec1", c, f"{r['days']} days against a limit of {limit}: not {r['right']}")
+                kb_fail("off_target", c, f"{r['days']} days against a limit of {limit}: not {r['right']}")
     if c.get("right") == "none" and METRIC[c["metric"]]["shown"] != "monitored":
-        kb_fail("dec1", c, f"{c['metric']} is not monitored")
+        kb_fail("off_target", c, f"{c['metric']} is not monitored")
     if "earlier_weeks" in c and c["earlier_weeks"] != THRESHOLDS["trends"]["trend_window_weeks"] - 1:
-        kb_fail("dec1", c, "earlier_weeks is not one fewer than the trend window")
+        kb_fail("off_target", c, "earlier_weeks is not one fewer than the trend window")
 
 cap = CAPACITY
 productive = cap["team_fte"] * (cap["hours_per_fte"] - cap["protected_hours_per_fte"])
 ceiling_h = cap["utilisation"]["ceiling"] * productive
 overtime_max = cap["team_fte"] * cap["overtime_hours_per_fte"]
-for c in known_bad("dec4"):
+for c in known_bad("capacity"):
     for r in c.get("rows", []):
         if "workload" in r:
             over = max(0.0, r["workload"] - ceiling_h)
@@ -315,57 +387,57 @@ for c in known_bad("dec4"):
                    "room": max(0.0, ceiling_h - r["workload"])}
             for k, v in r["right"].items():
                 if abs(got[k] - v) > 1e-9:
-                    kb_fail("dec4", c, f"{r['week']}: {k} is {got[k]:g}, case says {v}")
+                    kb_fail("capacity", c, f"{r['week']}: {k} is {got[k]:g}, case says {v}")
         if "committed" in r and r["committed"] <= productive + r["approved_overtime"]:
-            kb_fail("dec4", c, f"committed {r['committed']} fits; the bad plan is not bad")
+            kb_fail("capacity", c, f"committed {r['committed']} fits; the bad plan is not bad")
     if "intervention" in c:
         top = max(ENTRY[c["intervention"]["type"]]["effort_hours"])
         if c["intervention"]["effort_hours"] != ENTRY[c["intervention"]["type"]]["effort_hours"] or c["right"] != top:
-            kb_fail("dec4", c, "effort range or its top no longer matches the playbook")
+            kb_fail("capacity", c, "effort range or its top no longer matches the playbook")
     plan = c.get("plan", {})
     if "contracted" in plan and plan["contracted"] + plan["overtime"] <= cap["max_hours_per_person"]:
-        kb_fail("dec4", c, "the person is within the limit; the bad plan is not bad")
+        kb_fail("capacity", c, "the person is within the limit; the bad plan is not bad")
     if "proposed_overtime" in plan and plan["committed"] <= productive + plan["approved_overtime"]:
-        kb_fail("dec4", c, "the plan fits without the unapproved overtime; not bad")
+        kb_fail("capacity", c, "the plan fits without the unapproved overtime; not bad")
 
 high_min = THRESHOLDS["confidence"]["high_min_evidence_types"]
-for c in known_bad("dec2"):
+for c in known_bad("possible_issues"):
     for r in c.get("rows", []):
         if r.get("computed") == "high" and (len(r["evidence_types"]) < high_min or r["gaps"]):
-            kb_fail("dec2", c, "a row computed high has too few types or a gap")
+            kb_fail("possible_issues", c, "a row computed high has too few types or a gap")
         if r.get("bad") == "high" and not r["gaps"] and len(r["evidence_types"]) >= high_min:
-            kb_fail("dec2", c, "a row labelled bad for too few types now meets the minimum")
+            kb_fail("possible_issues", c, "a row labelled bad for too few types now meets the minimum")
 
 CAUSES = load("spec/causes.toml")
 cause_ids = {c["id"] for c in CAUSES["cause"]}
 for cid in sorted(cause_ids):
     if "_" not in cid:
-        errors.append(f"causes.toml: id '{cid}' has no underscore; the leakage scan (R-DET-12) "
-                      f"cannot tell it from a partner's words")
+        err("known-bad", f"causes.toml: id '{cid}' has no underscore; the leakage scan "
+                         f"([No answer in the world]) cannot tell it from a partner's words")
 for e in PLAYBOOK["entry"]:
     if e["causes"] != "all":
         for cid in sorted(set(e["causes"]) - cause_ids):
-            errors.append(f"playbook.toml {e['type']}: cause '{cid}' is not in the cause list")
+            err("known-bad", f"playbook.toml {e['type']}: cause '{cid}' is not in the cause list")
 forbidden = set(PLAYBOOK.get("forbidden_types", []))
 if not forbidden:
-    errors.append("playbook.toml: forbidden_types missing (R-DET-07)")
+    err("known-bad", "playbook.toml: forbidden_types missing ([The playbook respects the SOP])")
 for t in sorted(forbidden & set(PLAYBOOK["types"])):
-    errors.append(f"playbook.toml: type '{t}' is forbidden (R-DET-07)")
-for c in known_bad("dec3"):
+    err("known-bad", f"playbook.toml: type '{t}' is forbidden ([The playbook respects the SOP])")
+for c in known_bad("interventions"):
     if "week_reported" in c:
         for r in c.get("bad", []):
             if isinstance(r, dict) and "due_week" in r and \
                     r["due_week"] == c["week_reported"] + ENTRY[c["type"]]["weeks_allowed"]:
-                kb_fail("dec3", c, f"due week {r['due_week']} is what code sets; not bad")
-    if c["requirement"] == "R-DET-07" and isinstance(c.get("bad"), list):
+                kb_fail("interventions", c, f"due week {r['due_week']} is what code sets; not bad")
+    if c["requirement"] == "the-playbook-respects-the-sop" and isinstance(c.get("bad"), list):
         for line in c["bad"]:
             if "both include" in line:
                 for name in re.findall(r"'(\w+)'", line):
                     if name not in forbidden:
-                        kb_fail("dec3", c, f"'{name}' is not in forbidden_types")
+                        kb_fail("interventions", c, f"'{name}' is not in forbidden_types")
     for r in c.get("bad", []) if isinstance(c.get("bad"), list) else []:
         if isinstance(r, dict) and "type" in r and r["effort_hours"] == ENTRY[r["type"]]["effort_hours"]:
-            kb_fail("dec3", c, f"{r['type']} {r['effort_hours']} now matches the playbook; not bad")
+            kb_fail("interventions", c, f"{r['type']} {r['effort_hours']} now matches the playbook; not bad")
 
 for c in known_bad("week"):
     issue = c.get("issue", {})
@@ -377,18 +449,38 @@ for c in known_bad("week"):
         if day(issue["contained"]) - day(issue["detected"]) != c["right"]:
             kb_fail("week", c, "time to contain does not match the dates")
 
-# 14-16. Assumption labels, validation mentions, privacy (R-DET-15, R-DET-21)
+for f in kb_files:
+    for c in tomllib.loads(f.read_text(encoding="utf-8")).get("case", []):
+        if c.get("requirement") not in ids["requirement"]:
+            err("known-bad", f"known_bad/{f.name}: case '{c.get('covers', '')[:40]}' names unknown "
+                             f"requirement {c.get('requirement')}")
+
+
+# Assumption labels, validation mentions, privacy ([Documents match what exists],
+# [Nothing private in tracked files])
 def assumptions_ok(text):
     top = "\n".join(text.splitlines()[:6])
-    return "assumption" in top.lower() and "N7" in top
+    return "assumption" in top.lower() and "[Assumptions]" in top
 
 
 def validation_bad(unit):
-    return bool(re.search(r"validat", unit, re.I)) and "N20" not in unit
+    return bool(re.search(r"validat", unit, re.I)) and "No outside validation" not in unit
 
 
 def privacy_hits(text, terms):
     return [t for t in terms if re.search(r"\b" + re.escape(t) + r"\b", text, re.I)]
+
+
+def validation_lines(doc):
+    """A doc's lines; in decisions.md the entry that sets the limit is not checked against itself."""
+    lines, inside = scanned_lines(doc), False
+    if doc == DECISIONS_MD:
+        for i, line in enumerate(lines):
+            if line.startswith("#"):
+                inside = line == "### No outside validation"
+            elif inside:
+                lines[i] = ""
+    return lines
 
 
 def units(lines):
@@ -412,11 +504,13 @@ def units(lines):
 
 for f in sorted((ROOT / "spec").glob("*.toml")):
     if f.name != "registers.toml" and not assumptions_ok(f.read_text(encoding="utf-8")):
-        errors.append(f"spec/{f.name}: header does not say its figures are assumptions (N7)")
+        err("assumption labels", f"spec/{f.name}: header does not say its figures are assumptions, "
+                                 f"citing [Assumptions]")
 for doc in md_docs:
-    for i, unit in units(scanned_lines(doc)):
+    for i, unit in units(validation_lines(doc)):
         if validation_bad(unit):
-            errors.append(f"{doc.relative_to(ROOT)}:{i}: mentions validation without citing N20")
+            err("validation", f"{doc.relative_to(ROOT)}:{i}: mentions validation without citing "
+                              f"'No outside validation'")
 
 notes = []
 DENY = ROOT / "_working" / "privacy-denylist.txt"
@@ -432,20 +526,21 @@ if DENY.exists():
         except (UnicodeDecodeError, OSError):
             continue
         for t in privacy_hits(text, terms):
-            errors.append(f"{rel}: holds a name from the private deny-list (R-DET-21)")
+            err("privacy", f"{rel}: holds a name from the private deny-list")
     notes.append(f"privacy check ran against {len(terms)} private term(s)")
 else:
-    notes.append("privacy check skipped: no private deny-list (R-DET-21)")
+    notes.append("privacy check skipped: no private deny-list")
 
 KB_CHECK = {
-    None: (lambda line: bool(term_hits(line) or number_hits(line)), "checks 9-10"),
-    "assumptions": (lambda line: not assumptions_ok(line), "check 14"),
-    "validation": (validation_bad, "check 15"),
+    None: (lambda line: bool(term_hits(line) or number_hits(line)), "the terms and numbers checks"),
+    "assumptions": (lambda line: not assumptions_ok(line), "the assumption-labels check"),
+    "validation": (validation_bad, "the validation check"),
+    "citations": (lambda line: bool(citation_problems(line, REQS_MD)), "the citations check"),
 }
 for c in known_bad("evidence"):
-    if c["requirement"] == "R-DET-21":
-        flags, name = (lambda line, c=c: bool(privacy_hits(line, c["test_list"]))), "check 16"
-    elif c["requirement"] == "R-DET-15" and "built" not in c["covers"]:  # status claims: S1 (N26)
+    if c["requirement"] == "nothing-private-in-tracked-files":
+        flags, name = (lambda line, c=c: bool(privacy_hits(line, c["test_list"]))), "the privacy check"
+    elif c["requirement"] == "documents-match-what-exists" and "built" not in c["covers"]:  # status claims: Build 1
         flags, name = KB_CHECK[c.get("check")]
     else:
         continue
@@ -458,24 +553,22 @@ for c in known_bad("evidence"):
         if flags(line):
             kb_fail("evidence", c, f"{name} wrongly rejects: {line}")
 
-# 17. Decision links
-ACTIVE = {d["id"] for d in REG.get("decision", []) if not d.get("superseded_by")}
+# Decision links
+ACTIVE = ids["decision"]
 linked = set()
 for r in REG.get("requirement", []):
     if not r.get("decisions"):
-        errors.append(f"{r['id']}: names no decision it carries out")
+        err("decision links", f"{r['id']}: names no decision it carries out")
     for d in r.get("decisions", []):
         if d not in ACTIVE:
-            errors.append(f"{r['id']}.decisions: {d} is not an active decision")
+            err("decision links", f"{r['id']}.decisions: {d} is not a decision")
         linked.add(d)
 for d in REG.get("decision", []):
-    if d.get("process") and d.get("superseded_by"):
-        errors.append(f"{d['id']}: superseded but marked process")
     if d["id"] in ACTIVE and d["id"] not in linked and not d.get("process"):
-        errors.append(f"{d['id']}: no requirement carries it out and it is not marked process")
+        err("decision links", f"{d['id']}: no requirement carries it out and it is not marked process")
 
 
-# 8. README status block
+# Status block
 def status_block():
     st = REG["status"]
     built = ", ".join(st["built"]) or "no product code yet — the harness comes first"
@@ -491,37 +584,15 @@ if "--update-readme" in sys.argv and m:
                       encoding="utf-8")
     m = BLOCK.search(readme.read_text(encoding="utf-8"))
 if not m:
-    errors.append("README.md: status block markers missing")
+    err("status block", "README.md: markers missing")
 elif m.group(2) != status_block():
-    errors.append("README.md: status block is stale — run with --update-readme")
-
-for d in REG.get("decision", []):
-    sb = d.get("superseded_by")
-    if sb and (d["id"] not in superseded or f"Superseded by {sb}" not in superseded_part):
-        errors.append(f"{d['id']}: registers say superseded by {sb}; decisions.md does not")
-    if not sb and d["id"] in superseded:
-        errors.append(f"{d['id']}: superseded in decisions.md but not marked in the registers")
-# 13. No stale citations of superseded decisions
-SUPERSEDED_IDS = {d["id"] for d in REG.get("decision", []) if d.get("superseded_by")}
-cited = docs + sorted((ROOT / "evals" / "known_bad").glob("*.toml"))
-for doc in cited:
-    if not doc.exists():
-        continue
-    lines = scanned_lines(doc)
-    if doc.name == "decisions.md":  # the preamble, before the first section, records history
-        first = next(i for i, line in enumerate(lines) if line.startswith("## "))
-        lines = [""] * first + lines[first:]
-    for i, line in enumerate(lines, 1):
-        for ref in re.findall(r"\b(N\d+)\b", line):
-            if ref in SUPERSEDED_IDS:
-                errors.append(f"{doc.relative_to(ROOT)}:{i}: cites superseded {ref}")
+    err("status block", "README.md: stale — run with --update-readme")
 
 if errors:
     print(f"check.py: {len(errors)} problem(s)")
     print("\n".join(f"  - {e}" for e in errors))
     sys.exit(1)
-n_sup = sum(1 for d in REG.get("decision", []) if d.get("superseded_by"))
-print(f"check.py: clean — {len(ids['decision']) - n_sup} active decisions ({n_sup} superseded), {len(ids['risk'])} risks, "
+print(f"check.py: clean — {len(ids['decision'])} decisions, {len(ids['risk'])} risks, "
       f"{len(ids['requirement'])} requirements, {len(ids['v1_defect'])} v1 defects, "
       f"{len(ids['safeguard'])} safeguards")
 for n in notes:

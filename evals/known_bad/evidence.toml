@@ -1,10 +1,10 @@
-# Known-bad inputs for the evidence: R-DET-12 to R-DET-15 (N30).
+# Known-bad inputs for "The evidence" in 02-requirements.md ([Requirements and evals]).
 # The check must fail every `bad` and pass every `must_pass`.
-# Cause ids mirror spec/causes.toml; terms mirror spec/registers.toml (N26).
+# Cause ids mirror spec/causes.toml; terms mirror spec/registers.toml ([One home per fact]).
 
-# ── R-DET-12 · No answer in the world ──────────────────────────────────
+# ── No answer in the world ──────────────────────────────────
 [[case]]
-requirement = "R-DET-12"
+requirement = "no-answer-in-the-world"
 covers = "the leakage scan rejects cause ids, expected-answer text and metric values in tickets"
 runs_in = "CI, before generated data is accepted"
 bad = [
@@ -14,20 +14,20 @@ bad = [
   { ticket = "Your dispute rate is 4.6% this week, fix it.",             why = "that week's metric value as shown" },
 ]
 must_pass = [
-  "I think the fuel surcharge is wrong again.",       # the writer's guess is allowed (N12)
+  "I think the fuel surcharge is wrong again.",       # the writer's guess is allowed ([Simulated world])
   "Disputed amount EUR 97.00 on line 2.",            # an amount, not a metric value
 ]
 
 [[case]]
-requirement = "R-DET-12"
+requirement = "no-answer-in-the-world"
 covers = "prototype code cannot read the scenario definitions"
 runs_in = "CI"
 bad = "a prototype module imports from, or opens a file in, the scenario definitions"
 
-# ── R-DET-13 · The holdout stays sealed ────────────────────────────────
-# The fingerprint method is set in F3; these cases hold whatever it is.
+# ── Holdout fingerprint check ────────────────────────────────
+# The fingerprint method is set in the Harness phase; these cases hold whatever it is.
 [[case]]
-requirement = "R-DET-13"
+requirement = "holdout-fingerprint-check"
 covers = "the single held-out run starts only on a matching fingerprint"
 runs_in = "local (the held-out quarter is outside the project)"
 bad = [
@@ -38,28 +38,28 @@ bad = [
   "the expected answers changed after the freeze, and a scored run starts",
 ]
 
-# ── R-DET-14 · Change gate ─────────────────────────────────────────────
-# Drift-limit boundary cases follow when F3 sets the limits.
+# ── Change gate ─────────────────────────────────────────────
+# Drift-limit boundary cases follow when the Harness phase sets the limits.
 [[case]]
-requirement = "R-DET-14"
+requirement = "change-gate"
 covers = "a changed model version, prompt or data file is used only after a full, clean scenario-quarter run"
 runs_in = "local (needs the model)"
 bad = [
-  "the DEC-3 prompt changed; the last passing scorecard was for the old prompt",
+  "the prompt that drafts interventions changed; the last passing scorecard was for the old prompt",
   "the playbook changed; only the happy-path cases re-run",
   "total score up, but the thin-evidence case type down: shown as a pass",
 ]
 
-# ── R-DET-15 · Documents match what exists ─────────────────────────────
-# Document checks come in stages (R-DET-15).
+# ── Documents match what exists ─────────────────────────────
+# Document checks come in stages ([Documents match what exists]).
 [[case]]
-requirement = "R-DET-15"
+requirement = "documents-match-what-exists"
 covers = "preferred terms: exact replaced phrases fail; correct uses pass"
 runs_in = "CI"
 bad = [
   "The AI proposes a cause.",
   "Each proposed cause is reviewed.",
-  "The review gate comes after DEC-3.",
+  "The review gate comes after the interventions are drafted.",
 ]
 must_pass = [
   "A separate agent writes the held-out quarter.",
@@ -67,39 +67,56 @@ must_pass = [
 ]
 
 [[case]]
-requirement = "R-DET-15"
+requirement = "documents-match-what-exists"
 covers = "tunable numbers appear only in data files"
 runs_in = "CI"
 bad = "method/01-frame.md: 'the utilisation ceiling is 90%'"
-must_pass = "method/decisions.md: '1,500 partners' (a design fact, N26)"
+must_pass = "method/decisions.md: '1,500 partners' (a design fact, [One home per fact])"
 
 [[case]]
-requirement = "R-DET-15"
+requirement = "documents-match-what-exists"
 covers = "every data file says its figures are assumptions"
 runs_in = "CI"
 check = "assumptions"
 bad = "# Capacity file. Owned by the PMO lead."
-must_pass = "# Every figure is an assumption from operating experience (N7)."
+must_pass = "# Every figure is an assumption from operating experience ([Assumptions])."
 
 [[case]]
-requirement = "R-DET-15"
-covers = "every mention of validation cites N20"
+requirement = "documents-match-what-exists"
+covers = "every mention of validation cites [No outside validation]"
 runs_in = "CI"
 check = "validation"
 bad = ["The prototype has been validated.", "Results are validated against real operations."]
-must_pass = "No outside person validates the prototype; this is a stated limitation (N20)."
+must_pass = "No outside person validates the prototype; this is a stated limitation ([No outside validation])."
 
 [[case]]
-requirement = "R-DET-15"
-covers = "nothing is called built unless the registers mark it built (from S1)"
+requirement = "documents-match-what-exists"
+covers = "nothing is called built unless the registers mark it built (from Build 1)"
 runs_in = "CI"
 registers_built = []
 bad = "README.md: 'The capacity check is built.'"
 
-# ── R-DET-21 · Nothing private in tracked files ─────────────────────
+[[case]]
+requirement = "documents-match-what-exists"
+covers = "citations are names that exist, never codes ([Names, not codes])"
+runs_in = "CI"
+check = "citations"
+bad = [
+  "The capacity check (R-DET-05) runs every week.",
+  "As N27 sets, the PMO lead owns the decision.",
+  "See [Capacity planning](02-requirements.md#capacity-planning).",
+  "# Owned by the PMO lead ([Capacity planning]).",
+]
+must_pass = [
+  "See [Capacity check](02-requirements.md#capacity-check).",
+  "# Every figure is an assumption ([Assumptions]).",
+  "Dispute ticket T-31-0101 and week 31 are data, not citations.",
+]
+
+# ── Nothing private in tracked files ─────────────────────
 # The real deny-list is private (_working/); this case uses a made-up name.
 [[case]]
-requirement = "R-DET-21"
+requirement = "nothing-private-in-tracked-files"
 covers = "a name on the deny-list fails; the author's name passes"
 runs_in = "local"
 test_list = ["Zorblax Freight"]

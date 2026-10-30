@@ -1,15 +1,15 @@
-# Cause list (R-RL-02, R-DET-11). Owned by the PMO lead; changes approved, versioned, re-tested (R-DET-14).
-# v0, F2a. Drafted from the payment and dispute SOPs' dispute reasons; every entry is an assumption (N7).
+# Cause list ([Cause from the list, or human review], [Issues opened by hand]). Owned by the PMO lead; changes approved, versioned, re-tested ([Change gate]).
+# v0, Pass/fail requirements. Drafted from the payment and dispute SOPs' dispute reasons; every entry is an assumption ([Assumptions]).
 #
 # A cause names what is wrong on the invoice or payment, never why it went wrong: people investigate
-# the why, and nothing names a root cause (N27). Ops specialists tag causes at closure from this same list (the dispute SOP).
-# Every id contains an underscore, so the leakage scan (R-DET-12) can tell a label from a
+# the why, and nothing names a root cause ([The Monday decision]). Ops specialists tag causes at closure from this same list (the dispute SOP).
+# Every id contains an underscore, so the leakage scan ([No answer in the world]) can tell a label from a
 # partner's own words; check.py enforces this.
-# A pattern that fits no cause gets R-RL-02's fixed text.
+# A pattern that fits no cause gets [Cause from the list, or human review]'s fixed text.
 #
 # supported_by names the ticket fields and metrics that can support a cause. A ticket's stated reason
-# is the writer's claim and never counts as evidence (R-RL-03). Ticket fields the dataset must carry
-# (F2b): stated_reason, invoice_line, amount_disputed, partner_segment, service_week; per invoice:
+# is the writer's claim and never counts as evidence ([Ticket claims are claims]). Ticket fields the dataset must carry
+# (Judgement and data phase): stated_reason, invoice_line, amount_disputed, partner_segment, service_week; per invoice:
 # payment_status, bank_details_changed_week.
 
 [[cause]]

@@ -1,5 +1,5 @@
-# Metrics register (R-DET-01, R-DET-03). Owned by the PMO lead; changes approved, versioned, re-tested.
-# All targets and bands are assumptions from the author's operating experience (N7). Agreed in F2a.
+# Metrics register ([Colour shows the level], [Provisional weeks]). Owned by the PMO lead; changes approved, versioned, re-tested.
+# All targets and bands are assumptions from the author's operating experience ([Assumptions]). Agreed in the Pass/fail requirements phase.
 #
 # Weeks: every metric is keyed to week W: the invoice week (the service week), except dispute
 # resolution, which is keyed to the week the ticket is opened. The Tuesday run in week W+1 issues
@@ -7,10 +7,10 @@
 # Days: a clock that measures how long a partner, an invoice or an open issue waits counts calendar
 # days. Only the dispute-resolution time limit, which measures the team's response, counts business
 # days (Monday to Friday; the simulated year has no public holidays). A clock counts whole days after the day it starts.
-# Bands: target and red_beyond per metric; how they colour a figure: R-DET-01.
+# Bands: target and red_beyond per metric; how they colour a figure: [Colour shows the level].
 
 [display]
-decimals = 1            # colour is set on the figure as shown (R-DET-01)
+decimals = 1            # colour is set on the figure as shown ([Colour shows the level])
 rounding = "half_up"
 
 [[metric]]
@@ -18,7 +18,7 @@ id = "payment_accuracy"
 shown = "coloured"
 direction = "higher_is_better"
 unit = "percent"
-definition = "Share of week W's invoices with no confirmed payment error (N12). Counted by invoice: one wrong line makes the invoice wrong. Each error is attributed to its invoice week."
+definition = "Share of week W's invoices with no confirmed payment error ([Simulated world]). Counted by invoice: one wrong line makes the invoice wrong. Each error is attributed to its invoice week."
 target = 97.0
 red_beyond = 90.0       # red below 90.0
 final_when = "the dispute window for week W has closed"
@@ -53,7 +53,7 @@ stuck_limit_calendar_days = 2
 final_when = "all of week W's invoices are paid"
 
 [windows]
-dispute_window_days = 14   # calendar days; mirrors N12 for the code (N26)
+dispute_window_days = 14   # calendar days; mirrors [Simulated world] for the code ([One home per fact])
 
 [context]
 invoice_volume = "shown as context, never coloured"

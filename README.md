@@ -35,21 +35,21 @@ speculative extrapolation. The prompt was never written, and nothing failed.
 |------|----------|
 | [`method/`](method/) | The operating model: [decisions](method/decisions.md), the [frame](method/01-frame.md) and the draft [requirements](method/02-requirements.md), built up phase by phase |
 | [`spec/`](spec/) | The registers the checks read, and the data files for metrics, capacity, thresholds, causes and the playbook |
-| [`data/`](data/) | The simulated world, designed in F2b and generated in F3. Empty today |
-| [`evals/`](evals/) | The harness, built from F2a to F3. Today the traceability and document check, `check.py`, and the known-bad inputs |
+| [`data/`](data/) | The simulated world, designed in the Judgement and data phase and generated in the Harness phase. Empty today |
+| [`evals/`](evals/) | The harness, built from the Pass/fail requirements phase to the Harness phase. Today the traceability and document check, `check.py`, and the known-bad inputs |
 | [`prototype/`](prototype/) | v2 application code. Empty until the harness exists |
 | [`CLAUDE.md`](CLAUDE.md) | Standing rules for Claude and the builder |
 
 ## Status
 
 <!-- gen:status -->
-**Stage:** F2a: pass/fail requirements complete; some thresholds and cases follow in F2b and F3 · **Next:** the spike (N22); F2b items that do not depend on it are drafted privately meanwhile  
+**Stage:** Pass/fail requirements complete; some thresholds and cases follow in the Judgement and data and Harness phases · **Next:** the spike; Judgement and data items that do not depend on it are drafted privately meanwhile  
 **Built so far:** no product code yet — the harness comes first
 <!-- /gen:status -->
 
 The phases: the frame; requirements with a clear pass or fail; a short private
 spike to see how the model actually fails; judgement requirements and the dataset;
-the harness; four build slices; a wrap-up (N19). The status line is generated from
+the harness; four build slices; a wrap-up ([Phases and the builder](method/decisions.md#phases-and-the-builder)). The status line is generated from
 [`spec/registers.toml`](spec/registers.toml) by `evals/check.py`.
 
 ---

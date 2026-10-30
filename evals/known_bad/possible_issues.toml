@@ -1,24 +1,24 @@
-# Known-bad inputs for the DEC-2 red lines: R-RL-02 to R-RL-04 (N30).
+# Known-bad inputs for the red lines in "Possible issues?" in 02-requirements.md ([Requirements and evals]).
 # Each case is a draft that a broken build or a misbehaving model could produce. The check must fail
 # every `bad` and pass `right`. A `must_pass` case guards the other way: a valid answer the check
-# must not reject. These checks apply to the rules version and the model version alike (N15).
-# Cause ids mirror spec/causes.toml (N26). Evidence-type names are placeholders until F2b fixes the
-# list (R-RL-04); the cases are renamed then, not changed. Whether a pattern fits a listed cause
-# is judged against the expected answer (R-JDG-01), so it has no known-bad case here.
+# must not reject. These checks apply to the rules version and the model version alike ([Model against rules]).
+# Cause ids mirror spec/causes.toml ([One home per fact]). Evidence-type names are placeholders until the Judgement and data phase fixes the
+# list ([Confidence is measured]); the cases are renamed then, not changed. Whether a pattern fits a listed cause
+# is judged against the expected answer ([Detection against rules]), so it has no known-bad case here.
 
-# ── R-RL-02 · Cause from the list, or human review ─────────────────────
+# ── Cause from the list, or human review ─────────────────────
 [[case]]
-requirement = "R-RL-02"
+requirement = "cause-from-the-list-or-human-review"
 covers = "a suspected cause is exactly one cause id from the list"
 right = "suspected_cause = one id from spec/causes.toml"
 bad = [
   { suspected_cause = "rate_card_error",                              why = "not on the list" },
   { suspected_cause = "Wrong price per unit",                         why = "the name, not the id" },
-  { suspected_cause = "unit_price; root cause: rate card migration",  why = "names a root cause (N27)" },
+  { suspected_cause = "unit_price; root cause: rate card migration",  why = "names a root cause ([The Monday decision])" },
 ]
 
 [[case]]
-requirement = "R-RL-02"
+requirement = "cause-from-the-list-or-human-review"
 covers = "a pattern that fits no cause shows the fixed text, the tickets and code's counts, and no cause"
 pattern = "tickets about partner portal log-in failures; no cause fits"
 right = { suspected_cause = "none", text = "requires human review: no matching cause", tickets = "listed", counts = "from code" }
@@ -29,15 +29,15 @@ bad = [
 ]
 
 [[case]]
-requirement = "R-RL-02"
+requirement = "cause-from-the-list-or-human-review"
 covers = "'no issue this week' is a valid answer"
 week = "a quiet week: tickets spread across causes, no pattern"
 must_pass = "no issue this week"
 
-# ── R-RL-03 · Ticket claims are claims ─────────────────────────────────
+# ── Ticket claims are claims ─────────────────────────────────
 # Week 31 has 12 tickets whose stated reason says fuel: T-31-0101 to T-31-0112.
 [[case]]
-requirement = "R-RL-03"
+requirement = "ticket-claims-are-claims"
 covers = "a claim is recorded as claimed, with code's count, and never counts as evidence"
 right = { claimed_in_tickets = { cause = "wrong_fuel", tickets = "T-31-0101 to T-31-0112", count = 12 }, evidence = "excludes the claim" }
 bad = [
@@ -48,7 +48,7 @@ bad = [
 ]
 
 [[case]]
-requirement = "R-RL-03"
+requirement = "ticket-claims-are-claims"
 covers = "an unconfirmed claim stays on the review screen"
 bad = [
   "the claim shown in the ops view before the PMO lead confirms it",
@@ -56,10 +56,10 @@ bad = [
   "an intervention whose basis is the unconfirmed claim",
 ]
 
-# ── R-RL-04 · Confidence is measured ───────────────────────────────────
+# ── Confidence is measured ───────────────────────────────────
 # high_min_evidence_types mirrors spec/thresholds.toml.
 [[case]]
-requirement = "R-RL-04"
+requirement = "confidence-is-measured"
 covers = "the label is never above the level code computes"
 rows = [
   { evidence_types = ["confirmed errors on fuel lines"],                     gaps = [],                      computed = "medium", bad = "high", why = "one type, below the minimum for high" },
@@ -68,11 +68,11 @@ rows = [
 ]
 
 [[case]]
-requirement = "R-RL-04"
+requirement = "confidence-is-measured"
 covers = "derived figures, ticket claims and signals that move together by construction never add a type"
 computed = "medium"
 bad = [
   { evidence_types = ["confirmed errors on fuel lines", "utilisation"],           label = "high", why = "utilisation is derived" },
-  { evidence_types = ["confirmed errors on fuel lines", "claimed_in_tickets"],    label = "high", why = "a ticket claim is not evidence (R-RL-03)" },
+  { evidence_types = ["confirmed errors on fuel lines", "claimed_in_tickets"],    label = "high", why = "a ticket claim is not evidence ([Ticket claims are claims])" },
   { evidence_types = ["dispute_rate", "dispute_tickets_opened"],                  label = "high", why = "both count the same disputes: one type" },
 ]

@@ -1,11 +1,11 @@
-# Playbook (R-DET-07, R-DET-05, R-DET-06, R-RL-05). Owned by the PMO lead; changes approved, versioned,
-# re-tested (R-DET-14). The model may only propose changes, through a workflow designed, not built (N32).
-# v0, F2a. Every figure is an assumption from operating experience (N7).
+# Playbook ([The playbook respects the SOP], [Capacity check], [Coverage without padding], [No invented figures or dates]). Owned by the PMO lead; changes approved, versioned,
+# re-tested ([Change gate]). The model may only propose changes, through a workflow designed, not built ([What the prototype builds]).
+# v0, Pass/fail requirements. Every figure is an assumption from operating experience ([Assumptions]).
 #
-# stage: the lifecycle stage the intervention moves an issue towards (N23); which entries the
-#   model sees: R-DET-07.
-# effort_hours: [low, high]; how the capacity check uses it: R-DET-05.
-# weeks_allowed: sets the due week (R-RL-05).
+# stage: the lifecycle stage the intervention moves an issue towards ([Issue lifecycle]); which entries the
+#   model sees: [The playbook respects the SOP].
+# effort_hours: [low, high]; how the capacity check uses it: [Capacity check].
+# weeks_allowed: sets the due week ([No invented figures or dates]).
 # Each correction's own time is counted per confirmed error in the capacity file; entries count
 # only finding and coordinating the work.
 
@@ -13,7 +13,7 @@ types = [
   "investigate", "correct_affected", "contact_partners", "add_run_check", "escalate",
   "confirm_cause", "correct_payments", "fix_source_data", "make_check_permanent", "change_process",
 ]
-# Never a type (R-DET-07): the load check fails a playbook that holds any of these.
+# Never a type ([The playbook respects the SOP]): the load check fails a playbook that holds any of these.
 forbidden_types = ["hold_run", "stop_run", "delay_run", "pay_outside_approval", "skip_approval"]
 
 # ── Containment: the model may draft these ─────────────────────────────

@@ -1,13 +1,13 @@
-# Known-bad inputs for DEC-3: R-RL-05, R-DET-06 to R-DET-08 (N30).
+# Known-bad inputs for "Which interventions?" in 02-requirements.md ([Requirements and evals]).
 # Each case is a draft the model could produce, or a playbook a careless edit could produce. The
-# check must fail every `bad` and pass every `must_pass`. Playbook figures mirror spec/playbook.toml (N26).
+# check must fail every `bad` and pass every `must_pass`. Playbook figures mirror spec/playbook.toml ([One home per fact]).
 #
 # Evidence code gave the model (week 31): possible issue on fuel lines since week 29; 37 tickets;
 # 143 affected invoices; ticket refs T-31-0101 to T-31-0137. Playbook entry: contact_partners.
-# Code sets the due week: the week reported plus the entry's weeks_allowed (check.py check 12).
+# Code sets the due week: the week reported plus the entry's weeks_allowed (check.py's known-bad check).
 
 [[case]]
-requirement = "R-RL-05"
+requirement = "no-invented-figures-or-dates"
 covers = "every number is in the evidence or the playbook entry"
 bad = [
   { text = "Contact the 150 affected partners.",                    why = "150 is not in the evidence" },
@@ -20,7 +20,7 @@ must_pass = [
 ]
 
 [[case]]
-requirement = "R-RL-05"
+requirement = "no-invented-figures-or-dates"
 covers = "no expected impact"
 bad = [
   { text = "Expected to cut fuel disputes by 30%.",  why = "an impact forecast with a number" },
@@ -28,7 +28,7 @@ bad = [
 ]
 
 [[case]]
-requirement = "R-RL-05"
+requirement = "no-invented-figures-or-dates"
 covers = "code sets dates; the model sets none"
 type = "contact_partners"
 week_reported = 31
@@ -38,17 +38,17 @@ bad = [
 ]
 
 [[case]]
-requirement = "R-RL-05"
+requirement = "no-invented-figures-or-dates"
 covers = "effort comes from the playbook entry; an off-playbook draft states none"
 bad = [
   { type = "contact_partners", effort_hours = [2, 4],  why = "outside the playbook range" },
-  { off_playbook = true,       effort_hours = [3, 3],  why = "the PMO lead sets it in review (R-DET-05)" },
+  { off_playbook = true,       effort_hours = [3, 3],  why = "the PMO lead sets it in review ([Capacity check])" },
 ]
 
-# ── R-DET-06 · Coverage without padding ────────────────────────────────
+# ── Coverage without padding ────────────────────────────────
 # Two suspected causes this week: wrong_fuel and unit_price.
 [[case]]
-requirement = "R-DET-06"
+requirement = "coverage-without-padding"
 covers = "every suspected cause has an intervention or a deferral with a reason"
 bad = [
   "unit_price has no intervention and no deferral",
@@ -56,13 +56,13 @@ bad = [
 ]
 
 [[case]]
-requirement = "R-DET-06"
+requirement = "coverage-without-padding"
 covers = "no two interventions of the same playbook type for one cause and stage"
 bad = "two contact_partners interventions for wrong_fuel at Contained"
 must_pass = "investigate and contact_partners for wrong_fuel at Contained (different needs)"
 
 [[case]]
-requirement = "R-DET-06"
+requirement = "coverage-without-padding"
 covers = "each intervention names its cause and stage and cites evidence that exists"
 bad = [
   "an intervention with no cause",
@@ -70,9 +70,9 @@ bad = [
   "an intervention citing evidence id E-31-09, which code did not give the model",
 ]
 
-# ── R-DET-07 · The playbook respects the SOP ───────────────────────────
+# ── The playbook respects the SOP ───────────────────────────
 [[case]]
-requirement = "R-DET-07"
+requirement = "the-playbook-respects-the-sop"
 covers = "the playbook fails to load with a type off its list or a forbidden type"
 runs_in = "CI, when the playbook loads"
 bad = [
@@ -83,7 +83,7 @@ bad = [
 must_pass = "add_run_check, whose step says 'it never holds the run'"
 
 [[case]]
-requirement = "R-DET-07"
+requirement = "the-playbook-respects-the-sop"
 covers = "the model sees and cites only Contained entries that fit the suspected cause"
 bad = [
   "a draft citing confirm_cause (stage Cause confirmed)",
@@ -92,20 +92,20 @@ bad = [
 ]
 
 [[case]]
-requirement = "R-DET-07"
+requirement = "the-playbook-respects-the-sop"
 covers = "off-playbook drafts are labelled, carry no effort and are shown only after review"
 bad = [
   "an off-playbook draft without the off-playbook label",
   "an off-playbook draft in the ops view before review",
 ]
 
-# ── R-DET-08 · Failed checks are never repaired ────────────────────────
+# ── Failed checks are never repaired ────────────────────────
 # A stub model returns scripted drafts, so these run in CI without the model.
 [[case]]
-requirement = "R-DET-08"
+requirement = "failed-checks-are-never-repaired"
 covers = "a failing draft is rejected, retried once, then replaced by the fixed text"
-stub_drafts = ["fails R-RL-05", "fails R-RL-05"]
-right = "item shows 'requires human review: failed check' and 'R-RL-05'; both drafts in the record"
+stub_drafts = ["fails [No invented figures or dates]", "fails [No invented figures or dates]"]
+right = "item shows 'requires human review: failed check' and '[No invented figures or dates]'; both drafts in the record"
 bad = [
   "the first draft shown",
   "the invented number removed and the draft shown (code repaired it)",
@@ -115,7 +115,7 @@ bad = [
 ]
 
 [[case]]
-requirement = "R-DET-08"
+requirement = "failed-checks-are-never-repaired"
 covers = "a passing second draft is shown; the first stays in the record"
-stub_drafts = ["fails R-DET-06", "passes"]
+stub_drafts = ["fails [Coverage without padding]", "passes"]
 must_pass = "second draft on the review screen; first draft in the record as rejected"

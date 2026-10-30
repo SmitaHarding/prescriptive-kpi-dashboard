@@ -1,347 +1,354 @@
-# Registers: the machine-readable half of the ID chain (N26).
+# Registers: the machine-readable half of the chain ([One home per fact]).
 # Chain: v1 defect -> risk -> requirement -> eval case -> code -> status claim. evals/check.py checks it up to
-# requirement today; the later links are added from F3.
+# requirement today; the later links are added from the Harness phase.
+# Each id is the entry's name as a slug, equal to its heading anchor ([Names, not codes]).
 # Decision wording lives only in method/decisions.md; requirement wording only in method/02-requirements.md.
-# Earlier IDs (D1-D93, SG-01-SG-11) are retired; their mapping is in method/decisions.md.
+# Earlier numbered codes map to names in method/archive/code-map.md.
+# v1 defects keep their numbers: they are cited only here and in the v1 annex.
 
 [status]
-stage = "F2a: pass/fail requirements complete; some thresholds and cases follow in F2b and F3"
-next = "the spike (N22); F2b items that do not depend on it are drafted privately meanwhile"
-built = []   # no product code yet; S1 adds the first entries
+stage = "Pass/fail requirements complete; some thresholds and cases follow in the Judgement and data and Harness phases"
+next = "the spike; Judgement and data items that do not depend on it are drafted privately meanwhile"
+built = []   # no product code yet; Build 1 adds the first entries
 
 # ── Decisions ──────────────────────────────────────────────────────────
 # safeguards = safeguards the decision brings into force
 # process = true: enforced by CLAUDE.md, the gates or check.py's structure checks, not by a requirement
 [[decision]]
-id = "N1"
+id = "scope"
 process = true
 [[decision]]
-id = "N2"
+id = "repo-and-deployment"
 process = true
 [[decision]]
-id = "N3"
+id = "public-face"
 [[decision]]
-id = "N4"
+id = "privacy"
 [[decision]]
-id = "N5"
-superseded_by = "N25"
+id = "names-not-codes"
 [[decision]]
-id = "N6"
-superseded_by = "N26"
+id = "assumptions"
 [[decision]]
-id = "N7"
+id = "records-and-replay"
 [[decision]]
-id = "N8"
-superseded_by = "N27"
+id = "simulated-world"
 [[decision]]
-id = "N9"
-superseded_by = "N23"
+id = "model-against-rules"
+safeguards = ["freeze-first", "holdout-sealed", "blind-scoring", "never-fit-the-answer", "cost-beside-accuracy"]
 [[decision]]
-id = "N10"
-superseded_by = "N32"
+id = "value-measures"
 [[decision]]
-id = "N11"
+id = "change-control"
 [[decision]]
-id = "N12"
-[[decision]]
-id = "N13"
-superseded_by = "N28"
-[[decision]]
-id = "N14"
-superseded_by = "N29"
-[[decision]]
-id = "N15"
-safeguards = ["SG-1", "SG-2", "SG-3", "SG-4", "SG-5"]
-[[decision]]
-id = "N16"
-[[decision]]
-id = "N17"
-superseded_by = "N30"
-[[decision]]
-id = "N18"
-[[decision]]
-id = "N19"
+id = "phases-and-the-builder"
 process = true
 [[decision]]
-id = "N20"
+id = "no-outside-validation"
 [[decision]]
-id = "N21"
-superseded_by = "N31"
-[[decision]]
-id = "N22"
+id = "build-and-look-spike"
 process = true
 [[decision]]
-id = "N23"
+id = "issue-lifecycle"
 [[decision]]
-id = "N24"
-superseded_by = "N32"
-[[decision]]
-id = "N25"
+id = "method-documents"
 process = true
 [[decision]]
-id = "N26"
+id = "one-home-per-fact"
 [[decision]]
-id = "N27"
+id = "the-monday-decision"
 [[decision]]
-id = "N28"
+id = "the-year"
 [[decision]]
-id = "N29"
-safeguards = ["SG-1", "SG-2", "SG-3", "SG-4"]
+id = "scenarios-and-the-holdout"
+safeguards = ["freeze-first", "holdout-sealed", "blind-scoring", "never-fit-the-answer"]
 [[decision]]
-id = "N30"
+id = "requirements-and-evals"
 process = true
 [[decision]]
-id = "N31"
+id = "overrides-feed-the-tests"
 [[decision]]
-id = "N32"
+id = "what-the-prototype-builds"
 
 # ── Risks: what the requirements control ───────────────────────────────
 # evidence = v1 defects showing the risk is real
 [[risk]]
-id = "RK-01"
+id = "false-alarm"
 title = "False alarm: a normal month-end or a recovering metric is treated as a problem"
 evidence = ["V1-01", "V1-09"]
 [[risk]]
-id = "RK-02"
+id = "missed-or-late-issue"
 title = "Missed or late issue: a real dispute pattern is found later than the team's own rules would find it"
 evidence = []
 [[risk]]
-id = "RK-03"
+id = "wrong-cause"
 title = "Wrong cause: a suspected cause is shown as fact, or a partner's guess is taken as the cause"
 evidence = ["V1-05"]
 [[risk]]
-id = "RK-04"
+id = "overconfidence"
 title = "Overconfidence: confidence higher than the evidence supports, or one signal counted twice"
 evidence = ["V1-05", "V1-08"]
 [[risk]]
-id = "RK-05"
+id = "infeasible-plan"
 title = "Infeasible plan: interventions exceed team hours, the working-time limit or the approver's authority"
 evidence = ["V1-02"]
 [[risk]]
-id = "RK-06"
+id = "padding"
 title = "Padding: generic or duplicate interventions to fill a quota"
 evidence = ["V1-03"]
 [[risk]]
-id = "RK-07"
+id = "invented-figures"
 title = "Invented figures: numbers, dates or impact forecasts the model made up"
 evidence = ["V1-04"]
 [[risk]]
-id = "RK-08"
+id = "unsafe-text"
 title = "Unsafe text: instructions in ticket text change the output, or text renders as code"
 evidence = ["V1-11"]
 [[risk]]
-id = "RK-09"
+id = "unreviewed-output"
 title = "Unreviewed output: a model draft reaches the ops or exec view before the PMO lead has reviewed it"
 evidence = []
 [[risk]]
-id = "RK-10"
+id = "no-trail"
 title = "No trail: what was proposed, changed and decided can't be rebuilt, so value can't be measured"
 evidence = ["V1-06"]
 [[risk]]
-id = "RK-11"
+id = "stalled-issue"
 title = "Stalled issue: an open issue sits in one stage too long without anyone noticing"
 evidence = []
 [[risk]]
-id = "RK-12"
+id = "breaks-the-sop"
 title = "Breaks the SOP: an intervention would stop or delay the weekly payment run or skip the approval chain"
 evidence = []
 [[risk]]
-id = "RK-13"
+id = "leaky-test"
 title = "Leaky test: the data or the scenario text gives away the answer"
 evidence = ["V1-07"]
 [[risk]]
-id = "RK-14"
+id = "overfitting"
 title = "Overfitting: the build is tuned to the cases it is scored on"
 evidence = []
 [[risk]]
-id = "RK-15"
-title = "The model not earning its place: the model is no better than simple rules, or costs too much for what it adds"
+id = "model-not-earning-its-place"
+title = "Model not earning its place: the model is no better than simple rules, or costs too much for what it adds"
 evidence = []
 [[risk]]
-id = "RK-16"
+id = "drift"
 title = "Drift: a new model, prompt, cause list or playbook quietly makes results worse"
 evidence = []
 [[risk]]
-id = "RK-17"
+id = "docs-overclaim-or-contradict"
 title = "Docs overclaim or contradict: they describe more than is built, or state numbers that disagree"
 evidence = ["V1-10", "V1-12"]
 [[risk]]
-id = "RK-18"
+id = "missed-stuck-invoice"
 title = "Missed stuck invoice: an invoice stuck in the process chain is missing from the ops list, so nobody remedies it before the partner chases payment"
 evidence = []
 [[risk]]
-id = "RK-19"
+id = "views-disagree"
 title = "Views disagree: the ops and exec views show different figures for the same week, or leave out what a role must act on"
 evidence = []
 [[risk]]
-id = "RK-20"
+id = "privacy-leak"
 title = "Privacy leak: a tracked file names the employer, an internal tool or a person other than the author"
 evidence = []
 
 # ── Requirements: wording in method/02-requirements.md ─────────────────
-# class: DET deterministic, RL red line, JDG judgement (N30); risks = risks it controls; decisions = decisions it carries out
+# class: pass/fail, red line or judgement ([Requirements and evals]); question: the section in 02-requirements.md;
+# risks = risks it controls; decisions = decisions it carries out
 [[requirement]]
-id = "R-DET-01"
-part = "DEC-1"
-risks = ["RK-01"]
-decisions = ["N27", "N32"]
+id = "colour-shows-the-level"
+class = "pass/fail"
+question = "off-target"
+risks = ["false-alarm"]
+decisions = ["the-monday-decision", "what-the-prototype-builds"]
 [[requirement]]
-id = "R-DET-02"
-part = "DEC-1"
-risks = ["RK-01"]
-decisions = ["N27", "N28"]
+id = "cycle-weeks"
+class = "pass/fail"
+question = "off-target"
+risks = ["false-alarm"]
+decisions = ["the-monday-decision", "the-year"]
 [[requirement]]
-id = "R-DET-03"
-part = "DEC-1"
-risks = ["RK-01"]
-decisions = ["N23", "N28"]
+id = "provisional-weeks"
+class = "pass/fail"
+question = "off-target"
+risks = ["false-alarm"]
+decisions = ["issue-lifecycle", "the-year"]
 [[requirement]]
-id = "R-DET-04"
-part = "DEC-1"
-risks = ["RK-01"]
-decisions = ["N27"]
+id = "colour-triggers-nothing"
+class = "pass/fail"
+question = "off-target"
+risks = ["false-alarm"]
+decisions = ["the-monday-decision"]
 [[requirement]]
-id = "R-DET-05"
-part = "DEC-4"
-risks = ["RK-05"]
-decisions = ["N27", "N32"]
+id = "capacity-check"
+class = "pass/fail"
+question = "enough-capacity"
+risks = ["infeasible-plan"]
+decisions = ["the-monday-decision", "what-the-prototype-builds"]
 [[requirement]]
-id = "R-RL-01"
-part = "DEC-4"
-risks = ["RK-05"]
-decisions = ["N27"]
+id = "weekly-hours-limit"
+class = "red line"
+question = "enough-capacity"
+risks = ["infeasible-plan"]
+decisions = ["the-monday-decision"]
 [[requirement]]
-id = "R-JDG-01"
-part = "DEC-2"
-risks = ["RK-02", "RK-15"]
-decisions = ["N15", "N27"]
+id = "detection-against-rules"
+class = "judgement"
+question = "possible-issues"
+risks = ["missed-or-late-issue", "model-not-earning-its-place"]
+decisions = ["model-against-rules", "the-monday-decision"]
 [[requirement]]
-id = "R-RL-02"
-part = "DEC-2"
-risks = ["RK-03"]
-decisions = ["N27", "N28"]
+id = "cause-from-the-list-or-human-review"
+class = "red line"
+question = "possible-issues"
+risks = ["wrong-cause"]
+decisions = ["the-monday-decision", "the-year"]
 [[requirement]]
-id = "R-RL-03"
-part = "DEC-2"
-risks = ["RK-03"]
-decisions = ["N12", "N27"]
+id = "ticket-claims-are-claims"
+class = "red line"
+question = "possible-issues"
+risks = ["wrong-cause"]
+decisions = ["simulated-world", "the-monday-decision"]
 [[requirement]]
-id = "R-RL-04"
-part = "DEC-2"
-risks = ["RK-04"]
-decisions = ["N27"]
+id = "confidence-is-measured"
+class = "red line"
+question = "possible-issues"
+risks = ["overconfidence"]
+decisions = ["the-monday-decision"]
 [[requirement]]
-id = "R-JDG-02"
-part = "DEC-2"
-risks = ["RK-04"]
-decisions = ["N27"]
+id = "calibration"
+class = "judgement"
+question = "possible-issues"
+risks = ["overconfidence"]
+decisions = ["the-monday-decision"]
 [[requirement]]
-id = "R-RL-05"
-part = "DEC-3"
-risks = ["RK-07"]
-decisions = ["N16", "N27"]
+id = "no-invented-figures-or-dates"
+class = "red line"
+question = "which-interventions"
+risks = ["invented-figures"]
+decisions = ["value-measures", "the-monday-decision"]
 [[requirement]]
-id = "R-DET-06"
-part = "DEC-3"
-risks = ["RK-06"]
-decisions = ["N27"]
+id = "coverage-without-padding"
+class = "pass/fail"
+question = "which-interventions"
+risks = ["padding"]
+decisions = ["the-monday-decision"]
 [[requirement]]
-id = "R-DET-07"
-part = "DEC-3"
-risks = ["RK-12"]
-decisions = ["N12", "N27"]
+id = "the-playbook-respects-the-sop"
+class = "pass/fail"
+question = "which-interventions"
+risks = ["breaks-the-sop"]
+decisions = ["simulated-world", "the-monday-decision"]
 [[requirement]]
-id = "R-JDG-03"
-part = "DEC-3"
-risks = ["RK-06", "RK-12"]
-decisions = ["N27"]
+id = "practical-and-proportionate"
+class = "judgement"
+question = "which-interventions"
+risks = ["padding", "breaks-the-sop"]
+decisions = ["the-monday-decision"]
 [[requirement]]
-id = "R-DET-08"
-part = "DEC-3"
-risks = ["RK-03", "RK-04", "RK-05", "RK-06", "RK-07"]
-decisions = ["N27"]
+id = "failed-checks-are-never-repaired"
+class = "pass/fail"
+question = "which-interventions"
+risks = ["wrong-cause", "overconfidence", "infeasible-plan", "padding", "invented-figures"]
+decisions = ["the-monday-decision"]
 [[requirement]]
-id = "R-RL-06"
-part = "week"
-risks = ["RK-08"]
-decisions = ["N11", "N27"]
+id = "escaping"
+class = "red line"
+question = "across-the-week"
+risks = ["unsafe-text"]
+decisions = ["records-and-replay", "the-monday-decision"]
 [[requirement]]
-id = "R-RL-07"
-part = "week"
-risks = ["RK-09"]
-decisions = ["N27"]
+id = "review-before-anything-is-shown"
+class = "red line"
+question = "across-the-week"
+risks = ["unreviewed-output"]
+decisions = ["the-monday-decision"]
 [[requirement]]
-id = "R-DET-09"
-part = "week"
-risks = ["RK-10"]
-decisions = ["N11", "N27", "N31", "N32"]
+id = "append-only-record"
+class = "pass/fail"
+question = "across-the-week"
+risks = ["no-trail"]
+decisions = ["records-and-replay", "the-monday-decision", "overrides-feed-the-tests", "what-the-prototype-builds"]
 [[requirement]]
-id = "R-DET-10"
-part = "week"
-risks = ["RK-11"]
-decisions = ["N23", "N27"]
+id = "overdue-issues"
+class = "pass/fail"
+question = "across-the-week"
+risks = ["stalled-issue"]
+decisions = ["issue-lifecycle", "the-monday-decision"]
 [[requirement]]
-id = "R-DET-11"
-part = "week"
-risks = ["RK-02", "RK-09"]
-decisions = ["N23", "N27"]
+id = "issues-opened-by-hand"
+class = "pass/fail"
+question = "across-the-week"
+risks = ["missed-or-late-issue", "unreviewed-output"]
+decisions = ["issue-lifecycle", "the-monday-decision"]
 [[requirement]]
-id = "R-DET-12"
-part = "evidence"
-risks = ["RK-13"]
-decisions = ["N12", "N29"]
+id = "no-answer-in-the-world"
+class = "pass/fail"
+question = "the-evidence"
+risks = ["leaky-test"]
+decisions = ["simulated-world", "scenarios-and-the-holdout"]
 [[requirement]]
-id = "R-DET-13"
-part = "evidence"
-risks = ["RK-14"]
-decisions = ["N15", "N28", "N29"]
+id = "holdout-fingerprint-check"
+class = "pass/fail"
+question = "the-evidence"
+risks = ["overfitting"]
+decisions = ["model-against-rules", "the-year", "scenarios-and-the-holdout"]
 [[requirement]]
-id = "R-DET-14"
-part = "evidence"
-risks = ["RK-16"]
-decisions = ["N18"]
+id = "change-gate"
+class = "pass/fail"
+question = "the-evidence"
+risks = ["drift"]
+decisions = ["change-control"]
 [[requirement]]
-id = "R-DET-15"
-part = "evidence"
-risks = ["RK-17"]
-decisions = ["N3", "N7", "N20", "N26"]
+id = "documents-match-what-exists"
+class = "pass/fail"
+question = "the-evidence"
+risks = ["docs-overclaim-or-contradict"]
+decisions = ["public-face", "assumptions", "no-outside-validation", "one-home-per-fact", "names-not-codes"]
 [[requirement]]
-id = "R-DET-16"
-part = "DEC-1"
-risks = ["RK-18"]
-decisions = ["N27", "N32"]
+id = "stuck-invoice-list"
+class = "pass/fail"
+question = "off-target"
+risks = ["missed-stuck-invoice"]
+decisions = ["the-monday-decision", "what-the-prototype-builds"]
 [[requirement]]
-id = "R-DET-17"
-part = "week"
-risks = ["RK-09", "RK-10"]
-decisions = ["N11", "N32"]
+id = "read-only-public-app"
+class = "pass/fail"
+question = "across-the-week"
+risks = ["unreviewed-output", "no-trail"]
+decisions = ["records-and-replay", "what-the-prototype-builds"]
 [[requirement]]
-id = "R-DET-18"
-part = "week"
-risks = ["RK-10"]
-decisions = ["N16", "N32"]
+id = "measuring-value"
+class = "pass/fail"
+question = "across-the-week"
+risks = ["no-trail"]
+decisions = ["value-measures", "what-the-prototype-builds"]
 [[requirement]]
-id = "R-DET-19"
-part = "week"
-risks = ["RK-19"]
-decisions = ["N27", "N32"]
+id = "two-views-one-record"
+class = "pass/fail"
+question = "across-the-week"
+risks = ["views-disagree"]
+decisions = ["the-monday-decision", "what-the-prototype-builds"]
 [[requirement]]
-id = "R-DET-20"
-part = "week"
-risks = ["RK-08"]
-decisions = ["N27"]
+id = "injection-resistance"
+class = "pass/fail"
+question = "across-the-week"
+risks = ["unsafe-text"]
+decisions = ["the-monday-decision"]
 [[requirement]]
-id = "R-DET-21"
-part = "evidence"
-risks = ["RK-20"]
-decisions = ["N4"]
+id = "nothing-private-in-tracked-files"
+class = "pass/fail"
+question = "the-evidence"
+risks = ["privacy-leak"]
+decisions = ["privacy"]
 [[requirement]]
-id = "R-DET-22"
-part = "week"
-risks = ["RK-17"]
-decisions = ["N12", "N16", "N23"]
+id = "simulated-is-labelled"
+class = "pass/fail"
+question = "across-the-week"
+risks = ["docs-overclaim-or-contradict"]
+decisions = ["simulated-world", "value-measures", "issue-lifecycle"]
 
-# ── v1 defects (the structural ones; full register in the v1 review, published in W) ─────
+# ── v1 defects (the structural ones; full register in the v1 review, published in Wrap-up) ─────
 [[v1_defect]]
 id = "V1-01"
 title = "Severity binary and level-only; recoveries flagged as critical"
@@ -381,22 +388,22 @@ title = "Docs described a system that did not exist"
 
 # ── Safeguards: protect the model-against-rules comparison and the holdout ─
 [[safeguard]]
-id = "SG-1"
-title = "Freeze first: rules version, case mix, margin, rubric and expected answers fixed and fingerprinted at the end of F3, before the first scored run; after that only the author changes them, by a new decision; results reported per case type"
+id = "freeze-first"
+title = "Freeze first: rules version, case mix, margin, rubric and expected answers fixed and fingerprinted at the end of the Harness phase, before the first scored run; after that only the author changes them, by a new decision; results reported per case type"
 [[safeguard]]
-id = "SG-2"
-title = "Holdout sealed: written by a separate agent, kept outside the project, run once after S4 for both the model and the rules version"
+id = "holdout-sealed"
+title = "Holdout sealed: written by a separate agent, kept outside the project, run once after Build 4 for both the model and the rules version"
 [[safeguard]]
-id = "SG-3"
+id = "blind-scoring"
 title = "Blind scoring: wherever the author scores, outputs are shuffled and unlabelled"
 [[safeguard]]
-id = "SG-4"
+id = "never-fit-the-answer"
 title = "Never fit the answer: before the freeze, an ambiguous scenario is rewritten (held-out scenarios by their separate agent); after the freeze, a flawed scenario is excluded and reported; an expected answer is never changed to match an output"
 [[safeguard]]
-id = "SG-5"
+id = "cost-beside-accuracy"
 title = "Cost beside accuracy: model cost per week is shown next to every model-against-rules result"
 
-# ── Terms and glossary (N26): one preferred term per concept ──────────────
+# ── Terms and glossary ([One home per fact]): one preferred term per concept ──────────────
 [[term]]
 use = "the model"
 replaces = ["the AI", "the agent"]
@@ -404,7 +411,7 @@ meaning = "the AI inside the product"
 [[term]]
 use = "the builder"
 replaces = []
-meaning = "the agent that builds the code under a charter (N19)"
+meaning = "the agent that builds the code under a charter ([Phases and the builder])"
 [[term]]
 use = "suspected cause"
 replaces = ["proposed cause"]
@@ -428,11 +435,11 @@ meaning = "where drafts and ticket claims are shown before anything reaches the 
 [[term]]
 use = "committed hours"
 replaces = []
-meaning = "the whole workload in R-DET-05, including every reported intervention; DEC-4 starts from it (N27)"
+meaning = "the whole workload in [Capacity check], including every reported intervention; [Enough capacity?] starts from it ([The Monday decision])"
 [[term]]
 use = "weekly hours limit"
 replaces = ["working-time limit"]
-meaning = "max_hours_per_person in the capacity file: the most anyone works in a week (R-RL-01)"
+meaning = "max_hours_per_person in the capacity file: the most anyone works in a week ([Weekly hours limit])"
 [[term]]
 use = "overtime proposal"
 replaces = []
@@ -440,7 +447,7 @@ meaning = "a capacity proposal, not an intervention"
 [[term]]
 use = "expected answer"
 replaces = []
-meaning = "the right answer written into a scenario's definition (N29)"
+meaning = "the right answer written into a scenario's definition ([Scenarios and the holdout])"
 [[term]]
 use = "dispute ticket"
 replaces = []
@@ -448,7 +455,7 @@ meaning = "the record of one dispute; 'case' alone means a test case"
 [[term]]
 use = "intervention"
 replaces = ["containment action"]
-meaning = "an action that moves an issue towards its next stage; the model drafts only those that contain it (N23)"
+meaning = "an action that moves an issue towards its next stage; the model drafts only those that contain it ([Issue lifecycle])"
 [[term]]
 use = "case type"
 replaces = ["scenario type", "scenario kind"]
@@ -456,11 +463,11 @@ meaning = "a kind of test scenario, such as thin evidence or prompt injection"
 [[term]]
 use = "weekly record"
 replaces = ["decision record", "audit record"]
-meaning = "the append-only file for one week: every draft, edit, decision, partner contact and stage move (N11, R-DET-09); both views and the replay are built from it"
+meaning = "the append-only file for one week: every draft, edit, decision, partner contact and stage move ([Records and replay], [Append-only record]); both views and the replay are built from it"
 [[term]]
 use = "status claim"
 replaces = []
-meaning = "a document saying something is built (R-DET-15); 'claim' alone means a ticket claim (R-RL-03)"
+meaning = "a document saying something is built ([Documents match what exists]); 'claim' alone means a ticket claim ([Ticket claims are claims])"
 [[term]]
 use = "the PMO lead's review"
 replaces = ["review gate"]
@@ -472,8 +479,8 @@ meaning = "a partner's objection to an invoice; each is recorded as one dispute 
 [[term]]
 use = "held-out quarter"
 replaces = []
-meaning = "weeks 40-52, sealed and run once (N28, N29); 'holdout' is its short form"
+meaning = "weeks 40-52, sealed and run once ([The year], [Scenarios and the holdout]); 'holdout' is its short form"
 [[term]]
 use = "scenario"
 replaces = []
-meaning = "a planted pattern over several weeks, with its expected answer (N29); a test case checks one requirement against a scenario or one of its weeks"
+meaning = "a planted pattern over several weeks, with its expected answer ([Scenarios and the holdout]); a test case checks one requirement against a scenario or one of its weeks"
